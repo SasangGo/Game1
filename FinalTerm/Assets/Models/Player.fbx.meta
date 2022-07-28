@@ -1,0 +1,285 @@
+fileFormatVersion: 2
+guid: 7a359e8e587bfc9499bc9575c43c7ac3
+ModelImporter:
+  serializedVersion: 19301
+  internalIDToNameTable:
+  - first:
+      74: 2667949614841947897
+    second: Walk
+  - first:
+      74: -3403223495440316006
+    second: Walk.001
+  - first:
+      74: 8206791954344412533
+    second: "\uC544\uB9C8\uD29C\uC5B4|Die"
+  - first:
+      74: 7780236524212964778
+    second: "\uC544\uB9C8\uD29C\uC5B4|Idle"
+  - first:
+      74: 8034784051403107514
+    second: "\uC544\uB9C8\uD29C\uC5B4|Jump"
+  - first:
+      74: -9178764447734441153
+    second: "\uC544\uB9C8\uD29C\uC5B4|Walk"
+  - first:
+      74: -6210560951958625263
+    second: "\uC544\uB9C8\uD29C\uC5B4|Walk.001"
+  - first:
+      74: -8453235306586878693
+    second: "\uC544\uB9C8\uD29C\uC5B4|Walk.002"
+  - first:
+      74: 4240422599267658716
+    second: "\uC544\uB9C8\uD29C\uC5B4|\uC544\uB9C8\uD29C\uC5B4.001Action"
+  - first:
+      74: 653242903012661003
+    second: "\uC544\uB9C8\uD29C\uC5B4|\uC544\uB9C8\uD29C\uC5B4.001Action.001"
+  - first:
+      74: 4560523401154490247
+    second: "\uC544\uB9C8\uD29C\uC5B4|\uC544\uB9C8\uD29C\uC5B4.001Action.002"
+  - first:
+      74: -3160694126536028542
+    second: "\uC544\uB9C8\uD29C\uC5B4|\uC544\uB9C8\uD29C\uC5B4.001Action.003"
+  - first:
+      74: 8677504583777474121
+    second: "\uC544\uB9C8\uD29C\uC5B4|\uC544\uB9C8\uD29C\uC5B4.001Action.004"
+  - first:
+      74: -6192341457548419447
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|Die"
+  - first:
+      74: 3920804840278223298
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|Idle"
+  - first:
+      74: -1513539849736529379
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|Jump"
+  - first:
+      74: -1742049766717671512
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|Walk"
+  - first:
+      74: -5643004439804867493
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|Walk.001"
+  - first:
+      74: -2689880145190419958
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|Walk.002"
+  - first:
+      74: -8068941782378224625
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|\uC544\uB9C8\uD29C\uC5B4.001Action"
+  - first:
+      74: 526775277200664786
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|\uC544\uB9C8\uD29C\uC5B4.001Action.001"
+  - first:
+      74: 6662349430732871465
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|\uC544\uB9C8\uD29C\uC5B4.001Action.002"
+  - first:
+      74: -6845033129670566339
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|\uC544\uB9C8\uD29C\uC5B4.001Action.003"
+  - first:
+      74: 2885901083767367396
+    second: "\uC544\uB9C8\uD29C\uC5B4.001|\uC544\uB9C8\uD29C\uC5B4.001Action.004"
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: "\uC544\uB9C8\uD29C\uC5B4|Die"
+      takeName: "\uC544\uB9C8\uD29C\uC5B4|Die"
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: "\uC544\uB9C8\uD29C\uC5B4|Idle"
+      takeName: "\uC544\uB9C8\uD29C\uC5B4|Idle"
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 41
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: "\uC544\uB9C8\uD29C\uC5B4|Jump"
+      takeName: "\uC544\uB9C8\uD29C\uC5B4|Jump"
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 10
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: "\uC544\uB9C8\uD29C\uC5B4|Walk"
+      takeName: "\uC544\uB9C8\uD29C\uC5B4|Walk"
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
