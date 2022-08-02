@@ -8,6 +8,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] float jumpPower;
     [SerializeField] float rayLength = 5f;
 
+    private const float DEADLINE = -17f;
     private Animator anim;
     private const float MAXY = 30f; 
     private const float MINY = -30F; 
@@ -42,7 +43,7 @@ public class PlayerControl : MonoBehaviour
         //물리작용이므로 FixedUpdated에서 관리
         Move();
         Jump();
-        
+        if (transform.position.y < DEADLINE) StartCoroutine(DieOperate());
     }
     private void Move()
     {
