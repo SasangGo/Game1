@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DropBall : AObstacle
 {
-    private RaycastHit[] hits;
+    private RaycastHit[] hits; // 레이캐스트 쏘는 집합
 
     protected override void OnTriggerEnter(Collider other)
     {
@@ -13,15 +13,18 @@ public class DropBall : AObstacle
         Cell cell = other.GetComponent<Cell>();
         if(cell != null)
         {
+            // 땅과 부딪힐 때는 땅을 원래 색으로 바꿈
             cell.ChangeColor(cell.originColor);
         }
     }
     private void OnEnable()
     {
+        // 3초 후 다시 없어짐
         StartCoroutine(ReturnObstacle(3f,1));
     }
     private void FixedUpdate()
     {
+        // 아래 쪽으로 레이캐스트를 쏴서 땅을 빨간색으로 만듬
         Ray ray = new Ray(transform.position, transform.forward);
         hits = Physics.RaycastAll(ray, Mathf.Infinity, LayerMask.GetMask("Ground"));
 

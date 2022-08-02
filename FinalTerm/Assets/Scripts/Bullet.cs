@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class Bullet : AObstacle
 {
-    private Vector3 shotPos;
-    private float shotSpeed;
+    private Vector3 shotPos; // 발사 위치
+    private float shotSpeed; // 날아가는 속도
     private void OnEnable()
     {
         if (GameManager.Instance.isGameOver) return;
 
         shotSpeed = 25f;
-        StartCoroutine(ReturnObstacle(3f,0));
+        StartCoroutine(ReturnObstacle(3f,0)); //3초 뒤 반환
     }
 
     void Update()
     {
+        // 앞으로 날아감
         transform.position += transform.forward * Time.deltaTime * shotSpeed;
 
     }

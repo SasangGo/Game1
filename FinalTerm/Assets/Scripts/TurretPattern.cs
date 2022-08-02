@@ -14,17 +14,18 @@ public class TurretPattern : APattern
     protected override void OnEnable()
     {
         base.OnEnable();
-        turret.SetActive(false);
-        StartCoroutine(PhaseTimer(PHASETIME));
-        StartCoroutine(AlertHazard(hazardZones));
+        turret.SetActive(false); // 터렛 비활성화
+        StartCoroutine(PhaseTimer(PHASETIME)); // 패턴 시작 타이머
+        StartCoroutine(AlertHazard(hazardZones)); // 패턴 전 경고
     }
 
     protected override void StartPattern()
     {
         base.StartPattern();
         turret.SetActive(true);
-        InvokeRepeating("ShootBullet", 1, 0.3f);
+        InvokeRepeating("ShootBullet", 1, 0.3f); //ShootBullet() 함수를 1초후 0.3초마다 실행
     }
+    // 총알 발사
     private void ShootBullet()
     {
         GameObject bullet = ObjectPool.Instance.GetObject(0);

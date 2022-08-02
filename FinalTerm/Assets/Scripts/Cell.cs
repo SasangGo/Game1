@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    public Color originColor;
-    public Color hazardColor;
-
+    public Color originColor; // 원래 색깔
+    public Color hazardColor; // 빨간색
+    
+    // 경고를 위한 색 변경
     public void ChangeColor(Color color)
     {
         MeshRenderer mesh = GetComponent<MeshRenderer>();
