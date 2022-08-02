@@ -4,46 +4,29 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    [SerializeField] Transform player;
-    private const float MAXY = 30f;
-    private const float MINY = -30f;
-    private const float OFFSETY = 6f;
-    private const float OFFSETZ = -4f;
+    // player 변수
+    [SerializeField] GameObject target;
+    
+    // player와의 Offset
+    private float topOffsetX = 0;
+    private float topOffsetY = 20f;
+    private float topOffsetZ = -25f;
+    // 선형 보정값
+    private float DelayTime = 5f;
 
-    [SerializeField] float sensity;
-
-    float xRot;
-    float yRot;
-    // Start is called before the first frame update
-    void Start()
+    // Update is called once per frame    
+    private void Update()
     {
-        xRot = 0;
-        yRot = 0;
-        sensity = 100f;
+        CameraMove();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void CameraMove()
     {
-        if (GameManager.Instance.isGameOver) return;
-
-        //MoveCamera();
-        RotateCamera();
+        // Camera 위치 계산 및 선형 보정
+        Vector3 FixedPos = new Vector3(target.transform.position.x + topOffsetX, target.transform.position.y + topOffsetY, target.transform.position.z + topOffsetZ);
+        transform.position = Vector3.Lerp(transform.position, FixedPos, Time.deltaTime * DelayTime);
+        // Camera 각도
+        transform.eulerAngles = new Vector3(45f, 0, 0);
     }
-    private void RotateCamera()
-    {
-        xRot = Input.GetAxis("Mouse X") * sensity * Time.deltaTime;
-        yRot = Input.GetAxis("Mouse Y") * sensity * Time.deltaTime;
-        yRot = Mathf.Clamp(yRot, MINY, MAXY);
 
-        transform.Rotate(Vector3.up, xRot,Space.World);
-        transform.Rotate(Vector3.right, yRot);
-
-    }
-    private void MoveCamera()
-    {
-
-        Vector3 camPos = new Vector3(player.position.x + xRot, player.position.y + OFFSETY, player.position.z + OFFSETZ);
-        transform.position = camPos;
-    }
 }

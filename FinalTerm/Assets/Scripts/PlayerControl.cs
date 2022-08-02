@@ -7,6 +7,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] float jumpPower;
     [SerializeField] float rayLength = 5f;
+    // 조이스틱 변수
+    [SerializeField] FloatingJoystick joystick;
 
     private const float DEADLINE = -17f;
     private Animator anim;
@@ -42,13 +44,12 @@ public class PlayerControl : MonoBehaviour
         }
         //물리작용이므로 FixedUpdated에서 관리
         Move();
-        Jump();
         if (transform.position.y < DEADLINE) StartCoroutine(DieOperate());
     }
     private void Move()
     {
-        float moveX = Input.GetAxis("Horizontal"); // 수평 움직임
-        float moveZ = Input.GetAxis("Vertical"); // 수직 움직임
+        float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
+        float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
 
         Vector3 movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
         RotatePlayer(movePos); // 캐릭터 회전
@@ -59,10 +60,10 @@ public class PlayerControl : MonoBehaviour
         // 속도는 일정
         rigid.velocity = movePos;
     }
-    private void Jump()
+    public void Jump()
     {
         // isJump == false 일때
-        if (Input.GetKeyDown(KeyCode.Space) && !isJump)
+        if (!isJump)
         {
             isJump = true;
             rigid.AddForce(new Vector3(0, jumpPower, 0));
