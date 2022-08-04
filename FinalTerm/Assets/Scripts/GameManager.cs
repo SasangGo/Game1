@@ -14,12 +14,16 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] Text startText;
     [SerializeField] Text resultText;
     [SerializeField] GameObject gameOverPanel;
+    [SerializeField] GameObject optionPanel;
     [SerializeField] GameObject[] patterns;
+    [SerializeField] FloatingJoystick joystick;
     [SerializeField] float intervalTime;
 
     private int idx;
     private int preIdx = -1;
     private Animator startTextAnim;
+
+    private const int StartSceneNum = 0;
 
     private void Start()
     {
@@ -28,9 +32,18 @@ public class GameManager : Singleton<GameManager>
         isPhaseEnd = true;
         isGameOver = false;
         startTextAnim = startText.GetComponent<Animator>();
+        // GameOver함수에서 timeScale이 0이 된 경우 방지
+        Time.timeScale = 1f;
 
         StartCoroutine(StartGame());
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            OptionEvent();
+    }
+
     // 게임 시작 문구 코루틴
     IEnumerator StartGame()
     {
@@ -91,6 +104,35 @@ public class GameManager : Singleton<GameManager>
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
     }
+    // 게임 나가기
+    public void ExitGame()
+    {
+        SceneManager.LoadScene(StartSceneNum);
+    }
+    // optiomButtom 클릭 이벤트
+    public void OptionButton()
+    {
+        OptionEvent();
+    }
+
+    // 옵션 창 띄우기
+    private void OptionEvent()
+    {
+        if (!optionPanel.activeSelf)
+        {
+            optionPanel.gameObject.SetActive(true);
+            joystick.RangeReSize(100f, 100f);
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            optionPanel.gameObject.SetActive(false);
+            joystick.RangeReSize(650f, 650f);
+            Time.timeScale = 1f;
+        }
+    }
+
+
     // 스코어 타이머
     private IEnumerator ScoreTimer()
     {

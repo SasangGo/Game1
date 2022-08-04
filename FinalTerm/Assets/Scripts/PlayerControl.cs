@@ -31,17 +31,6 @@ public class PlayerControl : MonoBehaviour
     {
         if (GameManager.Instance.isGameOver) return;
 
-        
-        if (rigid.velocity.y < -0.1f) // 플레이어가 아래로 떨어질때
-        {
-            
-            // Ground 레이어를 감지하는 레이캐스트를 플레이어 아랫방향으로 쏨
-            if (Physics.Raycast(gameObject.transform.position, Vector3.down, rayLength, LayerMask.GetMask("Ground")))
-            {
-                // 플레이어가 지면에 닿을때(Raycast Hit)일 때
-                isJump = false;
-            }
-        }
         //물리작용이므로 FixedUpdated에서 관리
         Move();
         if (transform.position.y < DEADLINE) StartCoroutine(DieOperate());
@@ -51,7 +40,7 @@ public class PlayerControl : MonoBehaviour
         float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
         float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
 
-            Vector3 movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
+        Vector3 movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
             RotatePlayer(movePos); // 캐릭터 회전
             // 움직이고 있는 상태라면 걷는 애니메이션
             if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
@@ -62,7 +51,8 @@ public class PlayerControl : MonoBehaviour
     }
     public void Jump()
     {
-        if (isJump) return;
+        // TimeScale == 0 즉 게임이 멈췄을 때 버튼 동작X
+        if (isJump || Time.timeScale == 0) return;
         isJump = true;
         rigid.AddForce(new Vector3(0, jumpPower, 0));
         anim.SetBool("Jump", true);

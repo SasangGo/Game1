@@ -5,10 +5,18 @@ using UnityEngine.EventSystems;
 
 public class FloatingJoystick : Joystick
 {
+    private RectTransform rect;
+
     protected override void Start()
     {
+        rect = GetComponent<RectTransform>();
         base.Start();
         background.gameObject.SetActive(false);
+    }
+
+    public void RangeReSize(float x, float y)
+    {
+        rect.sizeDelta = new Vector2(x, y);
     }
 
     public override void OnPointerDown(PointerEventData eventData)
