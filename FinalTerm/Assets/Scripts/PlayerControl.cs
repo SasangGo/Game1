@@ -51,26 +51,21 @@ public class PlayerControl : MonoBehaviour
         float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
         float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
 
-        Vector3 movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
-        RotatePlayer(movePos); // 캐릭터 회전
-        // 움직이고 있는 상태라면 걷는 애니메이션
-        if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
-        // 가만히 있다면 걷는 애니메이션 중지
+            Vector3 movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
+            RotatePlayer(movePos); // 캐릭터 회전
+            // 움직이고 있는 상태라면 걷는 애니메이션
+            if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
+            // 가만히 있다면 걷는 애니메이션 중지
         else anim.SetBool("Walk", false);
         // 속도는 일정
-        rigid.velocity = movePos;
+         rigid.velocity = movePos;
     }
     public void Jump()
     {
-        // isJump == false 일때
-        if (!isJump)
-        {
-            isJump = true;
-            rigid.AddForce(new Vector3(0, jumpPower, 0));
-        }
-
-        if (isJump) anim.SetBool("Jump", true);
-        else anim.SetBool("Jump", false);
+        if (isJump) return;
+        isJump = true;
+        rigid.AddForce(new Vector3(0, jumpPower, 0));
+        anim.SetBool("Jump", true);
     }
 
     // 죽을때의 액션을 담당하는 코루틴
@@ -94,5 +89,13 @@ public class PlayerControl : MonoBehaviour
         rigid.rotation = Quaternion.Slerp(rigid.rotation, newRotate, Time.deltaTime * speed);
         //pos.y *= -1;
         newRotate = Quaternion.LookRotation(pos);
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.gameObject.layer == 8)
+        {
+            isJump = false;
+            anim.SetBool("Jump", false);
+        }
     }
 }
