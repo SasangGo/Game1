@@ -22,8 +22,10 @@ public class GameManager : Singleton<GameManager>
     private int idx;
     private int preIdx = -1;
     private Animator startTextAnim;
+    private List<int> recordList;
 
-    private const int StartSceneNum = 0;
+
+    private const int STARTSCENENUMBER = 0;
 
     private void Start()
     {
@@ -95,6 +97,7 @@ public class GameManager : Singleton<GameManager>
         gameOverPanel.gameObject.SetActive(true);
         resultText.text = Mathf.CeilToInt(Score) + "초";
         Time.timeScale = 0f;
+        RecordScore();
         StopAllCoroutines(); // 모든 코루틴 종료
         CancelInvoke(); // 모든 함수 종료
     }
@@ -107,7 +110,7 @@ public class GameManager : Singleton<GameManager>
     // 게임 나가기
     public void ExitGame()
     {
-        SceneManager.LoadScene(StartSceneNum);
+        SceneManager.LoadScene(STARTSCENENUMBER);
     }
     // optiomButtom 클릭 이벤트
     public void OptionButton()
@@ -128,7 +131,9 @@ public class GameManager : Singleton<GameManager>
         {
             optionPanel.gameObject.SetActive(false);
             joystick.RangeReSize(650f, 650f);
-            Time.timeScale = 1f;
+            // 게임 오버 상태 체크 : 게임 오버 후 움직이번 안되니께
+            if (!isGameOver)
+                Time.timeScale = 1f;
         }
     }
 
@@ -142,5 +147,42 @@ public class GameManager : Singleton<GameManager>
             scoreText.text = Mathf.CeilToInt(Score) + "";
             yield return null;
         }
+    }
+
+    // 스코어 기록 함수
+    private void RecordScore()
+    {
+        recordList = new List<int>();
+        Debug.Log("Record 1");
+
+        // 저장되어 있던 기록표들 가져옴
+        for(int i = 1; i<=10 && PlayerPrefs.HasKey("Record_" + i); i++)
+        {
+            recordList.Add(PlayerPrefs.GetInt("Record_" + i));
+        }
+        recordList.Add((int)Score);
+
+
+        Debug.Log("Record 2");
+        // 저장되어 있던 기록 + 새 기록 -> 내림차순 정렬
+        recordList.Sort((delegate (int A, int B) //내림차순; 오름차순 정렬의 경우 return값을 반대로 해주면 된다 1<-> -1
+        {
+            if (A < B) return 1;
+            else if (A > B) return -1;
+            return 0; //동일한 값일 경우
+        }));
+        Debug.Log("Record 3");
+
+        // 다시 기록
+        int j = 1;
+        foreach (int record in recordList)
+        {
+            Debug.Log(j + ". " + record);
+            if (j <= 10)
+                PlayerPrefs.SetInt("Record_" + j, record);
+            j++;
+        }
+
+        Debug.Log("Record 4");
     }
 }

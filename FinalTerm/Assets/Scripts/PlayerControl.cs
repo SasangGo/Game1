@@ -6,7 +6,6 @@ public class PlayerControl : MonoBehaviour
 {
     [SerializeField] float speed;
     [SerializeField] float jumpPower;
-    [SerializeField] float rayLength = 5f;
     // 조이스틱 변수
     [SerializeField] FloatingJoystick joystick;
 
