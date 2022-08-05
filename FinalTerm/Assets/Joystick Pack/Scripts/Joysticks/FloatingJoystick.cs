@@ -14,9 +14,12 @@ public class FloatingJoystick : Joystick
         background.gameObject.SetActive(false);
     }
 
-    public void RangeReSize(float x, float y)
+    public void UseJoystick(bool useJoystick)
     {
-        rect.sizeDelta = new Vector2(x, y);
+        if(useJoystick)
+            rect.sizeDelta = new Vector2(650f, 650f);
+        else
+            rect.sizeDelta = new Vector2(10f, 10f);
     }
 
     public override void OnPointerDown(PointerEventData eventData)

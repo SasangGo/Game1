@@ -16,6 +16,11 @@ public class PlayerControl : MonoBehaviour
     private bool isJump;
     private Rigidbody rigid;
 
+    public float hp { get; private set; }
+    public float level { get; private set; }
+    public float exp { get; private set; }
+    public float invincibilityTime { get; private set; }
+
     private void Start()
     {
         anim = GetComponent<Animator>();
@@ -23,6 +28,19 @@ public class PlayerControl : MonoBehaviour
         speed = 20f;
         jumpPower = 2000f;
         isJump = false;
+
+        hp = 3;
+        level = 1;
+        exp = 0f;
+        invincibilityTime = 4f;
+    }
+
+    private void Update()
+    {
+        exp = exp + Time.deltaTime;
+        GameManager.Instance.UpdateStatusPanel();
+        if (exp >= 5f)
+            LevelUp();
 
     }
 
@@ -42,14 +60,16 @@ public class PlayerControl : MonoBehaviour
         Vector3 movePos;
 
         // 점프 상태일때만 y 좌표를 받아 걸을때는 넘어지지 않게 함
-        if(isJump) movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
-        else movePos = new Vector3(moveX, 0, moveZ) * speed;
+        // if(isJump) movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
+        // else movePos = new Vector3(moveX, 0, moveZ) * speed;
+
+        movePos = new Vector3(moveX * speed, rigid.velocity.y, moveZ * speed);
 
         RotatePlayer(movePos); // 캐릭터 회전
 
-            // 움직이고 있는 상태라면 걷는 애니메이션
-            if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
-            // 가만히 있다면 걷는 애니메이션 중지
+        // 움직이고 있는 상태라면 걷는 애니메이션
+        if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
+        // 가만히 있다면 걷는 애니메이션 중지
         else anim.SetBool("Walk", false);
         // 속도는 일정
         rigid.velocity = movePos;
@@ -78,14 +98,49 @@ public class PlayerControl : MonoBehaviour
     // 캐릭터가 이동방향 쪽으로 회전하게 함
     private void RotatePlayer(Vector3 pos)
     {
+        pos = new Vector3(pos.x, 0f, pos.z);
         if (pos == Vector3.zero) return;
-        pos = new Vector3(pos.x, 0, pos.z);
         Quaternion newRotate = Quaternion.LookRotation(pos);
         //한번에 돌아가는게 아닌 자연스럽게 돌아가게 함
         rigid.rotation = Quaternion.Slerp(rigid.rotation, newRotate, Time.deltaTime * speed);
         //pos.y *= -1;
         newRotate = Quaternion.LookRotation(pos);
     }
+
+
+    // 플레이어 피격 시 호출되는 함수
+    public void OnDamaged()
+    {
+        hp--;
+        GameManager.Instance.UpdateStatusPanel();
+        if (hp <= 0)
+        {
+            StartCoroutine(DieOperate());
+        }
+        else
+        {
+            StartCoroutine(Invincibility(invincibilityTime));
+        }
+
+    }
+
+    // 무적 상태 코루틴
+    public IEnumerator Invincibility(float time)
+    {
+        this.gameObject.layer = 9;
+        yield return new WaitForSeconds(time);
+        this.gameObject.layer = 0;
+    }
+
+    public void LevelUp()
+    {
+        level++;
+        exp = exp - 20f;
+        GameManager.Instance.UpdateStatusPanel();
+        GameManager.Instance.ActiveSkillChoicePanel();
+    }
+
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.gameObject.layer == 8)

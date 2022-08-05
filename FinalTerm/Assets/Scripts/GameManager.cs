@@ -10,14 +10,21 @@ public class GameManager : Singleton<GameManager>
     public bool isGameOver; // 게임오버 체크
     public float Score { get; private set; } // 스코어
 
-    [SerializeField] Text scoreText;
+    [SerializeField] Text statusText;
     [SerializeField] Text startText;
     [SerializeField] Text resultText;
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject optionPanel;
+    [SerializeField] GameObject skillChoicePanel;
+    [SerializeField] public GameObject[] skillPanel;
+    [SerializeField] public Text[] skillPanelHeadText;
+    [SerializeField] public Image[] skillPanelImage;
+    [SerializeField] public Text[] skillPanelExplanText;
     [SerializeField] GameObject[] patterns;
     [SerializeField] FloatingJoystick joystick;
     [SerializeField] float intervalTime;
+    [SerializeField] PlayerControl player;
+
 
     private int idx;
     private int preIdx = -1;
@@ -43,12 +50,13 @@ public class GameManager : Singleton<GameManager>
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            OptionEvent();
+            ActiveOptionPanel();
     }
 
     // 게임 시작 문구 코루틴
     IEnumerator StartGame()
     {
+        
         yield return new WaitForSeconds(1f);
         startText.gameObject.SetActive(true);
         yield return new WaitForSeconds(1.5f);
@@ -56,6 +64,7 @@ public class GameManager : Singleton<GameManager>
         startTextAnim.Play("StartText",-1,0f);
         yield return new WaitForSeconds(1.5f);
         startText.gameObject.SetActive(false);
+        UpdateStatusPanel();
 
         // 시작 문구가 끝나면 score타이머가 돌아가고 다음 페이즈 타이머가 Invoke
         StartCoroutine(ScoreTimer());
@@ -115,22 +124,22 @@ public class GameManager : Singleton<GameManager>
     // optiomButtom 클릭 이벤트
     public void OptionButton()
     {
-        OptionEvent();
+        ActiveOptionPanel();
     }
 
     // 옵션 창 띄우기
-    private void OptionEvent()
+    private void ActiveOptionPanel()
     {
         if (!optionPanel.activeSelf)
         {
             optionPanel.gameObject.SetActive(true);
-            joystick.RangeReSize(100f, 100f);
+            joystick.UseJoystick(false);
             Time.timeScale = 0f;
         }
         else
         {
             optionPanel.gameObject.SetActive(false);
-            joystick.RangeReSize(650f, 650f);
+            joystick.UseJoystick(true);
             // 게임 오버 상태 체크 : 게임 오버 후 움직이번 안되니께
             if (!isGameOver)
                 Time.timeScale = 1f;
@@ -144,16 +153,54 @@ public class GameManager : Singleton<GameManager>
         while (!isGameOver)
         {
             Score += Time.deltaTime;
-            scoreText.text = Mathf.CeilToInt(Score) + "";
             yield return null;
         }
     }
+
+    // 스테이터스 UI 업데이트
+    public void UpdateStatusPanel()
+    {
+        statusText.text = "Level : " + player.level + "\nHp : " + player.hp + "\nExp : " + player.exp;
+    }
+
+    // 레벨 업 할 때 스킬 창 띄우기
+    public void ActiveSkillChoicePanel()
+    {
+        joystick.UseJoystick(false);
+        Time.timeScale = 0;
+        SetSkillPanels();
+        skillChoicePanel.SetActive(true);
+    }
+    public void UnActiveSkillChoicePanel()
+    {
+        joystick.UseJoystick(true);
+        Time.timeScale = 1;
+        skillChoicePanel.SetActive(false);
+    }
+
+    public void SetSkillPanels()
+    {
+        List<int> skillNumbers = SkillManager.Instance.RandomSkill();
+        int index = 0;
+        foreach(int skillNum in skillNumbers)
+        {
+            Debug.Log(skillNum);
+            skillPanelHeadText[index].text = "" + SkillManager.Instance.skillNames[skillNum];
+            skillPanelExplanText[index].text = "" + SkillManager.Instance.skillExplans[skillNum];
+            skillPanelImage[index].sprite = SkillManager.Instance.skillSprites[skillNum];
+            index++;
+        }
+    }
+    public void ClickSkillPanel(int skillIndex)
+    {
+        UnActiveSkillChoicePanel();
+    }
+
 
     // 스코어 기록 함수
     private void RecordScore()
     {
         recordList = new List<int>();
-        Debug.Log("Record 1");
 
         // 저장되어 있던 기록표들 가져옴
         for(int i = 1; i<=10 && PlayerPrefs.HasKey("Record_" + i); i++)
@@ -162,8 +209,6 @@ public class GameManager : Singleton<GameManager>
         }
         recordList.Add((int)Score);
 
-
-        Debug.Log("Record 2");
         // 저장되어 있던 기록 + 새 기록 -> 내림차순 정렬
         recordList.Sort((delegate (int A, int B) //내림차순; 오름차순 정렬의 경우 return값을 반대로 해주면 된다 1<-> -1
         {
@@ -171,18 +216,15 @@ public class GameManager : Singleton<GameManager>
             else if (A > B) return -1;
             return 0; //동일한 값일 경우
         }));
-        Debug.Log("Record 3");
 
         // 다시 기록
         int j = 1;
         foreach (int record in recordList)
         {
-            Debug.Log(j + ". " + record);
             if (j <= 10)
                 PlayerPrefs.SetInt("Record_" + j, record);
             j++;
         }
 
-        Debug.Log("Record 4");
     }
 }

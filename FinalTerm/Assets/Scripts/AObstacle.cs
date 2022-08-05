@@ -14,7 +14,7 @@ public abstract class AObstacle : MonoBehaviour
         PlayerControl player = collision.collider.GetComponent<PlayerControl>();
         if(player != null)
         {
-            StartCoroutine(player.DieOperate());
+            player.OnDamaged();
         }
     }
     // Ontrigger 시작할 때
@@ -22,9 +22,9 @@ public abstract class AObstacle : MonoBehaviour
     {
         //위와 같음
         PlayerControl player = other.GetComponent<PlayerControl>();
-        if(player != null)
+        if(player != null && player.gameObject.layer == 0)
         {
-            StartCoroutine(player.DieOperate());
+            player.OnDamaged();
         }
     }
     // 장애물 오브젝트 풀링(반환) (반환시간, 인덱스 번호)
