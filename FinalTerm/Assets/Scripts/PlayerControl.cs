@@ -6,7 +6,6 @@ public class PlayerControl : MonoBehaviour
 {
     [SerializeField] float speed;
     [SerializeField] float jumpPower;
-    [SerializeField] float rayLength = 5f;
     // 조이스틱 변수
     [SerializeField] FloatingJoystick joystick;
 
@@ -31,17 +30,6 @@ public class PlayerControl : MonoBehaviour
     {
         if (GameManager.Instance.isGameOver) return;
 
-        
-        if (rigid.velocity.y < -0.1f) // 플레이어가 아래로 떨어질때
-        {
-            
-            // Ground 레이어를 감지하는 레이캐스트를 플레이어 아랫방향으로 쏨
-            if (Physics.Raycast(gameObject.transform.position, Vector3.down, rayLength, LayerMask.GetMask("Ground")))
-            {
-                // 플레이어가 지면에 닿을때(Raycast Hit)일 때
-                isJump = false;
-            }
-        }
         //물리작용이므로 FixedUpdated에서 관리
         Move();
         if (transform.position.y < DEADLINE) StartCoroutine(DieOperate());
@@ -51,26 +39,28 @@ public class PlayerControl : MonoBehaviour
         float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
         float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
 
-        Vector3 movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
+        Vector3 movePos;
+
+        // 점프 상태일때만 y 좌표를 받아 걸을때는 넘어지지 않게 함
+        if(isJump) movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
+        else movePos = new Vector3(moveX, 0, moveZ) * speed;
+
         RotatePlayer(movePos); // 캐릭터 회전
-        // 움직이고 있는 상태라면 걷는 애니메이션
-        if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
-        // 가만히 있다면 걷는 애니메이션 중지
+
+            // 움직이고 있는 상태라면 걷는 애니메이션
+            if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
+            // 가만히 있다면 걷는 애니메이션 중지
         else anim.SetBool("Walk", false);
         // 속도는 일정
         rigid.velocity = movePos;
     }
     public void Jump()
     {
-        // isJump == false 일때
-        if (!isJump)
-        {
-            isJump = true;
-            rigid.AddForce(new Vector3(0, jumpPower, 0));
-        }
-
-        if (isJump) anim.SetBool("Jump", true);
-        else anim.SetBool("Jump", false);
+        // TimeScale == 0 즉 게임이 멈췄을 때 버튼 동작X
+        if (isJump || Time.timeScale == 0) return;
+        isJump = true;
+        rigid.AddForce(new Vector3(0, jumpPower, 0));
+        anim.SetBool("Jump", true);
     }
 
     // 죽을때의 액션을 담당하는 코루틴
@@ -89,10 +79,19 @@ public class PlayerControl : MonoBehaviour
     private void RotatePlayer(Vector3 pos)
     {
         if (pos == Vector3.zero) return;
+        pos = new Vector3(pos.x, 0, pos.z);
         Quaternion newRotate = Quaternion.LookRotation(pos);
         //한번에 돌아가는게 아닌 자연스럽게 돌아가게 함
         rigid.rotation = Quaternion.Slerp(rigid.rotation, newRotate, Time.deltaTime * speed);
         //pos.y *= -1;
         newRotate = Quaternion.LookRotation(pos);
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.gameObject.layer == 8)
+        {
+            isJump = false;
+            anim.SetBool("Jump", false);
+        }
     }
 }
