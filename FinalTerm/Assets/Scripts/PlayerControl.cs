@@ -39,14 +39,20 @@ public class PlayerControl : MonoBehaviour
         float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
         float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
 
-        Vector3 movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
-            RotatePlayer(movePos); // 캐릭터 회전
+        Vector3 movePos;
+
+        // 점프 상태일때만 y 좌표를 받아 걸을때는 넘어지지 않게 함
+        if(isJump) movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
+        else movePos = new Vector3(moveX, 0, moveZ) * speed;
+
+        RotatePlayer(movePos); // 캐릭터 회전
+
             // 움직이고 있는 상태라면 걷는 애니메이션
             if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
             // 가만히 있다면 걷는 애니메이션 중지
         else anim.SetBool("Walk", false);
         // 속도는 일정
-         rigid.velocity = movePos;
+        rigid.velocity = movePos;
     }
     public void Jump()
     {
@@ -73,6 +79,7 @@ public class PlayerControl : MonoBehaviour
     private void RotatePlayer(Vector3 pos)
     {
         if (pos == Vector3.zero) return;
+        pos = new Vector3(pos.x, 0, pos.z);
         Quaternion newRotate = Quaternion.LookRotation(pos);
         //한번에 돌아가는게 아닌 자연스럽게 돌아가게 함
         rigid.rotation = Quaternion.Slerp(rigid.rotation, newRotate, Time.deltaTime * speed);
