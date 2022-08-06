@@ -10,7 +10,6 @@ public class GameManager : Singleton<GameManager>
     public bool isGameOver; // 게임오버 체크
     public float Score { get; private set; } // 스코어
 
-    [SerializeField] Text statusText;
     [SerializeField] Text startText;
     [SerializeField] Text resultText;
     [SerializeField] GameObject gameOverPanel;
@@ -19,17 +18,21 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public GameObject[] skillPanel;
     [SerializeField] public Text[] skillPanelHeadText;
     [SerializeField] public Image[] skillPanelImage;
+    [SerializeField] public Image[] hpImages;
+    [SerializeField] public Image[] inHpImages;
     [SerializeField] public Text[] skillPanelExplanText;
+    [SerializeField] Slider levelBar;
+    [SerializeField] Text levelText;
     [SerializeField] GameObject[] patterns;
     [SerializeField] FloatingJoystick joystick;
     [SerializeField] float intervalTime;
     [SerializeField] PlayerControl player;
 
-
     private int idx;
     private int preIdx = -1;
     private Animator startTextAnim;
     private List<int> recordList;
+    private List<int> randomSkillNumbers;
 
 
     private const int STARTSCENENUMBER = 0;
@@ -51,12 +54,13 @@ public class GameManager : Singleton<GameManager>
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             ActiveOptionPanel();
+
+        LevelBarUpdate();
     }
 
     // 게임 시작 문구 코루틴
     IEnumerator StartGame()
     {
-        
         yield return new WaitForSeconds(1f);
         startText.gameObject.SetActive(true);
         yield return new WaitForSeconds(1.5f);
@@ -64,7 +68,6 @@ public class GameManager : Singleton<GameManager>
         startTextAnim.Play("StartText",-1,0f);
         yield return new WaitForSeconds(1.5f);
         startText.gameObject.SetActive(false);
-        UpdateStatusPanel();
 
         // 시작 문구가 끝나면 score타이머가 돌아가고 다음 페이즈 타이머가 Invoke
         StartCoroutine(ScoreTimer());
@@ -158,32 +161,52 @@ public class GameManager : Singleton<GameManager>
     }
 
     // 스테이터스 UI 업데이트
-    public void UpdateStatusPanel()
+    public void LevelBarUpdate()
     {
-        statusText.text = "Level : " + player.level + "\nHp : " + player.hp + "\nExp : " + player.exp;
+        levelText.text = "Lv. " + player.level;
+        levelBar.value = player.currentExp / player.maxExp;
+    }
+
+    public void HpImageUpdate()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            if (i < player.maxHp)
+                hpImages[i].gameObject.SetActive(true);
+            else
+                hpImages[i].gameObject.SetActive(false);
+
+            if (i < player.hp)
+                inHpImages[i].gameObject.SetActive(true);
+            else
+                inHpImages[i].gameObject.SetActive(false);
+        }
     }
 
     // 레벨 업 할 때 스킬 창 띄우기
-    public void ActiveSkillChoicePanel()
+    public void ActiveSkillChoicePanel(bool isAcive)
     {
-        joystick.UseJoystick(false);
-        Time.timeScale = 0;
-        SetSkillPanels();
-        skillChoicePanel.SetActive(true);
-    }
-    public void UnActiveSkillChoicePanel()
-    {
-        joystick.UseJoystick(true);
-        Time.timeScale = 1;
-        skillChoicePanel.SetActive(false);
+        if (isAcive)
+        {
+            joystick.UseJoystick(false);
+            Time.timeScale = 0;
+            SetSkillPanels();
+            skillChoicePanel.SetActive(true);
+        }
+        else
+        {
+            joystick.UseJoystick(true);
+            Time.timeScale = 1;
+            skillChoicePanel.SetActive(false);
+        }
     }
 
     // 스킬 패널 세팅
     public void SetSkillPanels()
     {
-        List<int> skillNumbers = SkillManager.Instance.RandomSkill();
+        randomSkillNumbers = SkillManager.Instance.RandomSkill();
         int index = 0;
-        foreach(int skillNum in skillNumbers)
+        foreach(int skillNum in randomSkillNumbers)
         {
             Debug.Log(skillNum);
             skillPanelHeadText[index].text = "" + SkillManager.Instance.skillNames[skillNum];
@@ -196,7 +219,8 @@ public class GameManager : Singleton<GameManager>
     // 스킬 패널 선택 함수
     public void ClickSkillPanel(int skillIndex)
     {
-        UnActiveSkillChoicePanel();
+        SkillManager.Instance.ChoiceSkillApply((SkillManager.Skills)randomSkillNumbers[skillIndex]);
+        ActiveSkillChoicePanel(false);
     }
 
 

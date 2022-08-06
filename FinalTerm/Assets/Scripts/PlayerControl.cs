@@ -16,9 +16,11 @@ public class PlayerControl : MonoBehaviour
     private bool isJump;
     private Rigidbody rigid;
 
+    public float maxHp { get; private set; }
     public float hp { get; private set; }
     public float level { get; private set; }
-    public float exp { get; private set; }
+    public float maxExp { get; private set; }
+    public float currentExp { get; private set; }
     public float invincibilityTime { get; private set; }
 
     private void Start()
@@ -29,17 +31,20 @@ public class PlayerControl : MonoBehaviour
         jumpPower = 2000f;
         isJump = false;
 
+        maxHp = 3;
         hp = 3;
         level = 1;
-        exp = 0f;
+        currentExp = 0f;
+        maxExp = 5f;
         invincibilityTime = 4f;
+
+        GameManager.Instance.HpImageUpdate();
     }
 
     private void Update()
     {
-        exp = exp + Time.deltaTime;
-        GameManager.Instance.UpdateStatusPanel();
-        if (exp >= 5f)
+        currentExp = currentExp + Time.deltaTime;
+        if (currentExp >= maxExp)
             LevelUp();
 
     }
@@ -112,7 +117,7 @@ public class PlayerControl : MonoBehaviour
     public void OnDamaged()
     {
         hp--;
-        GameManager.Instance.UpdateStatusPanel();
+        GameManager.Instance.HpImageUpdate();
         if (hp <= 0)
         {
             StartCoroutine(DieOperate());
@@ -135,9 +140,8 @@ public class PlayerControl : MonoBehaviour
     public void LevelUp()
     {
         level++;
-        exp = exp - 20f;
-        GameManager.Instance.UpdateStatusPanel();
-        GameManager.Instance.ActiveSkillChoicePanel();
+        currentExp = currentExp - maxExp;
+        GameManager.Instance.ActiveSkillChoicePanel(true);
     }
 
 

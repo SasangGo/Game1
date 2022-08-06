@@ -68,10 +68,8 @@ public class SkillManager : Singleton<SkillManager>
     }
 
     // 스킬 선택 시 적용되는 함수
-    public void SkillChoice(Skills skill)
+    public void ChoiceSkillApply(Skills skill)
     {
-        GameManager.Instance.ActiveSkillChoicePanel();
-
         switch (skill)
         {
             case Skills.IncreaseMaxHp:
@@ -92,7 +90,5 @@ public class SkillManager : Singleton<SkillManager>
                 break;
 
         }
-
-        GameManager.Instance.UnActiveSkillChoicePanel();
     }
 }
