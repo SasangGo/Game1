@@ -178,6 +178,7 @@ public class GameManager : Singleton<GameManager>
         skillChoicePanel.SetActive(false);
     }
 
+    // 스킬 패널 세팅
     public void SetSkillPanels()
     {
         List<int> skillNumbers = SkillManager.Instance.RandomSkill();
@@ -191,6 +192,8 @@ public class GameManager : Singleton<GameManager>
             index++;
         }
     }
+
+    // 스킬 패널 선택 함수
     public void ClickSkillPanel(int skillIndex)
     {
         UnActiveSkillChoicePanel();

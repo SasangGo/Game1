@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class SkillManager : Singleton<SkillManager>
 {
-    public enum Skills { IncreaseHp, IncreaseArmmor, IncreaseInvincibilityTime, IncreaseSpeed, SizeDown, InvincibilitySkill, IncreaseExp };
+
+    // 스킬 Enum 클래스
+    public enum Skills { IncreaseMaxHp, Heal, IncreaseArmmor, IncreaseInvincibilityTime, IncreaseSpeed, SizeDown, InvincibilitySkill, IncreaseExp };
 
     public List<string> skillNames;
     public List<string> skillExplans;
@@ -25,9 +27,11 @@ public class SkillManager : Singleton<SkillManager>
         
     }
     
+    // 스킬 기본 설정
     public void InitSkill()
     {
-        SetSkillsInfo("Hp 증가", "Hp를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/1"));
+        SetSkillsInfo("Hp 증가", "MaxHp를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/1"));
+        SetSkillsInfo("Hp 증가", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/1"));
         SetSkillsInfo("Armmor 증가", "Armmor를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/2"));
         SetSkillsInfo("피격무적 시간 증가", "피격무격 시간을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/3"));
         SetSkillsInfo("Speed 증가", "Speed를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/4"));
@@ -36,6 +40,8 @@ public class SkillManager : Singleton<SkillManager>
         SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/7"));
     }
 
+    // 스킬 정보 설정 함수
+    // SetSkillsInfo(스킬 이름, 스킬 설명, 스킬 이미지)
     public void SetSkillsInfo(string skillName, string skillExplan, Sprite skillSprite)
     {
         skillNames.Add(skillName);
@@ -43,6 +49,7 @@ public class SkillManager : Singleton<SkillManager>
         skillSprites.Add(skillSprite);
     }
 
+    // 랜덤 스킬 번호 리스트 생성, 2
     public List<int> RandomSkill()
     {
         List<int> randomNum = new List<int>();
@@ -60,13 +67,16 @@ public class SkillManager : Singleton<SkillManager>
         return randomNum;
     }
 
+    // 스킬 선택 시 적용되는 함수
     public void SkillChoice(Skills skill)
     {
         GameManager.Instance.ActiveSkillChoicePanel();
 
         switch (skill)
         {
-            case Skills.IncreaseHp:
+            case Skills.IncreaseMaxHp:
+                break;
+            case Skills.Heal:
                 break;
             case Skills.IncreaseArmmor:
                 break;
