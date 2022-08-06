@@ -17,15 +17,20 @@ public class PlayerControl : MonoBehaviour
     private Rigidbody rigid;
 
     public int maxHp;
+    public int maxLevel;
     public float maxSpeed;
     public float maxOnHitInvincibilityTime;
-    public float maxExp;
 
-    public float speed;
     public int hp;
-    public float level;
-    public float currentExp;
+    public int level;
+    public float speed;
     public float onHitInvincibilityTime;
+
+    public float currentExp;
+    public float maxExp;
+    public float getExpAmount;
+    public float secondPerExp;
+    public float timer;
 
     private void Start()
     {
@@ -41,16 +46,19 @@ public class PlayerControl : MonoBehaviour
 
         hp = 3;
         level = 1;
-        currentExp = 0f;
-        maxExp = 5f;
         onHitInvincibilityTime = 2f;
 
+        currentExp = 0;
+        maxExp = 5f;
+        getExpAmount = 0;
+        secondPerExp = 0;
+        timer = 0;
         GameManager.Instance.HpImageUpdate();
     }
 
     private void Update()
     {
-        currentExp = currentExp + Time.deltaTime;
+        GetExp(0.25f);
         if (currentExp >= maxExp)
             LevelUp();
 
@@ -168,6 +176,18 @@ public class PlayerControl : MonoBehaviour
         GameManager.Instance.ActiveSkillChoicePanel(true);
     }
 
+    // 
+    public void GetExp(float delayTime)
+    {
+        secondPerExp = secondPerExp + getExpAmount * Time.deltaTime;
+        timer = timer + Time.deltaTime;
+        if (timer >= delayTime)
+        {
+            currentExp = currentExp + secondPerExp;
+            secondPerExp = 0;
+            timer = 0;
+        }
+    }
 
     private void OnCollisionEnter(Collision collision)
     {

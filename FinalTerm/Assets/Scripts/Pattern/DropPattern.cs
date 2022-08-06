@@ -16,6 +16,7 @@ public class DropPattern : APattern // APattern 상속
     protected override void OnEnable()
     {
         base.OnEnable();
+        expAmount = 4f;
         isAlertEnd = true; // 이 패턴은 경고없이 바로 실행
         StartCoroutine(PhaseTimer(PHASETIME)); //바로 시작
 

@@ -14,6 +14,7 @@ public class TurretPattern : APattern
     protected override void OnEnable()
     {
         base.OnEnable();
+        expAmount = 1f;
         turret.SetActive(false); // 터렛 비활성화
         StartCoroutine(PhaseTimer(PHASETIME)); // 패턴 시작 타이머
         StartCoroutine(AlertHazard(hazardZones)); // 패턴 전 경고

@@ -4,6 +4,7 @@ using UnityEngine;
 
 // abstract를 안썼는데, 실수로 안쓴건지는 모르겠는데 쓰면 ㅈ될거같아서 꼬일까봐 일단 안씀
 // 패턴 관리의 부모, 모든 패턴은 해당 스크립트를 상속받으면 됨
+
 public class APattern : MonoBehaviour
 {
     [SerializeField] protected Cell[] hazardZones; // 빨간색 셀
@@ -11,6 +12,7 @@ public class APattern : MonoBehaviour
     [SerializeField] protected Transform ePos;// 셀의 끝 위치(거리 체크용)
 
     protected bool isAlertEnd; // 알림의 끝났는지 아닌지 체크
+    public float expAmount;
 
     protected virtual void OnEnable()
     {
@@ -27,7 +29,7 @@ public class APattern : MonoBehaviour
 
         float cnt = 0;
         StartPattern(); // 패턴 시작
-        while(cnt <= time)
+        while (cnt <= time)
         {
             cnt += Time.deltaTime;
             yield return null;
@@ -52,3 +54,5 @@ public class APattern : MonoBehaviour
         isAlertEnd = true;
     }
 }
+
+

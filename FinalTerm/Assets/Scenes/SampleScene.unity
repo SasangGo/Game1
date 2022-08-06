@@ -9135,6 +9135,87 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1005560014}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &968073456
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1606517339465041052}
+    m_Modifications:
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.30433202
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 589607580381273501, guid: 684823168330a014198e3d2183aff487,
+        type: 3}
+      propertyPath: m_Name
+      value: DamageEffect
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 684823168330a014198e3d2183aff487, type: 3}
+--- !u!198 &968073457 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 589607580381273502, guid: 684823168330a014198e3d2183aff487,
+    type: 3}
+  m_PrefabInstance: {fileID: 968073456}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &968073458 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 589607580381273488, guid: 684823168330a014198e3d2183aff487,
+    type: 3}
+  m_PrefabInstance: {fileID: 968073456}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &973438233
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9962,9 +10043,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MaxValue: 100
+  m_WholeNumbers: 1
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -20344,6 +20425,7 @@ Transform:
   - {fileID: 2466522959505580025}
   - {fileID: 7497141598466303177}
   - {fileID: 689602378677658805}
+  - {fileID: 968073458}
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20462,15 +20544,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpPower: 1200
   joystick: {fileID: 2053302240}
+  damageObject: {fileID: 968073457}
   maxHp: 0
+  maxLevel: 0
   maxSpeed: 0
   maxOnHitInvincibilityTime: 0
-  maxExp: 0
-  speed: 10
   hp: 0
   level: 0
-  currentExp: 0
+  speed: 10
   onHitInvincibilityTime: 0
+  currentExp: 0
+  maxExp: 0
+  getExpAmount: 0
 --- !u!95 &2089863391825993258
 Animator:
   serializedVersion: 3
