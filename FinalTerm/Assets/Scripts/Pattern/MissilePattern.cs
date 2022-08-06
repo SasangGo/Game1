@@ -14,6 +14,7 @@ public class MissilePattern : APattern
     protected override void OnEnable()
     {
         base.OnEnable();
+        expAmount = 2f;
         isAlertEnd = true; // 경고 없이 바로 실행
         StartCoroutine(PhaseTimer(PHASETIME));
 

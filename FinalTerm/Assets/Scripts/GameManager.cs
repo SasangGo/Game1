@@ -85,6 +85,7 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.Log(idx);
             pattern.gameObject.SetActive(true);
+            player.getExpAmount = pattern.expAmount;
             preIdx = idx;
         }
     }
@@ -149,7 +150,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-
     // 스코어 타이머
     private IEnumerator ScoreTimer()
     {
@@ -164,7 +164,7 @@ public class GameManager : Singleton<GameManager>
     public void LevelBarUpdate()
     {
         levelText.text = "Lv. " + player.level;
-        levelBar.value = player.currentExp / player.maxExp;
+        levelBar.value = (player.currentExp / player.maxExp) * 100;
     }
 
     public void HpImageUpdate()
@@ -188,8 +188,10 @@ public class GameManager : Singleton<GameManager>
     {
         if (isAcive)
         {
+            Debug.Log("칭 얼림");
             joystick.UseJoystick(false);
             Time.timeScale = 0;
+            Debug.Log(Time.timeScale);
             SetSkillPanels();
             skillChoicePanel.SetActive(true);
         }
