@@ -8,6 +8,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] float jumpPower;
     // 조이스틱 변수
     [SerializeField] FloatingJoystick joystick;
+    [SerializeField] ParticleSystem damageObject;
 
     private const float DEADLINE = -17f;
     private Animator anim;
@@ -109,7 +110,7 @@ public class PlayerControl : MonoBehaviour
 
 
     // 플레이어 피격 시 호출되는 함수
-    public void OnDamaged()
+    public void OnDamaged(Vector3 pos)
     {
         hp--;
         GameManager.Instance.UpdateStatusPanel();
@@ -121,15 +122,32 @@ public class PlayerControl : MonoBehaviour
         {
             StartCoroutine(Invincibility(invincibilityTime));
         }
+        StartCoroutine(DamageEffect(invincibilityTime, pos));
 
     }
-
     // 무적 상태 코루틴
     public IEnumerator Invincibility(float time)
     {
         this.gameObject.layer = 9;
         yield return new WaitForSeconds(time);
         this.gameObject.layer = 0;
+    }
+    // 데미지를 입을때의 이펙트, 색 변경
+    private IEnumerator DamageEffect(float time, Vector3 pos)
+    {
+        //데미지 이펙트를 충돌위치로 옮김
+        if (!damageObject.isPlaying)
+        {
+            damageObject.transform.position = pos;
+            damageObject.Play();
+        }
+
+        // 색 변경후 돌아옴
+        Renderer mesh = GetComponentInChildren<SkinnedMeshRenderer>();
+        Color tmp = mesh.material.color;
+        mesh.material.color = Color.green;
+        yield return new WaitForSeconds(time);
+        mesh.material.color = tmp;
     }
 
     public void LevelUp()
