@@ -14,7 +14,10 @@ public abstract class AObstacle : MonoBehaviour
         PlayerControl player = collision.collider.GetComponent<PlayerControl>();
         if(player != null)
         {
-            player.OnDamaged();
+            //충돌 지점을 체크하여 OnDamaged 함수에 넘김
+            Vector3 colliPos = collision.contacts[0].point;
+            Debug.Log(colliPos);
+            player.OnDamaged(colliPos);
         }
     }
     // Ontrigger 시작할 때
@@ -24,7 +27,8 @@ public abstract class AObstacle : MonoBehaviour
         PlayerControl player = other.GetComponent<PlayerControl>();
         if(player != null && player.gameObject.layer == 0)
         {
-            player.OnDamaged();
+            Vector3 colliPos = other.bounds.center;
+            player.OnDamaged(colliPos);
         }
     }
     // 장애물 오브젝트 풀링(반환) (반환시간, 인덱스 번호)
