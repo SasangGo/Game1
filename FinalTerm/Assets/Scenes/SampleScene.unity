@@ -13925,6 +13925,7 @@ MonoBehaviour:
   skillNames: []
   skillExplans: []
   skillSprites: []
+  player: {fileID: 2089863391825993255}
 --- !u!1001 &1525764328
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20459,9 +20460,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b311ca80c4fb9c6428330d7e6d1e25f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
   jumpPower: 1200
   joystick: {fileID: 2053302240}
+  maxHp: 0
+  maxSpeed: 0
+  maxOnHitInvincibilityTime: 0
+  maxExp: 0
+  speed: 10
+  hp: 0
+  level: 0
+  currentExp: 0
+  onHitInvincibilityTime: 0
 --- !u!95 &2089863391825993258
 Animator:
   serializedVersion: 3

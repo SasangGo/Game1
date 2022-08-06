@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] float speed;
     [SerializeField] float jumpPower;
     // 조이스틱 변수
     [SerializeField] FloatingJoystick joystick;
@@ -16,12 +15,16 @@ public class PlayerControl : MonoBehaviour
     private bool isJump;
     private Rigidbody rigid;
 
-    public float maxHp { get; private set; }
-    public float hp { get; private set; }
-    public float level { get; private set; }
-    public float maxExp { get; private set; }
-    public float currentExp { get; private set; }
-    public float invincibilityTime { get; private set; }
+    public int maxHp;
+    public float maxSpeed;
+    public float maxOnHitInvincibilityTime;
+    public float maxExp;
+
+    public float speed;
+    public int hp;
+    public float level;
+    public float currentExp;
+    public float onHitInvincibilityTime;
 
     private void Start()
     {
@@ -32,11 +35,14 @@ public class PlayerControl : MonoBehaviour
         isJump = false;
 
         maxHp = 3;
+        maxSpeed = 50f;
+        maxOnHitInvincibilityTime = 10f;
+
         hp = 3;
         level = 1;
         currentExp = 0f;
         maxExp = 5f;
-        invincibilityTime = 4f;
+        onHitInvincibilityTime = 2f;
 
         GameManager.Instance.HpImageUpdate();
     }
@@ -124,7 +130,7 @@ public class PlayerControl : MonoBehaviour
         }
         else
         {
-            StartCoroutine(Invincibility(invincibilityTime));
+            StartCoroutine(Invincibility(onHitInvincibilityTime));
         }
 
     }
