@@ -133,7 +133,7 @@ public class PlayerControl : MonoBehaviour
         {
             StartCoroutine(Invincibility(onHitInvincibilityTime));
         }
-        StartCoroutine(DamageEffect(invincibilityTime, pos));
+        StartCoroutine(DamageEffect(onHitInvincibilityTime, pos));
 
     }
     // 무적 상태 코루틴

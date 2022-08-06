@@ -40,6 +40,10 @@ public abstract class AObstacle : MonoBehaviour
             cnt += Time.deltaTime;
             yield return null;
         }
+        // 물리를 가지고 있는 장애물일 경우 속도를 초기화
+        Rigidbody rigid = GetComponent<Rigidbody>();
+        if(rigid != null) rigid.velocity = Vector3.zero;
         ObjectPool.Instance.ReturnObject(gameObject, index);
+
     }
 }
