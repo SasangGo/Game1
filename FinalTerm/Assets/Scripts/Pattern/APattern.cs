@@ -10,6 +10,7 @@ public class APattern : MonoBehaviour
     [SerializeField] protected Cell[] hazardZones; // 빨간색 셀
     [SerializeField] protected Transform sPos; // 셀의 시작 위치(거리 체크용)
     [SerializeField] protected Transform ePos;// 셀의 끝 위치(거리 체크용)
+    [SerializeField] protected GameObject[] alertObjects;
 
     protected bool isAlertEnd; // 알림의 끝났는지 아닌지 체크
     public float expAmount;
@@ -43,12 +44,22 @@ public class APattern : MonoBehaviour
     protected IEnumerator AlertHazard(Cell[] cells)
     {
         isAlertEnd = false;
-        for (int i = 0; i < 2; i++)
+        // 빨간색으로 전환
+
+        int count = 2;
+        while(count-- > 0)
         {
-            // 빨간색으로 두번 깜빡임 (근데 이거 잘 작동 안하더라)
-            foreach (Cell cell in cells) cell.ChangeColor(cell.hazardColor);
+            foreach(Cell cell in cells)
+            {
+                cell.ChangeColor(cell.hazardColor);
+                yield return null;
+            }
             yield return new WaitForSeconds(0.5f);
-            foreach (Cell cell in cells) cell.ChangeColor(cell.originColor);
+            foreach (Cell cell in cells)
+            {
+                cell.ChangeColor(cell.originColor);
+                yield return null;
+            }
             yield return new WaitForSeconds(0.5f);
         }
         isAlertEnd = true;
