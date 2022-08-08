@@ -17,10 +17,11 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] GameObject skillChoicePanel;
     [SerializeField] public GameObject[] skillPanel;
     [SerializeField] public Text[] skillPanelHeadText;
+    [SerializeField] public Text[] skillPanelInfoText;
     [SerializeField] public Image[] skillPanelImage;
     [SerializeField] public Image[] hpImages;
     [SerializeField] public Image[] inHpImages;
-    [SerializeField] public Text[] skillPanelExplanText;
+    [SerializeField] public Button[] activeSkillButtons;
     [SerializeField] Slider levelBar;
     [SerializeField] Text levelText;
     [SerializeField] GameObject[] patterns;
@@ -85,7 +86,7 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.Log(idx);
             pattern.gameObject.SetActive(true);
-            player.getExpAmount = pattern.expAmount;
+            player.patternExp = pattern.expAmount;
             preIdx = idx;
         }
     }
@@ -160,13 +161,14 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    // 스테이터스 UI 업데이트
+    // 레벨업바 UI 업데이트
     public void LevelBarUpdate()
     {
         levelText.text = "Lv. " + player.level;
-        levelBar.value = (player.currentExp / player.maxExp) * 100;
+        levelBar.value = (player.exp / player.maxExp) * 100;
     }
 
+    // 플레이어 체력 UI 업데이트 함수
     public void HpImageUpdate()
     {
         for (int i = 0; i < 10; i++)
@@ -183,15 +185,13 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    // 레벨 업 할 때 스킬 창 띄우기
-    public void ActiveSkillChoicePanel(bool isAcive)
+    // 레벨 업 할 때 스킬 선택창 띄우기
+    public void ActivateSkillChoicePanel(bool isAcive)
     {
         if (isAcive)
         {
-            Debug.Log("칭 얼림");
             joystick.UseJoystick(false);
             Time.timeScale = 0;
-            Debug.Log(Time.timeScale);
             SetSkillPanels();
             skillChoicePanel.SetActive(true);
         }
@@ -206,25 +206,33 @@ public class GameManager : Singleton<GameManager>
     // 스킬 패널 세팅
     public void SetSkillPanels()
     {
-        randomSkillNumbers = SkillManager.Instance.RandomSkill();
+        // skillPanel.Length(선택할 수 있는 스킬의 개수) 만큼 랜덤 스킬을 뽑음
+        randomSkillNumbers = SkillManager.Instance.RandomSkill(skillPanel.Length);
+
+        // SkillPanel들의 UI 업데이트
         int index = 0;
         foreach(int skillNum in randomSkillNumbers)
         {
-            Debug.Log(skillNum);
             skillPanelHeadText[index].text = "" + SkillManager.Instance.skillNames[skillNum];
-            skillPanelExplanText[index].text = "" + SkillManager.Instance.skillExplans[skillNum];
+            skillPanelInfoText[index].text = "" + SkillManager.Instance.skill_Info[skillNum];
             skillPanelImage[index].sprite = SkillManager.Instance.skillSprites[skillNum];
             index++;
         }
     }
 
-    // 스킬 패널 선택 함수
+    // 스킬 선택 창에서 하나의 스킬을 선택하면 호출되는 함수
     public void ClickSkillPanel(int skillIndex)
     {
+        // 스킬매니저에서 선택한 스킬을 적용함
         SkillManager.Instance.ChoiceSkillApply((SkillManager.Skills)randomSkillNumbers[skillIndex]);
-        ActiveSkillChoicePanel(false);
+        ActivateSkillChoicePanel(false);
     }
 
+    public void ActiveSkillButtonActive(int index, int skillNumber)
+    {
+        activeSkillButtons[index].image.sprite = SkillManager.Instance.skillSprites[skillNumber];
+        activeSkillButtons[index].gameObject.SetActive(true);
+    }
 
     // 스코어 기록 함수
     private void RecordScore()

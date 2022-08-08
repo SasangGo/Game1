@@ -11,57 +11,78 @@ public class PlayerControl : MonoBehaviour
 
     private const float DEADLINE = -17f;
     private Animator anim;
-    private const float MAXY = 30f; 
-    private const float MINY = -30F; 
     private bool isJump;
     private Rigidbody rigid;
 
-    public int maxHp;
-    public int maxLevel;
-    public float maxSpeed;
-    public float maxOnHitInvincibilityTime;
+    // 플레이어의 현재 상태 변수들
+    public int maxHp; // 플레이어 현재 최대 체력
+    public int hp; // 플레이어 현재 체력
+    public int maxLevel; // 플레이어 최대 레벨
+    public int level; // 플레이어 현재 레벨
+    public float maxExp; // 플레이어 최대 경험치
+    public float exp; // 플레이어 현재 경험치
+    public float speed; // 플레이어 현재 스피드
+    public float skillExp; // 경험치 증가 스킬로 얻는 추가 경험치량
+    public float downSize; // 크기 감소 스킬로 얻는 크기 감소량
+    public float onHitInvincibilityTime; // 피격 무적 시간
+    public float skillInvincibilityTime; // 스킬 무적 시간
 
-    public int hp;
-    public int level;
-    public float speed;
-    public float onHitInvincibilityTime;
+    // 각 패시브 스킬 최대값
+    public int maxHpIncrement;
+    public float maxOnHitInvincibilityTimeIncrement;
+    public float maxSkillExpIncrement;
+    public float maxDownSizeIncrement;
+    public float maxSpeedIncrement;
 
-    public float currentExp;
-    public float maxExp;
-    public float getExpAmount;
-    public float secondPerExp;
-    public float timer;
+
+    // 경험치 관련 변수들
+    public float patternExp;// 패턴 마다 얻는 경험치량
+    public float timePerExp;// ??초 마다 얻는 경험치
+    public float timer;// 시간을 재는 변수
 
     private void Start()
     {
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        speed = 20f;
         jumpPower = 2000f;
         isJump = false;
 
+        // 플레이어 현재 상태 변수들 초기 값 초기화
         maxHp = 3;
-        maxSpeed = 50f;
-        maxOnHitInvincibilityTime = 10f;
-
-        hp = 3;
+        hp = maxHp;
+        maxLevel = 30;
         level = 1;
-        onHitInvincibilityTime = 2f;
-
-        currentExp = 0;
         maxExp = 5f;
-        getExpAmount = 0;
-        secondPerExp = 0;
+        exp = 0;
+        speed = 20f;
+        downSize = 0.8f;
+        skillExp = 0;
+        onHitInvincibilityTime = 2f;
+        skillInvincibilityTime = 5f;
+
+        // 각 패시브 스킬 최대값 초기화
+        maxHpIncrement = 10;
+        maxSpeedIncrement = 50f;
+        maxOnHitInvincibilityTimeIncrement = 10f;
+        maxSkillExpIncrement = 10f;
+        maxDownSizeIncrement = 0.6f;
+
+        // 경험치 관련 변수들 초기화
+        patternExp = 0;
+        timePerExp = 0;
         timer = 0;
+
         GameManager.Instance.HpImageUpdate();
     }
 
     private void Update()
     {
-        GetExp(0.25f);
-        if (currentExp >= maxExp)
-            LevelUp();
-
+        if(level < maxLevel) // 레벨이 최대치에 도달했는지 체크
+        {
+            GetExp(0.25f);
+            if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
+                LevelUp();
+        }
     }
 
     private void FixedUpdate()
@@ -144,10 +165,11 @@ public class PlayerControl : MonoBehaviour
         StartCoroutine(DamageEffect(onHitInvincibilityTime, pos));
 
     }
-    // 무적 상태 코루틴
+    // 무적 상태 코루틴, 매개변수 time초 만큼 무적
     public IEnumerator Invincibility(float time)
     {
         this.gameObject.layer = 9;
+        StartCoroutine(DamageEffect(time, transform.position));
         yield return new WaitForSeconds(time);
         this.gameObject.layer = 0;
     }
@@ -169,22 +191,30 @@ public class PlayerControl : MonoBehaviour
         mesh.material.color = tmp;
     }
 
+    // 레벨 업 함수
     public void LevelUp()
     {
         level++;
-        currentExp = currentExp - maxExp;
-        GameManager.Instance.ActiveSkillChoicePanel(true);
+        if (level < maxLevel)
+            exp = exp - maxExp;
+        else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)
+            exp = maxExp;
+        // 스킬 선택창 띄우기
+        GameManager.Instance.ActivateSkillChoicePanel(true);
     }
 
-    // 
+    // 경험치 얻는 함수
     public void GetExp(float delayTime)
     {
-        secondPerExp = secondPerExp + getExpAmount * Time.deltaTime;
+        // 시간 당 얻는 경험치 양 계산식
+        timePerExp = timePerExp + ( patternExp + skillExp )* Time.deltaTime;
+
+        // 매개변수 delayTime초 마다 경험치를 획득할 수 있하는 코드
         timer = timer + Time.deltaTime;
         if (timer >= delayTime)
         {
-            currentExp = currentExp + secondPerExp;
-            secondPerExp = 0;
+            exp = exp + timePerExp;
+            timePerExp = 0;
             timer = 0;
         }
     }
