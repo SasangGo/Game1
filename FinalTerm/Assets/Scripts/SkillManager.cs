@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillManager : Singleton<SkillManager>
 {
+
+    public Text debugText;
 
     // 스킬의 Index
     public enum Skills { IncreaseMaxHp, Heal, IncreaseInvincibilityTime, IncreaseSpeed, SizeDown, InvincibilitySkill, IncreaseExp };
@@ -12,8 +15,11 @@ public class SkillManager : Singleton<SkillManager>
     public List<string> skill_Info; // 스킬의 정보를 담는 List
     public List<Sprite> skillSprites; // 스킬의 이미지를 담는 List
 
+    public Skills[] actSkillButtonNumber;
+    public int GettingActSkillCount;
+
     public bool[] isMaxSkillLevel; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
-    public int[] skillLevel;
+    public int[] skillLevel; // 각 스킬들 레벨을 체크하는 배열
     public int totalSkillsCount; // 이 게임에 존재하는 Skill 개수 변수
     public int maxSkillCount; // Max가 된 스킬들이 몇개인지 체크하기 위한 변수
 
@@ -40,6 +46,9 @@ public class SkillManager : Singleton<SkillManager>
         InitSkill();
         totalSkillsCount = skillNames.Count;
 
+        GettingActSkillCount = 0;
+        actSkillButtonNumber = new Skills[GameManager.Instance.activeSkillButtons.Length];
+
         maxSkillCount = 0;
         isMaxSkillLevel = new bool[totalSkillsCount];
         skillLevel = new int[totalSkillsCount];
@@ -61,11 +70,11 @@ public class SkillManager : Singleton<SkillManager>
     {
         SetSkillsInfo("Hp 증가", "MaxHp를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/HealthUp"));
         SetSkillsInfo("Hp 회복", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Heal"));
-        SetSkillsInfo("피격무적 시간 증가", "피격무격 시간을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("피격무적 시간 증가", "피격무격 시간을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/InvincibleTimeUpOnHit"));
         SetSkillsInfo("Speed 증가", "Speed를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SpeedUp"));
         SetSkillsInfo("Size 감소", "Size를 감소시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
-        SetSkillsInfo("무적 스킬", "사용시 무적이 된다", Resources.Load<Sprite>("Sprites/SkillSprites/6"));
-        SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/7"));
+        SetSkillsInfo("무적 스킬", "사용시 무적이 된다", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
 
         // 각 패시브 스킬 증가량 초기화
         HpIncrement = 1;
@@ -221,26 +230,6 @@ public class SkillManager : Singleton<SkillManager>
         }
     }
 
-    public void GetInvincibilitySkill()
-    {
-        if (isMaxSkillLevel[(int)Skills.InvincibilitySkill])
-            return;
-
-        GameManager.Instance.ActiveSkillButtonActive(0, (int)Skills.InvincibilitySkill);
-        skillLevel[(int)Skills.InvincibilitySkill]++;
-
-        isMaxSkillLevel[(int)Skills.InvincibilitySkill] = true;
-        maxSkillCount++;
-    }
-
-    public void InvincibilitySkill()
-    {
-        // StartCoroutine(player.Invincibility(player.skillInvincibilityTime));
-        GameManager.Instance.activeSkillButtons[0].interactable = false;
-        StartCoroutine(ActtiveSkillCoolDown(0, 5f));
-        GameManager.Instance.activeSkillButtons[0].interactable = true;
-    }
-
     public void IncreaseSkillExp(int maxLevel, float increment)
     {
         player.skillExp = player.skillExp + increment;
@@ -254,16 +243,52 @@ public class SkillManager : Singleton<SkillManager>
         }
     }
 
+    public void GetInvincibilitySkill()
+    {
+        if (isMaxSkillLevel[(int)Skills.InvincibilitySkill])
+            return;
+
+        GameManager.Instance.ActiveSkillButtonActive(0, (int)Skills.InvincibilitySkill);
+        skillLevel[(int)Skills.InvincibilitySkill]++;
+
+        actSkillButtonNumber[GettingActSkillCount] = Skills.InvincibilitySkill;
+        isMaxSkillLevel[(int)Skills.InvincibilitySkill] = true;
+        GettingActSkillCount++;
+        maxSkillCount++;
+    }
+
+    public void ClickActSkillButton(int buttonIndex)
+    {
+        switch (actSkillButtonNumber[buttonIndex])
+        {
+            case Skills.InvincibilitySkill:
+                InvincibilitySkill();
+                StartCoroutine(ActtiveSkillCoolDown(buttonIndex, 5f));
+                break;
+        }
+    }
+
+    public void InvincibilitySkill()
+    {
+        player.isSkillInvincibility = true;
+        StartCoroutine(player.Invincibility(player.skillInvincibilityTime));
+    }
+    
+
     public IEnumerator ActtiveSkillCoolDown(int index, float maxCoolTime)
     {
+        GameManager.Instance.activeSkillButtons[index].interactable = false;
         float coolTime = maxCoolTime;
         while (coolTime > 0f)
         {
-            GameManager.Instance.ShowLeftCoolTime(index, coolTime, maxCoolTime);
             coolTime -= Time.deltaTime;
-            yield return new WaitForSeconds(Time.deltaTime);
+            if (coolTime < 0f)
+                coolTime = 0f;
+
+            GameManager.Instance.ShowLeftCoolTime(index, coolTime, maxCoolTime);
+            yield return new WaitForFixedUpdate();
         }
 
-        //GameManager.Instance.ShowLeftCoolTime(index, 0f, maxCoolTime);
+        GameManager.Instance.activeSkillButtons[index].interactable = true;
     }
 }

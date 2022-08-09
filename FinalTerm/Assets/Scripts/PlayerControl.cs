@@ -25,6 +25,8 @@ public class PlayerControl : MonoBehaviour
     public float skillExp; // 경험치 증가 스킬로 얻는 추가 경험치량
     public float onHitInvincibilityTime; // 피격 무적 시간
     public float skillInvincibilityTime; // 스킬 무적 시간
+    public bool isSkillInvincibility;
+    public bool isOnHitInvincibility;
 
 
     // 경험치 관련 변수들
@@ -138,6 +140,7 @@ public class PlayerControl : MonoBehaviour
     {
         hp--;
         GameManager.Instance.HpImageUpdate();
+        isOnHitInvincibility = true;
         if (hp <= 0)
         {
             StartCoroutine(DieOperate());
@@ -146,33 +149,41 @@ public class PlayerControl : MonoBehaviour
         {
             StartCoroutine(Invincibility(onHitInvincibilityTime));
         }
-        StartCoroutine(DamageEffect(onHitInvincibilityTime, pos));
 
     }
     // 무적 상태 코루틴, 매개변수 time초 만큼 무적
     public IEnumerator Invincibility(float time)
     {
         this.gameObject.layer = 9;
-        StartCoroutine(DamageEffect(time, transform.position));
-        yield return new WaitForSeconds(time);
-        this.gameObject.layer = 0;
-    }
-    // 데미지를 입을때의 이펙트, 색 변경
-    private IEnumerator DamageEffect(float time, Vector3 pos)
-    {
+
         //데미지 이펙트를 충돌위치로 옮김
         if (!damageObject.isPlaying)
         {
-            damageObject.transform.position = pos;
+            damageObject.transform.position = transform.position;
             damageObject.Play();
         }
 
-        // 색 변경후 돌아옴
+        // 색 변경
         Renderer mesh = GetComponentInChildren<SkinnedMeshRenderer>();
-        Color tmp = mesh.material.color;
         mesh.material.color = Color.green;
+
         yield return new WaitForSeconds(time);
-        mesh.material.color = tmp;
+        if (isSkillInvincibility && isOnHitInvincibility)
+        {
+            isOnHitInvincibility = false;
+            yield break;
+        }
+        else
+        {
+            this.gameObject.layer = 0;
+        }
+
+        isSkillInvincibility = false;
+        isOnHitInvincibility = false;
+
+        // 색 돌아옴
+        mesh.material.color = Color.blue;
+
     }
 
     // 레벨 업 함수
@@ -182,7 +193,7 @@ public class PlayerControl : MonoBehaviour
         if (level < maxLevel)
         {
             exp = exp - maxExp;
-            maxExp = maxExp * 1.15f;
+            maxExp = maxExp * 1.15f + level;
             Debug.Log("MaxExp : " + maxExp);
         }
         else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)

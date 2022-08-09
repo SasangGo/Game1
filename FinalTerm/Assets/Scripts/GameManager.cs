@@ -22,6 +22,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public Image[] hpImages;
     [SerializeField] public Image[] inHpImages;
     [SerializeField] public Button[] activeSkillButtons;
+    [SerializeField] public Image[] activeSkillButtonImage;
     [SerializeField] public Image[] activeSkillCoolTimeImage;
     [SerializeField] Slider levelBar;
     [SerializeField] Text levelText;
@@ -233,15 +234,12 @@ public class GameManager : Singleton<GameManager>
 
     public void ActiveSkillButtonActive(int index, int skillNumber)
     {
-        activeSkillButtons[index].image.sprite = SkillManager.Instance.skillSprites[skillNumber];
+        activeSkillButtonImage[index].sprite = SkillManager.Instance.skillSprites[skillNumber];
         activeSkillButtons[index].gameObject.SetActive(true);
     }
 
     public void ShowLeftCoolTime(int index, float currentCoolTime, float maxCoolTime)
     {
-        //if (currentCoolTime == maxCoolTime)
-        //    activeSkillCoolTimeImage[index].gameObject.SetActive(true);
-
         activeSkillCoolTimeImage[index].fillAmount = currentCoolTime / maxCoolTime;
     }
     // 스코어 기록 함수
