@@ -13,8 +13,25 @@ public class SkillManager : Singleton<SkillManager>
     public List<Sprite> skillSprites; // 스킬의 이미지를 담는 List
 
     public bool[] isMaxSkillLevel; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
+    public int[] skillLevel;
     public int totalSkillsCount; // 이 게임에 존재하는 Skill 개수 변수
     public int maxSkillCount; // Max가 된 스킬들이 몇개인지 체크하기 위한 변수
+
+    // 각 패시브 스킬 증가량
+    public int HpIncrement;
+    public int HealIncrement;
+    public float speedIncrement;
+    public float skillExpIncrement;
+    public float onHitInvincibilityTimeIncrement;
+    public float downSizeIncrement;
+
+    // 각 패시브 스킬 최대값
+    public int maxHpLevel;
+    public int maxSpeedLevel;
+    public int maxSkillExpLevel;
+    public int maxOnHitInvincibilityTimeLevel;
+    public int maxDownSizeLevel;
+
 
     [SerializeField] PlayerControl player; // player의 정보를 가지고 오기 위한 변수
 
@@ -25,8 +42,12 @@ public class SkillManager : Singleton<SkillManager>
 
         maxSkillCount = 0;
         isMaxSkillLevel = new bool[totalSkillsCount];
+        skillLevel = new int[totalSkillsCount];
         for (int i = 0; i < totalSkillsCount; i++)
+        {
             isMaxSkillLevel[i] = false;
+            skillLevel[i] = 1;
+        }
     }
 
     // Update is called once per frame
@@ -45,6 +66,22 @@ public class SkillManager : Singleton<SkillManager>
         SetSkillsInfo("Size 감소", "Size를 감소시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/5"));
         SetSkillsInfo("무적 스킬", "사용시 무적이 된다", Resources.Load<Sprite>("Sprites/SkillSprites/6"));
         SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/7"));
+
+        // 각 패시브 스킬 증가량 초기화
+        HpIncrement = 1;
+        HealIncrement = 2;
+        speedIncrement = 2f;
+        onHitInvincibilityTimeIncrement = 1f;
+        skillExpIncrement = 1f;
+        downSizeIncrement = 0.8f;
+
+
+        // 각 패시브 스킬 최대값 초기화
+        maxHpLevel = 8;
+        maxSpeedLevel = 5;
+        maxOnHitInvincibilityTimeLevel = 5;
+        maxSkillExpLevel = 5;
+        maxDownSizeLevel = 5;
     }
 
     // 스킬 정보 설정 함수
@@ -91,82 +128,142 @@ public class SkillManager : Singleton<SkillManager>
         {
             // Hp 최대치 증가 스킬
             case Skills.IncreaseMaxHp:
-                player.maxHp++;
-                // 스킬이 max치가 되면
-                if (player.maxHp >= player.maxHpIncrement)
-                {
-                    player.maxHp = 10;
-
-                    isMaxSkillLevel[(int)Skills.IncreaseMaxHp] = true;
-                    maxSkillCount++;
-                }
-                GameManager.Instance.HpImageUpdate();
+                InscreaseMaxHp(maxHpLevel, HpIncrement);
                 break;
             // Hp 회복 스킬
             case Skills.Heal:
-                player.hp = player.hp + 2;
-                if (player.hp > player.maxHp)
-                    player.hp = player.maxHp;
-                GameManager.Instance.HpImageUpdate();
+                Heal(HealIncrement);
                 break;
             // 피격 무적 시간 증가 스킬
             case Skills.IncreaseInvincibilityTime:
-                player.onHitInvincibilityTime = player.onHitInvincibilityTime + 1f;
-                // 스킬이 max치가 되면
-                if (player.onHitInvincibilityTime >= player.maxOnHitInvincibilityTimeIncrement)
-                {
-                    player.onHitInvincibilityTime = player.maxOnHitInvincibilityTimeIncrement;
-
-                    isMaxSkillLevel[(int)Skills.IncreaseInvincibilityTime] = true;
-                    maxSkillCount++;
-                }
+                IncreaseOnHitInvincibilityTime(maxOnHitInvincibilityTimeLevel, onHitInvincibilityTimeIncrement);
                 break;
             // 스피드 증가 스킬
             case Skills.IncreaseSpeed:
-                player.speed = player.speed + 2f;
-                // 스킬이 max치가 되면
-                if (player.speed >= player.maxSpeedIncrement)
-                {
-                    player.speed = player.maxSpeedIncrement;
-
-                    isMaxSkillLevel[(int)Skills.IncreaseSpeed] = true;
-                    maxSkillCount++;
-                }
+                IncreaseSpeed(maxSpeedLevel, speedIncrement);
                 break;
             // 플레이어의 크기를 줄이는 스킬
             case Skills.SizeDown:
-                Vector3 temp = player.gameObject.transform.localScale;
-                temp = temp * player.downSize;
-                // 스킬이 max치가 되면
-                if (temp.x <= player.maxDownSizeIncrement)
-                {
-                    temp = new Vector3(player.maxDownSizeIncrement, player.maxDownSizeIncrement, player.maxDownSizeIncrement);
-
-                    isMaxSkillLevel[(int)Skills.SizeDown] = true;
-                    maxSkillCount++;
-                }
-                player.gameObject.transform.localScale = temp;
+                SizeDown(maxDownSizeLevel, downSizeIncrement);
                 break;
             // 엑티브 무적 스킬 획득
             case Skills.InvincibilitySkill:
-                GameManager.Instance.ActiveSkillButtonActive(0, (int)Skills.InvincibilitySkill);
-
-                isMaxSkillLevel[(int)Skills.InvincibilitySkill] = true;
-                maxSkillCount++;
+                GetInvincibilitySkill();
                 break;
             // 경험치 획득량 증가 스킬
             case Skills.IncreaseExp:
-                player.skillExp = player.skillExp + 1f;
-                // 스킬이 max치가 되면
-                if (player.skillExp >= player.maxSkillExpIncrement)
-                {
-                    player.skillExp = player.maxSkillExpIncrement;
-
-                    isMaxSkillLevel[(int)Skills.IncreaseExp] = true;
-                    maxSkillCount++;
-                }
+                IncreaseSkillExp(maxSkillExpLevel, skillExpIncrement);
                 break;
 
         }
+    }
+
+    public void InscreaseMaxHp(int maxLevel, int increment)
+    {
+        player.maxHp = player.maxHp + increment;
+
+        skillLevel[(int)Skills.IncreaseMaxHp]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.IncreaseMaxHp] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.IncreaseMaxHp] = true;
+            maxSkillCount++;
+        }
+        GameManager.Instance.HpImageUpdate();
+    }
+
+    public void Heal(int increment)
+    {
+        player.hp = player.hp + increment;
+        if (player.hp > player.maxHp)
+            player.hp = player.maxHp;
+        GameManager.Instance.HpImageUpdate();
+    }
+
+    public void IncreaseOnHitInvincibilityTime(int maxLevel, float increment)
+    {
+        player.onHitInvincibilityTime = player.onHitInvincibilityTime + increment;
+
+        skillLevel[(int)Skills.IncreaseInvincibilityTime]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.IncreaseInvincibilityTime] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.IncreaseInvincibilityTime] = true;
+            maxSkillCount++;
+        }
+    }
+
+    public void IncreaseSpeed(int maxLevel, float increment)
+    {
+        player.speed = player.speed + speedIncrement;
+
+        skillLevel[(int)Skills.IncreaseSpeed]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.IncreaseSpeed] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.IncreaseSpeed] = true;
+            maxSkillCount++;
+        }
+    }
+
+    public void SizeDown(int maxLevel, float increment)
+    {
+        Vector3 temp = player.gameObject.transform.localScale;
+        temp = temp * increment;
+        player.gameObject.transform.localScale = temp;
+
+        skillLevel[(int)Skills.SizeDown]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.SizeDown] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.SizeDown] = true;
+            maxSkillCount++;
+        }
+    }
+
+    public void GetInvincibilitySkill()
+    {
+        if (isMaxSkillLevel[(int)Skills.InvincibilitySkill])
+            return;
+
+        GameManager.Instance.ActiveSkillButtonActive(0, (int)Skills.InvincibilitySkill);
+        skillLevel[(int)Skills.InvincibilitySkill]++;
+
+        isMaxSkillLevel[(int)Skills.InvincibilitySkill] = true;
+        maxSkillCount++;
+    }
+
+    public void InvincibilitySkill()
+    {
+        // StartCoroutine(player.Invincibility(player.skillInvincibilityTime));
+        GameManager.Instance.activeSkillButtons[0].interactable = false;
+        StartCoroutine(ActtiveSkillCoolDown(0, 5f));
+        GameManager.Instance.activeSkillButtons[0].interactable = true;
+    }
+
+    public void IncreaseSkillExp(int maxLevel, float increment)
+    {
+        player.skillExp = player.skillExp + increment;
+
+        skillLevel[(int)Skills.IncreaseExp]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.IncreaseExp] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.IncreaseExp] = true;
+            maxSkillCount++;
+        }
+    }
+
+    public IEnumerator ActtiveSkillCoolDown(int index, float maxCoolTime)
+    {
+        float coolTime = maxCoolTime;
+        while (coolTime > 0f)
+        {
+            GameManager.Instance.ShowLeftCoolTime(index, coolTime, maxCoolTime);
+            coolTime -= Time.deltaTime;
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        //GameManager.Instance.ShowLeftCoolTime(index, 0f, maxCoolTime);
     }
 }

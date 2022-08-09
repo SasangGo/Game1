@@ -22,6 +22,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public Image[] hpImages;
     [SerializeField] public Image[] inHpImages;
     [SerializeField] public Button[] activeSkillButtons;
+    [SerializeField] public Image[] activeSkillCoolTimeImage;
     [SerializeField] Slider levelBar;
     [SerializeField] Text levelText;
     [SerializeField] GameObject[] patterns;
@@ -214,6 +215,8 @@ public class GameManager : Singleton<GameManager>
         foreach(int skillNum in randomSkillNumbers)
         {
             skillPanelHeadText[index].text = "" + SkillManager.Instance.skillNames[skillNum];
+            if(skillNum != (int)SkillManager.Skills.Heal && skillNum != (int)SkillManager.Skills.InvincibilitySkill)
+                skillPanelHeadText[index].text += " Lv." + SkillManager.Instance.skillLevel[skillNum];
             skillPanelInfoText[index].text = "" + SkillManager.Instance.skill_Info[skillNum];
             skillPanelImage[index].sprite = SkillManager.Instance.skillSprites[skillNum];
             index++;
@@ -234,6 +237,13 @@ public class GameManager : Singleton<GameManager>
         activeSkillButtons[index].gameObject.SetActive(true);
     }
 
+    public void ShowLeftCoolTime(int index, float currentCoolTime, float maxCoolTime)
+    {
+        //if (currentCoolTime == maxCoolTime)
+        //    activeSkillCoolTimeImage[index].gameObject.SetActive(true);
+
+        activeSkillCoolTimeImage[index].fillAmount = currentCoolTime / maxCoolTime;
+    }
     // 스코어 기록 함수
     private void RecordScore()
     {

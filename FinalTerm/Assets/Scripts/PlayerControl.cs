@@ -23,16 +23,8 @@ public class PlayerControl : MonoBehaviour
     public float exp; // 플레이어 현재 경험치
     public float speed; // 플레이어 현재 스피드
     public float skillExp; // 경험치 증가 스킬로 얻는 추가 경험치량
-    public float downSize; // 크기 감소 스킬로 얻는 크기 감소량
     public float onHitInvincibilityTime; // 피격 무적 시간
     public float skillInvincibilityTime; // 스킬 무적 시간
-
-    // 각 패시브 스킬 최대값
-    public int maxHpIncrement;
-    public float maxOnHitInvincibilityTimeIncrement;
-    public float maxSkillExpIncrement;
-    public float maxDownSizeIncrement;
-    public float maxSpeedIncrement;
 
 
     // 경험치 관련 변수들
@@ -55,17 +47,9 @@ public class PlayerControl : MonoBehaviour
         maxExp = 5f;
         exp = 0;
         speed = 20f;
-        downSize = 0.8f;
         skillExp = 0;
         onHitInvincibilityTime = 2f;
         skillInvincibilityTime = 5f;
-
-        // 각 패시브 스킬 최대값 초기화
-        maxHpIncrement = 10;
-        maxSpeedIncrement = 50f;
-        maxOnHitInvincibilityTimeIncrement = 10f;
-        maxSkillExpIncrement = 10f;
-        maxDownSizeIncrement = 0.6f;
 
         // 경험치 관련 변수들 초기화
         patternExp = 0;
@@ -196,7 +180,11 @@ public class PlayerControl : MonoBehaviour
     {
         level++;
         if (level < maxLevel)
+        {
             exp = exp - maxExp;
+            maxExp = maxExp * 1.15f;
+            Debug.Log("MaxExp : " + maxExp);
+        }
         else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)
             exp = maxExp;
         // 스킬 선택창 띄우기
