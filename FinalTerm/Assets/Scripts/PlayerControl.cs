@@ -8,6 +8,7 @@ public class PlayerControl : MonoBehaviour
     // 조이스틱 변수
     [SerializeField] FloatingJoystick joystick;
     [SerializeField] ParticleSystem damageObject;
+    [SerializeField] GameObject[] CheckPoints;
 
     private const float DEADLINE = -17f;
     private Animator anim;
