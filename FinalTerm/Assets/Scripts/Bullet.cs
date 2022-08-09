@@ -9,6 +9,7 @@ public class Bullet : AObstacle
     private void OnEnable()
     {
         if (GameManager.Instance.isGameOver) return;
+        SoundManager.Instance.PlaySound(SoundManager.Instance.objectAudioSource, SoundManager.Instance.turretBulletSound);
 
         shotSpeed = 25f;
         StartCoroutine(ReturnObstacle(3f,0)); //3초 뒤 반환

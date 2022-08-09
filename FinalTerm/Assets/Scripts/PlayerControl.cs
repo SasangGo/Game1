@@ -29,11 +29,11 @@ public class PlayerControl : MonoBehaviour
     public bool isSkillInvincibility;
     public bool isOnHitInvincibility;
 
-
     // 경험치 관련 변수들
     public float patternExp;// 패턴 마다 얻는 경험치량
     public float timePerExp;// ??초 마다 얻는 경험치
     public float timer;// 시간을 재는 변수
+
 
     private void Start()
     {
@@ -96,9 +96,18 @@ public class PlayerControl : MonoBehaviour
         RotatePlayer(movePos); // 캐릭터 회전
 
         // 움직이고 있는 상태라면 걷는 애니메이션
-        if (moveX != 0 || moveZ != 0) anim.SetBool("Walk", true);
+        if ((moveX != 0 || moveZ != 0))
+        {
+            anim.SetBool("Walk", true);
+            if(!SoundManager.Instance.playerAudioSource.isPlaying && !isJump)
+                SoundManager.Instance.PlaySound(SoundManager.Instance.playerAudioSource, SoundManager.Instance.MoveSound);
+        }
         // 가만히 있다면 걷는 애니메이션 중지
-        else anim.SetBool("Walk", false);
+        else
+        {
+            anim.SetBool("Walk", false);
+            SoundManager.Instance.StopSound(SoundManager.Instance.playerAudioSource);
+        }
         // 속도는 일정
         rigid.velocity = movePos;
     }
@@ -109,6 +118,7 @@ public class PlayerControl : MonoBehaviour
         isJump = true;
         rigid.AddForce(new Vector3(0, jumpPower, 0));
         anim.SetBool("Jump", true);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.playerAudioSource, SoundManager.Instance.JumpSound);
     }
 
     // 죽을때의 액션을 담당하는 코루틴
@@ -201,6 +211,8 @@ public class PlayerControl : MonoBehaviour
             exp = maxExp;
         // 스킬 선택창 띄우기
         GameManager.Instance.ActivateSkillChoicePanel(true);
+        SoundManager.Instance.StopSound(SoundManager.Instance.playerAudioSource);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.LevelUpSound);
     }
 
     // 경험치 얻는 함수

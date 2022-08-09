@@ -7,6 +7,7 @@ public class Missile : AObstacle
     [SerializeField] float speed; // 속도
     private RaycastHit[] hits; // 셀 감지
     private bool timerEnd;
+
     private void OnEnable()
     {
         speed = 200f;
@@ -33,6 +34,7 @@ public class Missile : AObstacle
         }
         timerEnd = true;
         StartCoroutine(ReturnObstacle(3f, 2)); // 생성 3초후 사라짐
+        SoundManager.Instance.PlaySound(SoundManager.Instance.objectAudioSource, SoundManager.Instance.missileSound);
 
     }
     void Update()
