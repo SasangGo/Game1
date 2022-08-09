@@ -5561,7 +5561,7 @@ PrefabInstance:
     - target: {fileID: 8243953315450607411, guid: d2b5152543a71c843bb63e56a81259aa,
         type: 3}
       propertyPath: m_Name
-      value: Cell_white (82)
+      value: CheckPoint(2)
       objectReference: {fileID: 0}
     - target: {fileID: 8243953315450607411, guid: d2b5152543a71c843bb63e56a81259aa,
         type: 3}
@@ -5805,6 +5805,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 402956576}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &765282904 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8243953315450607411, guid: d2b5152543a71c843bb63e56a81259aa,
+    type: 3}
+  m_PrefabInstance: {fileID: 2023425812}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &791977455 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8774601468721322398, guid: 00441b2c828373942a6a2ab19e228384,
@@ -5985,6 +5991,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2b5152543a71c843bb63e56a81259aa, type: 3}
+--- !u!1 &844289463 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8243953315450607411, guid: d2b5152543a71c843bb63e56a81259aa,
+    type: 3}
+  m_PrefabInstance: {fileID: 705877441}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &851016277
 GameObject:
   m_ObjectHideFlags: 0
@@ -6363,6 +6375,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00441b2c828373942a6a2ab19e228384, type: 3}
+--- !u!1 &878558235 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8774601468721322393, guid: 00441b2c828373942a6a2ab19e228384,
+    type: 3}
+  m_PrefabInstance: {fileID: 1232622772}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &882876858 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8774601468721322398, guid: 00441b2c828373942a6a2ab19e228384,
@@ -8819,7 +8837,7 @@ PrefabInstance:
     - target: {fileID: 8774601468721322393, guid: 00441b2c828373942a6a2ab19e228384,
         type: 3}
       propertyPath: m_Name
-      value: Cell_black (4)
+      value: CheckPoint(1)
       objectReference: {fileID: 0}
     - target: {fileID: 8774601468721322393, guid: 00441b2c828373942a6a2ab19e228384,
         type: 3}
@@ -9996,6 +10014,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1416162516}
   m_CullTransparentMesh: 0
+--- !u!1 &1417929262 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8774601468721322393, guid: 00441b2c828373942a6a2ab19e228384,
+    type: 3}
+  m_PrefabInstance: {fileID: 1847853381}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1421497179 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8243953315450607404, guid: d2b5152543a71c843bb63e56a81259aa,
@@ -14000,7 +14024,7 @@ PrefabInstance:
     - target: {fileID: 8774601468721322393, guid: 00441b2c828373942a6a2ab19e228384,
         type: 3}
       propertyPath: m_Name
-      value: Cell_black (86)
+      value: CheckPoint(3)
       objectReference: {fileID: 0}
     - target: {fileID: 8774601468721322393, guid: 00441b2c828373942a6a2ab19e228384,
         type: 3}
@@ -15146,7 +15170,7 @@ PrefabInstance:
     - target: {fileID: 8243953315450607411, guid: d2b5152543a71c843bb63e56a81259aa,
         type: 3}
       propertyPath: m_Name
-      value: Cell_white
+      value: CheckPoint(3)
       objectReference: {fileID: 0}
     - target: {fileID: 8243953315450607411, guid: d2b5152543a71c843bb63e56a81259aa,
         type: 3}
@@ -16381,6 +16405,11 @@ MonoBehaviour:
   jumpPower: 1200
   joystick: {fileID: 2053302240}
   damageObject: {fileID: 968073457}
+  checkPoints:
+  - {fileID: 765282904}
+  - {fileID: 878558235}
+  - {fileID: 1417929262}
+  - {fileID: 844289463}
   maxHp: 0
   hp: 0
   maxLevel: 0

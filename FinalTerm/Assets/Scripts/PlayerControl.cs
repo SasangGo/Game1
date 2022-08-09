@@ -8,7 +8,7 @@ public class PlayerControl : MonoBehaviour
     // 조이스틱 변수
     [SerializeField] FloatingJoystick joystick;
     [SerializeField] ParticleSystem damageObject;
-    [SerializeField] GameObject[] CheckPoints;
+    [SerializeField] GameObject[] checkPoints;
 
     private const float DEADLINE = -17f;
     private Animator anim;
@@ -78,7 +78,11 @@ public class PlayerControl : MonoBehaviour
 
         //물리작용이므로 FixedUpdated에서 관리
         Move();
-        if (transform.position.y < DEADLINE) StartCoroutine(DieOperate());
+        if (transform.position.y < DEADLINE)
+        {
+            OnDamaged(transform.position);
+            Respawn();
+        }
     }
     private void Move()
     {
@@ -226,5 +230,18 @@ public class PlayerControl : MonoBehaviour
             isJump = false;
             anim.SetBool("Jump", false);
         }
+    }
+    private void Respawn()
+    {
+        int idx = Random.Range(0, checkPoints.Length);
+        int OFFSET = 2;
+        do
+        {
+            idx = Random.Range(0, checkPoints.Length);
+        } while (!checkPoints[idx].activeSelf);
+
+        Vector3 pos = checkPoints[idx].transform.position;
+
+        transform.position = pos + Vector3.up * OFFSET;
     }
 }
