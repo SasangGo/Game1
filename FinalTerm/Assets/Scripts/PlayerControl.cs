@@ -115,10 +115,12 @@ public class PlayerControl : MonoBehaviour
     {
         // TimeScale == 0 즉 게임이 멈췄을 때 버튼 동작X
         if (isJump || Time.timeScale == 0) return;
+
+        SoundManager.Instance.PlaySound(SoundManager.Instance.playerAudioSource, SoundManager.Instance.JumpSound);
+
         isJump = true;
         rigid.AddForce(new Vector3(0, jumpPower, 0));
         anim.SetBool("Jump", true);
-        SoundManager.Instance.PlaySound(SoundManager.Instance.playerAudioSource, SoundManager.Instance.JumpSound);
     }
 
     // 죽을때의 액션을 담당하는 코루틴
