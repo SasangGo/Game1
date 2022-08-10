@@ -37,7 +37,6 @@ public class GameManager : Singleton<GameManager>
     private List<int> recordList;
     private List<int> randomSkillNumbers;
 
-
     private const int STARTSCENENUMBER = 0;
 
     private void Start()
@@ -230,6 +229,7 @@ public class GameManager : Singleton<GameManager>
         // 스킬매니저에서 선택한 스킬을 적용함
         SkillManager.Instance.ChoiceSkillApply((SkillManager.Skills)randomSkillNumbers[skillIndex]);
         ActivateSkillChoicePanel(false);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.SkillGetSound);
     }
 
     public void ActiveSkillButtonActive(int index, int skillNumber)
@@ -242,6 +242,8 @@ public class GameManager : Singleton<GameManager>
     {
         activeSkillCoolTimeImage[index].fillAmount = currentCoolTime / maxCoolTime;
     }
+
+
     // 스코어 기록 함수
     private void RecordScore()
     {

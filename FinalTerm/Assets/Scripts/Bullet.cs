@@ -14,6 +14,12 @@ public class Bullet : AObstacle
         StartCoroutine(ReturnObstacle(3f,0)); //3초 뒤 반환
     }
 
+    private void Start()
+    {
+
+        SoundManager.Instance.PlaySound(SoundManager.Instance.objectAudioSource, SoundManager.Instance.turretBulletSound);
+    }
+
     void Update()
     {
         // 앞으로 날아감

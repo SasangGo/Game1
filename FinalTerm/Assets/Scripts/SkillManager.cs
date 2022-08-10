@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class SkillManager : Singleton<SkillManager>
 {
-
     public Text debugText;
 
     // 스킬의 Index
