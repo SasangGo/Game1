@@ -6,10 +6,10 @@ public class CameraControl : MonoBehaviour
 {
     // player 변수
     [SerializeField] GameObject target;
-    
+
     // player와의 Offset
+    [SerializeField] float topOffsetY = 30f;
     private float topOffsetX = 0;
-    private float topOffsetY = 20f;
     private float topOffsetZ = -25f;
     // 선형 보정값
     private float DelayTime = 5f;

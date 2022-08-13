@@ -102,14 +102,14 @@ public class PlayerControl : MonoBehaviour
         // 움직이고 있는 상태라면 걷는 애니메이션
         if ((moveX != 0 || moveZ != 0))
         {
-            anim.SetBool("Walk", true);
+            //anim.SetBool("Walk", true);
             if(!SoundManager.Instance.playerAudioSource.isPlaying && !isJump)
                 SoundManager.Instance.PlaySound(SoundManager.Instance.playerAudioSource, SoundManager.Instance.MoveSound);
         }
         // 가만히 있다면 걷는 애니메이션 중지
         else
         {
-            anim.SetBool("Walk", false);
+            //anim.SetBool("Walk", false);
             SoundManager.Instance.StopSound(SoundManager.Instance.playerAudioSource);
         }
         // 속도는 일정
@@ -124,13 +124,13 @@ public class PlayerControl : MonoBehaviour
 
         isJump = true;
         rigid.AddForce(new Vector3(0, jumpPower, 0));
-        anim.SetBool("Jump", true);
+        //anim.SetBool("Jump", true);
     }
 
     // 죽을때의 액션을 담당하는 코루틴
     public IEnumerator DieOperate()
     {
-        anim.SetBool("Die",true);
+        //anim.SetBool("Die",true);
         GameManager.Instance.isGameOver = true;
         this.gameObject.layer = 9; // 플레이어 무적상태
         
@@ -181,7 +181,7 @@ public class PlayerControl : MonoBehaviour
         }
 
         // 색 변경
-        Renderer mesh = GetComponentInChildren<SkinnedMeshRenderer>();
+        Renderer mesh = GetComponentInChildren<MeshRenderer>();
         mesh.material.color = Color.green;
 
         yield return new WaitForSeconds(time);
@@ -242,7 +242,7 @@ public class PlayerControl : MonoBehaviour
         if (collision.collider.gameObject.layer == 8)
         {
             isJump = false;
-            anim.SetBool("Jump", false);
+            //anim.SetBool("Jump", false);
         }
     }
     private void Respawn()
