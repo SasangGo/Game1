@@ -8,6 +8,7 @@ public class PlayerControl : MonoBehaviour
     // 조이스틱 변수
     [SerializeField] FloatingJoystick joystick;
     [SerializeField] ParticleSystem damageObject;
+    [SerializeField] ParticleSystem changeEffect;
     [SerializeField] GameObject[] checkPoints;
 
     private const float DEADLINE = -17f;
@@ -34,6 +35,12 @@ public class PlayerControl : MonoBehaviour
     public float timePerExp;// ??초 마다 얻는 경험치
     public float timer;// 시간을 재는 변수
 
+    public enum State
+    {
+      //폰/나이트/룩/비숍/킹 순서
+        PAWN,KNIGHT,ROOK,BISHOP,KING
+    }
+    public State state;
 
     private void Start()
     {
@@ -42,6 +49,8 @@ public class PlayerControl : MonoBehaviour
         jumpPower = 2000f;
         isJump = false;
 
+        //플레이어의 초기 상태를 폰으로 초기화
+        SkillManager.Instance.ChangeType(state);
         // 플레이어 현재 상태 변수들 초기 값 초기화
         maxHp = 3;
         hp = maxHp;
@@ -53,7 +62,7 @@ public class PlayerControl : MonoBehaviour
         skillExp = 0;
         onHitInvincibilityTime = 2f;
         skillInvincibilityTime = 5f;
-
+        
         // 경험치 관련 변수들 초기화
         patternExp = 0;
         timePerExp = 0;

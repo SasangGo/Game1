@@ -39,6 +39,8 @@ public class SkillManager : Singleton<SkillManager>
 
 
     [SerializeField] PlayerControl player; // player의 정보를 가지고 오기 위한 변수
+    [SerializeField] MeshFilter[] types;
+    [SerializeField] ParticleSystem changeEffect;
 
     void Start()
     {
@@ -289,5 +291,23 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         GameManager.Instance.activeSkillButtons[index].interactable = true;
+    }
+    public void ChangeType(PlayerControl.State state)
+    {
+        int index = (int)state;
+
+        Mesh model = types[index].mesh;
+        if (model != null)
+        {
+            MeshFilter pType = player.GetComponent<MeshFilter>();
+            pType.sharedMesh = model;
+
+            MeshCollider pCollider = player.GetComponent<MeshCollider>();
+            pCollider.sharedMesh = model;
+
+            player.state = (PlayerControl.State)index;
+            changeEffect.transform.position = player.transform.position;
+            changeEffect.Play();
+        }
     }
 }
