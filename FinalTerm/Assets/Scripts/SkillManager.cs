@@ -8,15 +8,17 @@ public class SkillManager : Singleton<SkillManager>
     public Text debugText;
 
     // 스킬의 Index
-    public enum Skills { IncreaseMaxHp, Heal, IncreaseInvincibilityTime, IncreaseSpeed, SizeDown, InvincibilitySkill, IncreaseExp };
+    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, SizeDown, IncreaseExp, Heal, InvincibilitySkill, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
     public List<string> skillNames; // 스킬 이름을 담는 List
     public List<string> skill_Info; // 스킬의 정보를 담는 List
     public List<Sprite> skillSprites; // 스킬의 이미지를 담는 List
 
     public Skills[] actSkillButtonNumber;
-    public int GettingActSkillCount;
+    public int ActSkillIndex;
+    public int transformSkillIndex;
 
+    public bool[] isGetTransformSkill; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
     public bool[] isMaxSkillLevel; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
     public int[] skillLevel; // 각 스킬들 레벨을 체크하는 배열
     public int totalSkillsCount; // 이 게임에 존재하는 Skill 개수 변수
@@ -47,7 +49,8 @@ public class SkillManager : Singleton<SkillManager>
         InitSkill();
         totalSkillsCount = skillNames.Count;
 
-        GettingActSkillCount = 0;
+        ActSkillIndex = 0;
+        transformSkillIndex = 2;
         actSkillButtonNumber = new Skills[GameManager.Instance.activeSkillButtons.Length];
 
         maxSkillCount = 0;
@@ -58,6 +61,7 @@ public class SkillManager : Singleton<SkillManager>
             isMaxSkillLevel[i] = false;
             skillLevel[i] = 1;
         }
+
     }
 
     // Update is called once per frame
@@ -70,12 +74,17 @@ public class SkillManager : Singleton<SkillManager>
     public void InitSkill()
     {
         SetSkillsInfo("Hp 증가", "MaxHp를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/HealthUp"));
-        SetSkillsInfo("Hp 회복", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Heal"));
         SetSkillsInfo("피격무적 시간 증가", "피격무격 시간을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/InvincibleTimeUpOnHit"));
         SetSkillsInfo("Speed 증가", "Speed를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SpeedUp"));
         SetSkillsInfo("Size 감소", "Size를 감소시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
-        SetSkillsInfo("무적 스킬", "사용시 무적이 된다", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
         SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("Hp 회복", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Heal"));
+        SetSkillsInfo("무적 스킬", "사용시 무적이 된다", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("폰", "폰으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("나이트", "나이트로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("비숍", "비숍으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("룩", "룩으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("킹", "킹으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
 
         // 각 패시브 스킬 증가량 초기화
         HpIncrement = 1;
@@ -110,7 +119,7 @@ public class SkillManager : Singleton<SkillManager>
         List<int> randomNum = new List<int>();
 
         // Max치가 정해져 있는 스킬들이 Max상태 일 경우
-        if (totalSkillsCount - maxSkillCount == 1)
+        if (totalSkillsCount - maxSkillCount == 4)
         {
             for (int i = 0; i < N; i++)
                 randomNum.Add((int)Skills.Heal);
@@ -122,7 +131,7 @@ public class SkillManager : Singleton<SkillManager>
         for (int i = 0; i < N; i++)
         {
             // List에 포함되 있는지, 뽑은 스킬이 이미 Max인지 체크 해서 제외시키기
-            while (randomNum.Contains(temp) || isMaxSkillLevel[temp])
+            while (randomNum.Contains(temp) || isMaxSkillLevel[temp] || (temp >= (int)Skills.InvincibilitySkill && (ActSkillIndex > 1 || transformSkillIndex > 3)))
                 temp = Random.Range(0, totalSkillsCount);
 
             randomNum.Add(temp);
@@ -134,37 +143,39 @@ public class SkillManager : Singleton<SkillManager>
     // 각 스킬 기능 함수
     public void ChoiceSkillApply(Skills skill)
     {
-        switch (skill)
+        if(skill < Skills.InvincibilitySkill)
         {
-            // Hp 최대치 증가 스킬
-            case Skills.IncreaseMaxHp:
-                InscreaseMaxHp(maxHpLevel, HpIncrement);
-                break;
-            // Hp 회복 스킬
-            case Skills.Heal:
-                Heal(HealIncrement);
-                break;
-            // 피격 무적 시간 증가 스킬
-            case Skills.IncreaseInvincibilityTime:
-                IncreaseOnHitInvincibilityTime(maxOnHitInvincibilityTimeLevel, onHitInvincibilityTimeIncrement);
-                break;
-            // 스피드 증가 스킬
-            case Skills.IncreaseSpeed:
-                IncreaseSpeed(maxSpeedLevel, speedIncrement);
-                break;
-            // 플레이어의 크기를 줄이는 스킬
-            case Skills.SizeDown:
-                SizeDown(maxDownSizeLevel, downSizeIncrement);
-                break;
-            // 엑티브 무적 스킬 획득
-            case Skills.InvincibilitySkill:
-                GetInvincibilitySkill();
-                break;
-            // 경험치 획득량 증가 스킬
-            case Skills.IncreaseExp:
-                IncreaseSkillExp(maxSkillExpLevel, skillExpIncrement);
-                break;
-
+            switch (skill)
+            {
+                // Hp 최대치 증가 스킬
+                case Skills.IncreaseMaxHp:
+                    InscreaseMaxHp(maxHpLevel, HpIncrement);
+                    break;
+                // 피격 무적 시간 증가 스킬
+                case Skills.IncreaseInvincibilityTime:
+                    IncreaseOnHitInvincibilityTime(maxOnHitInvincibilityTimeLevel, onHitInvincibilityTimeIncrement);
+                    break;
+                // 스피드 증가 스킬
+                case Skills.IncreaseSpeed:
+                    IncreaseSpeed(maxSpeedLevel, speedIncrement);
+                    break;
+                // 플레이어의 크기를 줄이는 스킬
+                case Skills.SizeDown:
+                    SizeDown(maxDownSizeLevel, downSizeIncrement);
+                    break;
+                // 경험치 획득량 증가 스킬
+                case Skills.IncreaseExp:
+                    IncreaseSkillExp(maxSkillExpLevel, skillExpIncrement);
+                    break;
+                // Hp 회복 스킬
+                case Skills.Heal:
+                    Heal(HealIncrement);
+                    break;
+            }
+        }
+        else
+        {
+            GetActiveSkill(skill);
         }
     }
 
@@ -244,17 +255,28 @@ public class SkillManager : Singleton<SkillManager>
         }
     }
 
-    public void GetInvincibilitySkill()
+    public void GetActiveSkill(Skills skill)
     {
-        if (isMaxSkillLevel[(int)Skills.InvincibilitySkill])
+        if (isMaxSkillLevel[(int)skill])
             return;
 
-        GameManager.Instance.ActiveSkillButtonActive(0, (int)Skills.InvincibilitySkill);
-        skillLevel[(int)Skills.InvincibilitySkill]++;
+        int buttonIndex = 0;
+        if (skill >= Skills.PAWN)
+            buttonIndex = transformSkillIndex;
+        else
+            buttonIndex = ActSkillIndex;
 
-        actSkillButtonNumber[GettingActSkillCount] = Skills.InvincibilitySkill;
-        isMaxSkillLevel[(int)Skills.InvincibilitySkill] = true;
-        GettingActSkillCount++;
+        GameManager.Instance.ActiveSkillButtonActive(buttonIndex, (int)skill);
+        skillLevel[(int)skill]++;
+
+        actSkillButtonNumber[buttonIndex] = skill;
+        isMaxSkillLevel[(int)skill] = true;
+
+        if (skill >= Skills.PAWN)
+            transformSkillIndex++;
+        else
+            ActSkillIndex++;
+
         maxSkillCount++;
     }
 
@@ -264,7 +286,27 @@ public class SkillManager : Singleton<SkillManager>
         {
             case Skills.InvincibilitySkill:
                 InvincibilitySkill();
-                StartCoroutine(ActtiveSkillCoolDown(buttonIndex, 5f));
+                StartCoroutine(SkillCoolDown(buttonIndex, 5f));
+                break;
+            case Skills.PAWN:
+                ChangeType(PlayerControl.State.PAWN);
+                StartCoroutine(SkillCoolDown(buttonIndex, 5f));
+                break;
+            case Skills.KNIGHT:
+                ChangeType(PlayerControl.State.KNIGHT);
+                StartCoroutine(SkillCoolDown(buttonIndex, 5f));
+                break;
+            case Skills.BISHOP:
+                ChangeType(PlayerControl.State.BISHOP);
+                StartCoroutine(SkillCoolDown(buttonIndex, 5f));
+                break;
+            case Skills.ROOK:
+                ChangeType(PlayerControl.State.ROOK);
+                StartCoroutine(SkillCoolDown(buttonIndex, 5f));
+                break;
+            case Skills.KING:
+                ChangeType(PlayerControl.State.KING);
+                StartCoroutine(SkillCoolDown(buttonIndex, 5f));
                 break;
         }
     }
@@ -274,11 +316,11 @@ public class SkillManager : Singleton<SkillManager>
         player.isSkillInvincibility = true;
         StartCoroutine(player.Invincibility(player.skillInvincibilityTime));
     }
-    
 
-    public IEnumerator ActtiveSkillCoolDown(int index, float maxCoolTime)
+    public IEnumerator SkillCoolDown(int index, float maxCoolTime)
     {
         GameManager.Instance.activeSkillButtons[index].interactable = false;
+
         float coolTime = maxCoolTime;
         while (coolTime > 0f)
         {
@@ -292,6 +334,7 @@ public class SkillManager : Singleton<SkillManager>
 
         GameManager.Instance.activeSkillButtons[index].interactable = true;
     }
+
     public void ChangeType(PlayerControl.State state)
     {
         int index = (int)state;

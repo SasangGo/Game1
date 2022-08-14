@@ -243,7 +243,6 @@ public class GameManager : Singleton<GameManager>
         activeSkillCoolTimeImage[index].fillAmount = currentCoolTime / maxCoolTime;
     }
 
-
     // 스코어 기록 함수
     private void RecordScore()
     {

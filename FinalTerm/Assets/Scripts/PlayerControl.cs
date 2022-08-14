@@ -38,7 +38,7 @@ public class PlayerControl : MonoBehaviour
     public enum State
     {
       //폰/나이트/룩/비숍/킹 순서
-        PAWN,KNIGHT,ROOK,BISHOP,KING
+        PAWN,KNIGHT, BISHOP, ROOK,KING
     }
     public State state;
 
@@ -49,8 +49,6 @@ public class PlayerControl : MonoBehaviour
         jumpPower = 2000f;
         isJump = false;
 
-        //플레이어의 초기 상태를 폰으로 초기화
-        SkillManager.Instance.ChangeType(state);
         // 플레이어 현재 상태 변수들 초기 값 초기화
         maxHp = 3;
         hp = maxHp;
