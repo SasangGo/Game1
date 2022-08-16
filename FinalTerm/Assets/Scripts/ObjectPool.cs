@@ -13,7 +13,7 @@ public class ObjectPool : Singleton<ObjectPool>
 
     private void Awake()
     {
-        Initialize(200);
+        Initialize(100);
     }
     // 초기화(개수)
     private void Initialize(int count)

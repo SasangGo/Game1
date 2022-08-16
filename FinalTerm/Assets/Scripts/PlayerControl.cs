@@ -7,8 +7,9 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] float jumpPower;
     // 조이스틱 변수
     [SerializeField] public FloatingJoystick joystick;
-    [SerializeField] ParticleSystem damageObject;
-    [SerializeField] ParticleSystem changeEffect;
+    [SerializeField] public ParticleSystem damageObject;
+    [SerializeField] public ParticleSystem changeEffect;
+    [SerializeField] public ParticleSystem BombEffect;
     [SerializeField] GameObject[] checkPoints;
 
     private const float DEADLINE = -17f;
@@ -23,6 +24,7 @@ public class PlayerControl : MonoBehaviour
     public int hp; // 플레이어 현재 체력
     public int maxLevel; // 플레이어 최대 레벨
     public int level; // 플레이어 현재 레벨
+    public int shieldCount;
     public float maxExp; // 플레이어 최대 경험치
     public float exp; // 플레이어 현재 경험치
     public float speed; // 플레이어 현재 스피드
@@ -58,6 +60,7 @@ public class PlayerControl : MonoBehaviour
         hp = maxHp;
         maxLevel = 30;
         level = 1;
+        shieldCount = 0;
         maxExp = 5f;
         exp = 0;
         speed = 20f;
@@ -166,17 +169,28 @@ public class PlayerControl : MonoBehaviour
     // 플레이어 피격 시 호출되는 함수
     public void OnDamaged()
     {
+        if(shieldCount > 0)
+        {
+            shieldCount--;
+            if(shieldCount == 0)
+            {
+                Renderer mesh = GetComponentInChildren<MeshRenderer>(); 
+                Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f);
+                mesh.material.color = color;
+            }
+
+
+            return;
+        }
+
         hp--;
         GameManager.Instance.HpImageUpdate();
+
         isOnHitInvincibility = true;
         if (hp <= 0)
-        {
             StartCoroutine(DieOperate());
-        }
         else
-        {
             StartCoroutine(Invincibility(onHitInvincibilityTime));
-        }
 
     }
     // 무적 상태 코루틴, 매개변수 time초 만큼 무적
@@ -267,16 +281,14 @@ public class PlayerControl : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "ExpBall")
-            exp += other.gameObject.GetComponent<ExpBall>().exp;
-
         AObstacle obj = other.GetComponent<AObstacle>();
         if (obj == null) return;
 
-        OnDamaged();
-        AObstacle obstacle = obj.GetComponent<AObstacle>();
-        Debug.Log("충돌");
-        StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
+        if (other.gameObject.tag == "ExpBall")
+            exp += other.gameObject.GetComponent<ExpBall>().exp;
+        else
+            OnDamaged();
+        StartCoroutine(obj.ReturnObstacle(0, obj.Index));
     }
 
 

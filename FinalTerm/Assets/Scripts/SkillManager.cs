@@ -38,9 +38,13 @@ public class SkillManager : Singleton<SkillManager>
     public int maxOnHitInvincibilityTimeLevel;
     public int maxDownSizeLevel;
 
+    [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
+    [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
     [SerializeField] PlayerControl player; // player의 정보를 가지고 오기 위한 변수
-    [SerializeField] MeshFilter[] types;
-    [SerializeField] ParticleSystem changeEffect;
+    [SerializeField] GameObject Clone;
+    [SerializeField] MeshFilter[] types;    
+
+    private const float HEIGHT = -7f;
 
     void Start()
     {
@@ -60,7 +64,8 @@ public class SkillManager : Singleton<SkillManager>
             skillLevel[i] = 1;
         }
 
-        GetActiveSkill(Skills.SizeDown);
+        GetActiveSkill(Skills.Clone);
+        GetActiveSkill(Skills.SkillHeal);
 
     }
 
@@ -87,9 +92,10 @@ public class SkillManager : Singleton<SkillManager>
 
         SetSkillsInfo("SizeDown", "SizeDown", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
         SetSkillsInfo("DoubleJump", "DoubleJump", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
-        SetSkillsInfo("SkillHeal", "SkillHeal", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+        SetSkillsInfo("SkillHeal", "SkillHeal", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
         SetSkillsInfo("Teleport", "Teleport", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
         SetSkillsInfo("Shield", "Shield", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+
         SetSkillsInfo("InvincibilitySkill", "InvincibilitySkill", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
         SetSkillsInfo("Wall", "Wall", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
         SetSkillsInfo("폰", "폰으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
@@ -286,34 +292,49 @@ public class SkillManager : Singleton<SkillManager>
         switch (skill)
         {
             case Skills.ExpBall:
+                SkillExpBall(5, 5f);
+                cooltime = 5f;
                 break;
             case Skills.RandomAll:
                 SkillRandomAll(Skills.ExpBall, Skills.Wall);
+                cooltime = 5f;
                 break;
             case Skills.Clone:
+                SkillClone();
+                cooltime = 5f;
                 break;
             case Skills.Bomb:
+                SkillBomb();
+                cooltime = 5f;
                 break;
             case Skills.Dash:
-                SkillDash(100000f);
+                SkillDash(100000f, 1500f);
                 break;
             case Skills.SizeDown:
                 SkillSizeDown(0.5f, 5f);
                 cooltime = 5f;
                 break;
             case Skills.DoubleJump:
+                // 구현 완료
                 break;
             case Skills.SkillHeal:
+                Heal(1);
+                cooltime = 5f;
                 break;
             case Skills.Teleport:
+                SkillTeleport();
+                cooltime = 5f;
                 break;
             case Skills.Shield:
+                SkillShield(1);
                 break;
             case Skills.InvincibilitySkill:
                 SkillInvincibility();
                 cooltime = 5f;
                 break;
             case Skills.Wall:
+                SkillWall();
+                cooltime = 5f;
                 break;
             case Skills.PAWN:
                 ChangeType(PlayerControl.State.PAWN);
@@ -340,12 +361,34 @@ public class SkillManager : Singleton<SkillManager>
         return cooltime;
     }
 
-    public void SkillDash(float power)
+    // 경험치 구슬 스킬
+    public void SkillExpBall(int count, float time)
     {
-        player.rigid.AddForce(player.transform.up * 2000f);
-        player.rigid.AddForce(player.transform.forward * power);
+        ExpBall expBall;
+        for (int i = 0; i<count; i++)
+        {
+            expBall = ObjectPool.Instance.GetObject(3).GetComponent<ExpBall>();
+            StartCoroutine(expBall.ReturnObstacle(time, 3));
+        }
     }
 
+    // 필드 중 랜덤 위치 생성
+    public Vector3 GetRandomPosition()
+    {
+        Vector3 start = transform.TransformDirection(sPos.position);
+        Vector3 end = transform.TransformDirection(ePos.position);
+
+        // 셀 범위 내에서 랜덤한 위치에 공이 생성되고 떨어짐
+        float x = Random.Range(start.x - 5, end.x + 5);
+        float z = Random.Range(start.z - 5, end.z + 5);
+
+        Vector3 offset = transform.TransformDirection(sPos.position);
+
+        int posX = (int)x / 5 * 5;
+        int posZ = (int)z / 5 * 5;
+
+        return new Vector3(posX, HEIGHT, posZ);
+    }
 
     // ??? 스킬
     public void SkillRandomAll(Skills start, Skills end)
@@ -358,6 +401,29 @@ public class SkillManager : Singleton<SkillManager>
 
         ActiveSkill((Skills)random);
     }
+
+    // 분신 소환 스킬
+    public void SkillClone()
+    {
+        Clone.transform.position = player.transform.position;
+        Clone.SetActive(true);
+    }
+
+    // 탄막 터뜨리기
+    public void SkillBomb()
+    {
+        player.BombEffect.transform.position = player.transform.position;
+        player.BombEffect.Play();
+    }
+
+    // 대쉬 스킬
+    public void SkillDash(float xPower, float yPower)
+    {
+        player.rigid.AddForce(player.transform.forward * xPower);
+        player.rigid.AddForce(player.transform.up * yPower);
+    }
+
+    // 소소화
     public void SkillSizeDown(float increment, float duration)
     {
         float x = player.gameObject.transform.localScale.x;
@@ -365,18 +431,38 @@ public class SkillManager : Singleton<SkillManager>
         float z = player.gameObject.transform.localScale.z;
         Vector3 origin = new Vector3(x, y, z);
 
-        player.gameObject.transform.localScale = origin * increment;
-        StartCoroutine(DurationSizeDown(duration, origin));
+        StartCoroutine(DurationSizeDown(origin, increment, duration));
     }
-    public IEnumerator DurationSizeDown(float duration, Vector3 origin)
+
+    // 소소화 지속 시간
+    public IEnumerator DurationSizeDown(Vector3 origin, float increment, float duration)
     {
         float time = 0f;
         while (time < duration)
         {
+            if (time < 1f)
+                player.transform.localScale = Vector3.Lerp(origin * increment, origin
+                    , Time.fixedDeltaTime);
             time += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
         player.gameObject.transform.localScale = origin;
+    }
+
+    // 텔레포트 스킬
+    public void SkillTeleport()
+    {
+
+    }
+
+    // 쉴드 스킬
+    public void SkillShield(int maxCount)
+    {
+        player.shieldCount++;
+        if (player.shieldCount > maxCount)
+            player.shieldCount = maxCount;
+        Renderer mesh = player.GetComponentInChildren<MeshRenderer>();
+        mesh.material.color = Color.yellow;
     }
 
 
@@ -385,6 +471,12 @@ public class SkillManager : Singleton<SkillManager>
     {
         player.isSkillInvincibility = true;
         StartCoroutine(player.Invincibility(player.skillInvincibilityTime));
+    }
+
+    // 벽 세우기 스킬
+    public void SkillWall()
+    {
+
     }
 
     public void ChangeType(PlayerControl.State state)
@@ -401,8 +493,8 @@ public class SkillManager : Singleton<SkillManager>
             pCollider.sharedMesh = model;
 
             player.state = (PlayerControl.State)index;
-            changeEffect.transform.position = player.transform.position;
-            changeEffect.Play();
+            player.changeEffect.transform.position = player.transform.position;
+            player.changeEffect.Play();
         }
     }
 

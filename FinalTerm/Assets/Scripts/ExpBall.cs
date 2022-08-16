@@ -5,11 +5,13 @@ using UnityEngine;
 public class ExpBall : AObstacle
 {
     public float speed = 1f;
+    public float time = 0;
     public int exp = 5;
 
     private void OnEnable()
     {
-        StartCoroutine(ReturnObstacle(3f, 3)); //3초 뒤 반환
+        base.OnEnable();
+        transform.position = SkillManager.Instance.GetRandomPosition();
     }
     void Update()
     {

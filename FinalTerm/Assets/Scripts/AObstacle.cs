@@ -17,7 +17,6 @@ public abstract class AObstacle : MonoBehaviour
             if (gameObject.name.Contains(poolList[i].name))
             {
                 Index = i;
-                Debug.Log(Index);
                 return;
             }
         }
