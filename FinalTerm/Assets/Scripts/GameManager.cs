@@ -38,9 +38,13 @@ public class GameManager : Singleton<GameManager>
     private List<int> randomSkillNumbers;
 
     private const int STARTSCENENUMBER = 0;
+    private const int BOSSINTEVAR = 20;
+
+    private int phase;
 
     private void Start()
     {
+        phase = 0;
         Score = 0;
         intervalTime = 2f;
         isPhaseEnd = true;
@@ -82,6 +86,7 @@ public class GameManager : Singleton<GameManager>
         {
             idx = Random.Range(0, patterns.Length);
         } while (preIdx == idx);
+
         APattern pattern = patterns[idx].GetComponent<APattern>();
         if (pattern != null)
         {
@@ -91,12 +96,22 @@ public class GameManager : Singleton<GameManager>
             preIdx = idx;
         }
     }
+    public void SummonBoss(int stage)
+    {
+    }
     // 다음 패턴 불러옴
     public void NextPhase()
     {
         if (isGameOver) return;
         isPhaseEnd = false;
-        StartPattern();
+
+        phase++;
+        Debug.Log("phase :" + phase);
+
+        // 일정 페이즈마다 보스 스테이지 진행
+        int stage = (phase / BOSSINTEVAR) + 1;
+        if (phase % BOSSINTEVAR == 0) SummonBoss(stage);
+        else StartPattern();
     }
     // 해당 패턴 종료하고 일정 시간후 다음 페이즈 시작
     public void EndPhase(GameObject pattern)
