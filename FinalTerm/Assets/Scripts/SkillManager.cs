@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class SkillManager : Singleton<SkillManager>
 {
     public Text debugText;
-
     // 스킬의 Index
     public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
@@ -39,7 +38,6 @@ public class SkillManager : Singleton<SkillManager>
     public int maxOnHitInvincibilityTimeLevel;
     public int maxDownSizeLevel;
 
-
     [SerializeField] PlayerControl player; // player의 정보를 가지고 오기 위한 변수
     [SerializeField] MeshFilter[] types;
     [SerializeField] ParticleSystem changeEffect;
@@ -62,6 +60,8 @@ public class SkillManager : Singleton<SkillManager>
             skillLevel[i] = 1;
         }
 
+        GetActiveSkill(Skills.SizeDown);
+
     }
 
     // Update is called once per frame
@@ -78,11 +78,24 @@ public class SkillManager : Singleton<SkillManager>
         SetSkillsInfo("Speed 증가", "Speed를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SpeedUp"));
         SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
         SetSkillsInfo("Hp 회복", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Heal"));
-        SetSkillsInfo("무적 스킬", "사용시 무적이 된다", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
-        SetSkillsInfo("Size 감소", "Size를 감소시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+
+        SetSkillsInfo("ExpBall", "ExpBall", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("RandomAll", "RandomAll", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+        SetSkillsInfo("Clone", "Clone", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("Bomb", "Bomb", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+        SetSkillsInfo("Dash", "Dash", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+
+        SetSkillsInfo("SizeDown", "SizeDown", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+        SetSkillsInfo("DoubleJump", "DoubleJump", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("SkillHeal", "SkillHeal", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+        SetSkillsInfo("Teleport", "Teleport", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("Shield", "Shield", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+        SetSkillsInfo("InvincibilitySkill", "InvincibilitySkill", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
+        SetSkillsInfo("Wall", "Wall", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
         SetSkillsInfo("폰", "폰으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
         SetSkillsInfo("나이트", "나이트로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
         SetSkillsInfo("비숍", "비숍으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+
         SetSkillsInfo("룩", "룩으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
         SetSkillsInfo("킹", "킹으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
 
@@ -246,6 +259,13 @@ public class SkillManager : Singleton<SkillManager>
         GameManager.Instance.ActiveSkillButtonActive(buttonIndex, (int)skill); // UI 설정
         actSkillButtonNumber[buttonIndex] = skill; // 버튼에 어떤 스킬이 연결되어 있는지 설정
 
+        if (skill == Skills.DoubleJump)
+        {
+            GameManager.Instance.activeSkillButtons[buttonIndex].interactable = false;
+            player.isDoubleJump = true;
+        }
+
+
         if (skill >= Skills.PAWN)
             transformSkillIndex++;
         else
@@ -255,21 +275,30 @@ public class SkillManager : Singleton<SkillManager>
     // 액티브 스킬 and 변신 버튼 클릭 이벤트
     public void ClickActSkillButton(int buttonIndex)
     {
+        float cooltime = ActiveSkill(actSkillButtonNumber[buttonIndex]);
+
+        StartCoroutine(SkillCoolDown(buttonIndex, cooltime));
+    }
+
+    public float ActiveSkill(Skills skill)
+    {
         float cooltime = 5f;
-        switch (actSkillButtonNumber[buttonIndex])
+        switch (skill)
         {
             case Skills.ExpBall:
                 break;
             case Skills.RandomAll:
+                SkillRandomAll(Skills.ExpBall, Skills.Wall);
                 break;
             case Skills.Clone:
                 break;
             case Skills.Bomb:
                 break;
             case Skills.Dash:
+                SkillDash(100000f);
                 break;
             case Skills.SizeDown:
-                SizeDown(0.5f);
+                SkillSizeDown(0.5f, 5f);
                 cooltime = 5f;
                 break;
             case Skills.DoubleJump:
@@ -281,7 +310,7 @@ public class SkillManager : Singleton<SkillManager>
             case Skills.Shield:
                 break;
             case Skills.InvincibilitySkill:
-                InvincibilitySkill();
+                SkillInvincibility();
                 cooltime = 5f;
                 break;
             case Skills.Wall:
@@ -307,21 +336,55 @@ public class SkillManager : Singleton<SkillManager>
                 cooltime = 5f;
                 break;
         }
-        StartCoroutine(SkillCoolDown(buttonIndex, cooltime));
+
+        return cooltime;
     }
 
+    public void SkillDash(float power)
+    {
+        player.rigid.AddForce(player.transform.up * 2000f);
+        player.rigid.AddForce(player.transform.forward * power);
+    }
+
+
+    // ??? 스킬
+    public void SkillRandomAll(Skills start, Skills end)
+    {
+        int random = 0;
+        do
+        {
+            random = Random.Range((int)start, (int)end + 1);
+        } while (random == (int)Skills.RandomAll);
+
+        ActiveSkill((Skills)random);
+    }
+    public void SkillSizeDown(float increment, float duration)
+    {
+        float x = player.gameObject.transform.localScale.x;
+        float y = player.gameObject.transform.localScale.y;
+        float z = player.gameObject.transform.localScale.z;
+        Vector3 origin = new Vector3(x, y, z);
+
+        player.gameObject.transform.localScale = origin * increment;
+        StartCoroutine(DurationSizeDown(duration, origin));
+    }
+    public IEnumerator DurationSizeDown(float duration, Vector3 origin)
+    {
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        player.gameObject.transform.localScale = origin;
+    }
+
+
     // 무적 스킬
-    public void InvincibilitySkill()
+    public void SkillInvincibility()
     {
         player.isSkillInvincibility = true;
         StartCoroutine(player.Invincibility(player.skillInvincibilityTime));
-    }
-
-    public void SizeDown(float increment)
-    {
-        Vector3 temp = player.gameObject.transform.localScale;
-        temp = temp * increment;
-        player.gameObject.transform.localScale = temp;
     }
 
     public void ChangeType(PlayerControl.State state)
