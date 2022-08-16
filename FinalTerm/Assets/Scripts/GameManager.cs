@@ -82,7 +82,7 @@ public class GameManager : Singleton<GameManager>
         {
             idx = Random.Range(0, patterns.Length);
         } while (preIdx == idx);
-        APattern pattern = patterns[0].GetComponent<APattern>();
+        APattern pattern = patterns[idx].GetComponent<APattern>();
         if (pattern != null)
         {
             Debug.Log(idx);
