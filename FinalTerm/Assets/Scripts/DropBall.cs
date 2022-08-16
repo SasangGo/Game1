@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class DropBall : AObstacle
 {
-    private RaycastHit[] hits; // 레이캐스트 쏘는 집합
-
     protected override void OnTriggerEnter(Collider other)
     {
         base.OnTriggerEnter(other);
@@ -17,8 +15,9 @@ public class DropBall : AObstacle
             cell.ChangeColor(cell.originColor);
         }
     }
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         // 3초 후 다시 없어짐
         StartCoroutine(ReturnObstacle(3f,1));
     }

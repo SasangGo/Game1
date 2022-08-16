@@ -7,17 +7,19 @@ using UnityEngine;
 // 충돌시에 관한 작용이 쓰여있음
 public abstract class AObstacle : MonoBehaviour
 {
-    // 물리충돌 시작할 때(Ontrigger 체크 X)
-    protected virtual void OnCollisionEnter(Collision collision)
+    public RaycastHit[] hits; // 셀 감지
+    public int Index { get; protected set; }
+    protected virtual void OnEnable()
     {
-        // 플레이어와 충돌하면 플레이어의 DieOperate 코루틴을 시작시킴
-        PlayerControl player = collision.collider.GetComponent<PlayerControl>();
-        if(player != null)
+        List<GameObject> poolList = ObjectPool.Instance.poolList;
+        for (int i = 0; i < poolList.Count; i++)
         {
-            //충돌 지점을 체크하여 OnDamaged 함수에 넘김
-            Vector3 colliPos = collision.contacts[0].point;
-            Debug.Log(colliPos);
-            player.OnDamaged(colliPos);
+            if (gameObject.name.Contains(poolList[i].name))
+            {
+                Index = i;
+                Debug.Log(Index);
+                return;
+            }
         }
     }
     // Ontrigger 시작할 때
@@ -27,12 +29,15 @@ public abstract class AObstacle : MonoBehaviour
         PlayerControl player = other.GetComponent<PlayerControl>();
         if(player != null && player.gameObject.layer == 10)
         {
-            Vector3 colliPos = other.bounds.center;
-            player.OnDamaged(colliPos);
+            if (gameObject.tag == "ExpBall")
+            {
+                player.exp += gameObject.GetComponent<ExpBall>().exp;
+                ObjectPool.Instance.ReturnObject(gameObject, 3);
+            }
         }
     }
     // 장애물 오브젝트 풀링(반환) (반환시간, 인덱스 번호)
-    protected IEnumerator ReturnObstacle(float time, int index)
+    public IEnumerator ReturnObstacle(float time, int index)
     {
         float cnt = 0;
         while (cnt <= time)
@@ -43,6 +48,16 @@ public abstract class AObstacle : MonoBehaviour
         // 물리를 가지고 있는 장애물일 경우 속도를 초기화
         Rigidbody rigid = GetComponent<Rigidbody>();
         if(rigid != null) rigid.velocity = Vector3.zero;
+
+        // 반환할 때 붉은색으로 만들었던 셀을 원래 색으로 되돌림
+        if(hits != null && hits.Length > 0)
+        {
+            foreach(RaycastHit hit in hits)
+            {
+                Cell cell = hit.collider.GetComponent<Cell>();
+                cell.ChangeColor(cell.originColor);
+            }
+        }
         ObjectPool.Instance.ReturnObject(gameObject, index);
 
     }

@@ -6,15 +6,17 @@ public class PlayerControl : MonoBehaviour
 {
     [SerializeField] float jumpPower;
     // 조이스틱 변수
-    [SerializeField] FloatingJoystick joystick;
+    [SerializeField] public FloatingJoystick joystick;
     [SerializeField] ParticleSystem damageObject;
     [SerializeField] ParticleSystem changeEffect;
     [SerializeField] GameObject[] checkPoints;
 
     private const float DEADLINE = -17f;
     private Animator anim;
-    private bool isJump;
-    private Rigidbody rigid;
+    public bool isDoubleJump;
+    public Rigidbody rigid;
+    public int jumpCount;
+
 
     // 플레이어의 현재 상태 변수들
     public int maxHp; // 플레이어 현재 최대 체력
@@ -48,7 +50,8 @@ public class PlayerControl : MonoBehaviour
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
         jumpPower = 2000f;
-        isJump = false;
+        isDoubleJump = false;
+        jumpCount = 0;
 
         // 플레이어 현재 상태 변수들 초기 값 초기화
         maxHp = 3;
@@ -88,7 +91,7 @@ public class PlayerControl : MonoBehaviour
         Move();
         if (transform.position.y < DEADLINE)
         {
-            OnDamaged(transform.position);
+            OnDamaged();
             Respawn();
         }
     }
@@ -111,7 +114,7 @@ public class PlayerControl : MonoBehaviour
         if ((moveX != 0 || moveZ != 0))
         {
             //anim.SetBool("Walk", true);
-            if(!SoundManager.Instance.playerAudioSource.isPlaying && !isJump)
+            if(!SoundManager.Instance.playerAudioSource.isPlaying && jumpCount == 0)
                 SoundManager.Instance.PlaySound(SoundManager.Instance.playerAudioSource, SoundManager.Instance.MoveSound);
         }
         // 가만히 있다면 걷는 애니메이션 중지
@@ -126,11 +129,12 @@ public class PlayerControl : MonoBehaviour
     public void Jump()
     {
         // TimeScale == 0 즉 게임이 멈췄을 때 버튼 동작X
-        if (isJump || Time.timeScale == 0) return;
+        if ((!isDoubleJump && jumpCount > 0) || (isDoubleJump && jumpCount > 1) || Time.timeScale == 0) return;
 
         SoundManager.Instance.PlaySound(SoundManager.Instance.playerAudioSource, SoundManager.Instance.JumpSound);
 
-        isJump = true;
+        jumpCount++;
+        rigid.velocity = new Vector3(rigid.velocity.x, 0f, rigid.velocity.z);
         rigid.AddForce(new Vector3(0, jumpPower, 0));
         //anim.SetBool("Jump", true);
     }
@@ -156,12 +160,11 @@ public class PlayerControl : MonoBehaviour
         //한번에 돌아가는게 아닌 자연스럽게 돌아가게 함
         rigid.rotation = Quaternion.Slerp(rigid.rotation, newRotate, Time.deltaTime * speed);
         //pos.y *= -1;
-        newRotate = Quaternion.LookRotation(pos);
     }
 
 
     // 플레이어 피격 시 호출되는 함수
-    public void OnDamaged(Vector3 pos)
+    public void OnDamaged()
     {
         hp--;
         GameManager.Instance.HpImageUpdate();
@@ -248,12 +251,35 @@ public class PlayerControl : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.gameObject.layer == 8)
+        GameObject obj = collision.collider.GetComponent<GameObject>();
+        if (obj == null) return;
+        if (obj.layer == 8)
         {
-            isJump = false;
+            jumpCount = 0;
             //anim.SetBool("Jump", false);
         }
+        else if(obj.GetComponent<AObstacle>() != null)
+        {
+            AObstacle obstacle = obj.GetComponent<AObstacle>();
+            StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
+        }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "ExpBall")
+            exp += other.gameObject.GetComponent<ExpBall>().exp;
+
+        AObstacle obj = other.GetComponent<AObstacle>();
+        if (obj == null) return;
+
+        OnDamaged();
+        AObstacle obstacle = obj.GetComponent<AObstacle>();
+        Debug.Log("충돌");
+        StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
+    }
+
+
     private void Respawn()
     {
         int idx = Random.Range(0, checkPoints.Length);
