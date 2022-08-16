@@ -88,7 +88,7 @@ public class PlayerControl : MonoBehaviour
         Move();
         if (transform.position.y < DEADLINE)
         {
-            OnDamaged(transform.position);
+            OnDamaged();
             Respawn();
         }
     }
@@ -161,7 +161,7 @@ public class PlayerControl : MonoBehaviour
 
 
     // 플레이어 피격 시 호출되는 함수
-    public void OnDamaged(Vector3 pos)
+    public void OnDamaged()
     {
         hp--;
         GameManager.Instance.HpImageUpdate();
@@ -200,7 +200,7 @@ public class PlayerControl : MonoBehaviour
         }
         else
         {
-            this.gameObject.layer = 0;
+            this.gameObject.layer = 10;
         }
 
         isSkillInvincibility = false;
@@ -248,10 +248,17 @@ public class PlayerControl : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.gameObject.layer == 8)
+        GameObject obj = collision.collider.GetComponent<GameObject>();
+        if (obj == null) return;
+        if (obj.layer == 8)
         {
             isJump = false;
             //anim.SetBool("Jump", false);
+        }
+        else if(obj.GetComponent<AObstacle>() != null)
+        {
+            AObstacle obstacle = obj.GetComponent<AObstacle>();
+            StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
         }
     }
 
@@ -259,6 +266,14 @@ public class PlayerControl : MonoBehaviour
     {
         if (other.gameObject.tag == "ExpBall")
             exp += other.gameObject.GetComponent<ExpBall>().exp;
+
+        AObstacle obj = other.GetComponent<AObstacle>();
+        if (obj == null) return;
+
+        OnDamaged();
+        AObstacle obstacle = obj.GetComponent<AObstacle>();
+        Debug.Log("충돌");
+        StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
     }
 
 

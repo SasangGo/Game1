@@ -6,8 +6,9 @@ public class Bullet : AObstacle
 {
     private Vector3 shotPos; // 발사 위치
     private float shotSpeed; // 날아가는 속도
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         if (GameManager.Instance.isGameOver) return;
 
         shotSpeed = 25f;

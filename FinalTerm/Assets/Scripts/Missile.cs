@@ -5,11 +5,12 @@ using UnityEngine;
 public class Missile : AObstacle
 {
     [SerializeField] float speed; // 속도
-    private RaycastHit[] hits; // 셀 감지
     private bool timerEnd;
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         speed = 200f;
         timerEnd = false;
         StartCoroutine(Timer(2f)); // 2초 뒤에 날아가게 하기 위해
