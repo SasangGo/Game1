@@ -9,7 +9,7 @@ public class ObjectPool : Singleton<ObjectPool>
     private Dictionary<int, Queue<GameObject>> poolingObjects = new Dictionary<int, Queue<GameObject>>();
 
     // 생성할 게임 오브젝트 프리팹을 유니티 프로젝트 상에서 넣으면 됨
-    [SerializeField] GameObject[] poolPrefabs;
+    public List<GameObject> poolList; 
 
     private void Awake()
     {
@@ -18,7 +18,7 @@ public class ObjectPool : Singleton<ObjectPool>
     // 초기화(개수)
     private void Initialize(int count)
     {
-        for(int i = 0; i < poolPrefabs.Length; i++)
+        for(int i = 0; i < poolList.Count; i++)
         {
             for (int j = 0; j < count; j++)
             {
@@ -36,7 +36,7 @@ public class ObjectPool : Singleton<ObjectPool>
     // 오브젝트 생성(프리팹 번호)
     private GameObject CreateNewObject(int index)
     {
-        var obj = Instantiate(poolPrefabs[index]);
+        var obj = Instantiate(poolList[index]);
         poolingObjects[index].Enqueue(obj); // 해당 키의 큐에 추가
         obj.SetActive(false); // 당장 사용 안하므로 비활성화
         obj.transform.SetParent(transform); // 해당 스크립트의 자식으로 지정
