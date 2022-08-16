@@ -21268,6 +21268,21 @@ PrefabInstance:
       propertyPath: checkPoints.Array.data[3]
       value: 
       objectReference: {fileID: 344025700}
+    - target: {fileID: 2067166179048786062, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067166179375132827, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067166179441831918, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 2067166179664973076, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
         type: 3}
       propertyPath: m_RootOrder
@@ -21343,6 +21358,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2067166179665342136, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067166179901035424, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 2067166181031153942, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
         type: 3}
       propertyPath: m_Mass
@@ -21388,6 +21413,11 @@ PrefabInstance:
       propertyPath: checkPoints.Array.data[3]
       value: 
       objectReference: {fileID: 344025700}
+    - target: {fileID: 2067166181080992195, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67a2fbe8ddc3ece49b055b63e79146aa, type: 3}
 --- !u!1001 &4581784225700407403
@@ -21676,6 +21706,16 @@ PrefabInstance:
       propertyPath: turret
       value: 
       objectReference: {fileID: 622838139}
+    - target: {fileID: 7262129034670657821, guid: 3d14a1a8f42c64044b6be178aebab9df,
+        type: 3}
+      propertyPath: attackRange
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 7262129034670657821, guid: 3d14a1a8f42c64044b6be178aebab9df,
+        type: 3}
+      propertyPath: amountRandomBullet
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7262129034670657821, guid: 3d14a1a8f42c64044b6be178aebab9df,
         type: 3}
       propertyPath: hazardZones.Array.size

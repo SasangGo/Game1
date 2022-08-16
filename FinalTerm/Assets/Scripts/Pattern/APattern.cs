@@ -10,7 +10,6 @@ public class APattern : MonoBehaviour
     [SerializeField] protected Cell[] hazardZones; // 빨간색 셀
     [SerializeField] protected Transform sPos; // 셀의 시작 위치(거리 체크용)
     [SerializeField] protected Transform ePos;// 셀의 끝 위치(거리 체크용)
-    [SerializeField] protected GameObject[] alertObjects;
 
     protected bool isAlertEnd; // 알림의 끝났는지 아닌지 체크
     public float expAmount;

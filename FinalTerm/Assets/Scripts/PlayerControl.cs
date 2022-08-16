@@ -200,7 +200,7 @@ public class PlayerControl : MonoBehaviour
         }
         else
         {
-            this.gameObject.layer = 0;
+            this.gameObject.layer = 10;
         }
 
         isSkillInvincibility = false;

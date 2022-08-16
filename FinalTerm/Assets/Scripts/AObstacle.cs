@@ -25,7 +25,7 @@ public abstract class AObstacle : MonoBehaviour
     {
         //위와 같음
         PlayerControl player = other.GetComponent<PlayerControl>();
-        if(player != null && player.gameObject.layer == 0)
+        if(player != null && player.gameObject.layer == 10)
         {
             Vector3 colliPos = other.bounds.center;
             player.OnDamaged(colliPos);
