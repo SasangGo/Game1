@@ -251,9 +251,9 @@ public class PlayerControl : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        GameObject obj = collision.collider.GetComponent<GameObject>();
+        GameObject obj = collision.gameObject;
         if (obj == null) return;
-        if (obj.layer == 8)
+        if (collision.gameObject.layer == 8)
         {
             jumpCount = 0;
             //anim.SetBool("Jump", false);
