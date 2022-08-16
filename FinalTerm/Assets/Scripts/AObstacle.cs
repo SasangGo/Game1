@@ -28,7 +28,13 @@ public abstract class AObstacle : MonoBehaviour
         if(player != null && player.gameObject.layer == 0)
         {
             Vector3 colliPos = other.bounds.center;
-            player.OnDamaged(colliPos);
+            if (gameObject.tag == "ExpBall")
+            {
+                player.exp += gameObject.GetComponent<ExpBall>().exp;
+                ObjectPool.Instance.ReturnObject(gameObject, 3);
+            }
+            else
+                player.OnDamaged(colliPos);
         }
     }
     // 장애물 오브젝트 풀링(반환) (반환시간, 인덱스 번호)

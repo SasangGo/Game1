@@ -219,7 +219,7 @@ public class PlayerControl : MonoBehaviour
         if (level < maxLevel)
         {
             exp = exp - maxExp;
-            maxExp = maxExp * 1.15f + level;
+            //maxExp = maxExp * 1.15f + level;
             Debug.Log("MaxExp : " + maxExp);
         }
         else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)
@@ -254,6 +254,14 @@ public class PlayerControl : MonoBehaviour
             //anim.SetBool("Jump", false);
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "ExpBall")
+            exp += other.gameObject.GetComponent<ExpBall>().exp;
+    }
+
+
     private void Respawn()
     {
         int idx = Random.Range(0, checkPoints.Length);
