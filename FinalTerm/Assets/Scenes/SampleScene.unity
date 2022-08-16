@@ -21275,6 +21275,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2067166179664973076, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067166179664973076, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067166179664973076, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067166179664973076, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.26
       objectReference: {fileID: 0}
@@ -21328,6 +21343,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2067166181031153942, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: m_Mass
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2067166181031153943, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
         type: 3}
       propertyPath: state
@@ -21338,6 +21358,11 @@ PrefabInstance:
       propertyPath: joystick
       value: 
       objectReference: {fileID: 2053302240}
+    - target: {fileID: 2067166181031153943, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
+        type: 3}
+      propertyPath: changeEffect
+      value: 
+      objectReference: {fileID: 1168316213}
     - target: {fileID: 2067166181031153943, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
         type: 3}
       propertyPath: damageObject

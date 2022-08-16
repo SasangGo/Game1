@@ -35,6 +35,7 @@ public class PlayerControl : MonoBehaviour
     public float timePerExp;// ??초 마다 얻는 경험치
     public float timer;// 시간을 재는 변수
 
+    //플레어어의 현재 체스말 상태를 나타냄
     public enum State
     {
       //폰/나이트/룩/비숍/킹 순서
@@ -206,7 +207,8 @@ public class PlayerControl : MonoBehaviour
         isOnHitInvincibility = false;
 
         // 색 돌아옴
-        mesh.material.color = Color.blue;
+        Color color = new Color(195f/255f, 202f/255f, 219f/255f);
+        mesh.material.color = color;
 
     }
 

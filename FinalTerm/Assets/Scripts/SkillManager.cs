@@ -335,13 +335,15 @@ public class SkillManager : Singleton<SkillManager>
         GameManager.Instance.activeSkillButtons[index].interactable = true;
     }
 
+    // 플레이어 체스말 변신 (매개변수로 State 현재 플레이어의 체스말)
     public void ChangeType(PlayerControl.State state)
     {
-        int index = (int)state;
+        int index = (int)state; // State를 정수로 변경
 
         Mesh model = types[index].mesh;
         if (model != null)
         {
+            // 각 체스의 mesh(모양)을 가지고옴
             MeshFilter pType = player.GetComponent<MeshFilter>();
             pType.sharedMesh = model;
 
@@ -349,6 +351,8 @@ public class SkillManager : Singleton<SkillManager>
             pCollider.sharedMesh = model;
 
             player.state = (PlayerControl.State)index;
+            
+            //변신할때의 이펙트
             changeEffect.transform.position = player.transform.position;
             changeEffect.Play();
         }
