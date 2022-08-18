@@ -33,7 +33,7 @@ public abstract class ABoss : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
 
         //3초마다 타겟 쫓아감
-        InvokeRepeating("UpdateTarget",1,3);
+        Invoke("UpdateTarget", 3);
     }
 
     // Update is called once per frame
@@ -79,6 +79,7 @@ public abstract class ABoss : MonoBehaviour
         transform.position = movePos;
         rigid.useGravity = true;
         Debug.Log("이동종료");
+        Invoke("UpdateTarget", 3);
     }
 
     // 이동 방향을 바라보도록 회전
