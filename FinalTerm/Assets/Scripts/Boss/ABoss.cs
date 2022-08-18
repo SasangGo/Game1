@@ -70,7 +70,7 @@ public abstract class ABoss : MonoBehaviour
 
         // 중력을 꺼둬 Slerp에 방해되지 않게 함
         rigid.useGravity = false;
-        while(Vector3.Distance(transform.position,movePos) > 0.1f)
+        while(Vector3.Distance(transform.position,movePos) > 0.5f)
         {
             transform.position = Vector3.Slerp(transform.position, movePos, 0.1f);
             yield return null;
