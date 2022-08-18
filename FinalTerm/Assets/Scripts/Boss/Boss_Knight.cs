@@ -4,26 +4,29 @@ using UnityEngine;
 
 public class Boss_Knight : ABoss
 {
-    const int OFFSET = -135;
-    // Start is called before the first frame update
+
+    // 기본적인 정보
     protected override void Start()
     {
         base.Start();
         speed = 5;
         health = 4;
     }
-    
-    // Update is called once per frame
-    protected override void Update()
+    protected override void Trace(Vector3 pos)
     {
-        base.Update();
+        base.Trace(pos);
+        // 체스에서 말의 움직임 구현
+        moveList.Add(GetMovePosition(2, 1));
+        moveList.Add(GetMovePosition(1, 2));
 
-    }
-    protected override void Rotate(Vector3 pos)
-    {
-        base.Rotate(pos);
-        Vector3 newPos = rigid.rotation.eulerAngles + new Vector3(0, OFFSET, 0);
-        Quaternion newRot = Quaternion.Euler(newPos);
-        rigid.rotation = Quaternion.Slerp(rigid.rotation, newRot, Time.deltaTime * speed);
+        // 두 방향 중 랜덤 방향으로 움직임
+        int idx = Random.Range(0, moveList.Count);
+        Vector3 move = moveList[idx];
+        Rotate();
+        Debug.Log(move);
+        StartCoroutine(MovingAction(move));
+
+        //새로운 리스트를 받기위해 리스트 초기화
+        moveList.Clear();
     }
 }
