@@ -10,6 +10,7 @@ public class TurretPattern : APattern
     [SerializeField] int amountRandomBullet;
     [SerializeField] GameObject player;
     [SerializeField] GameObject clone;
+
     private const float PHASETIME = 10f;
     private Vector3 bulletRot;
     private Transform target;

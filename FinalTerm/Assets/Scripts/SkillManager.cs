@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class SkillManager : Singleton<SkillManager>
 {
     public Text debugText;
+    public Text debugText2;
     // 스킬의 Index
     public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
@@ -22,6 +23,10 @@ public class SkillManager : Singleton<SkillManager>
     public int[] skillLevel; // 각 스킬들 레벨을 체크하는 배열
     public int totalSkillsCount; // 이 게임에 존재하는 Skill 개수 변수
     public int maxSkillCount; // Max가 된 스킬들이 몇개인지 체크하기 위한 변수
+    public bool isTeleport;
+    public bool isTeleportInvokeEnd;
+    public int teleportButtonIndex;
+    public float teleportCoolTime;
 
     // 각 패시브 스킬 증가량
     public int HpIncrement;
@@ -44,8 +49,9 @@ public class SkillManager : Singleton<SkillManager>
     [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
     [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
     [SerializeField] PlayerControl player; // player의 정보를 가지고 오기 위한 변수
-    [SerializeField] GameObject Clone;
-    [SerializeField] GameObject Wall;
+    [SerializeField] GameObject clone;
+    [SerializeField] GameObject wall;
+    [SerializeField] GameObject teleportPoint; // 텔레포트 좌표
     [SerializeField] MeshFilter[] types;    
 
     private const float HEIGHT = -7f;
@@ -68,14 +74,21 @@ public class SkillManager : Singleton<SkillManager>
             skillLevel[i] = 1;
         }
 
-        GetActiveSkill(Skills.Clone);
-        GetActiveSkill(Skills.Wall);
+        GetActiveSkill(Skills.RandomAll);
+        GetActiveSkill(Skills.Teleport);
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        debugText2.text = "" + (player.transform.forward*10);
+
+        if (isTeleportInvokeEnd)
+        {
+            isTeleportInvokeEnd = false;
+            StartCoroutine(SkillCoolDown(teleportButtonIndex, teleportCoolTime));
+        }
 
     }
 
@@ -314,7 +327,8 @@ public class SkillManager : Singleton<SkillManager>
             GameManager.Instance.activeSkillButtons[buttonIndex].interactable = false;
             player.isDoubleJump = true;
         }
-
+        if(skill == Skills.Teleport)
+            teleportButtonIndex = buttonIndex;
 
         if (skill >= Skills.PAWN)
             transformSkillIndex++;
@@ -326,7 +340,6 @@ public class SkillManager : Singleton<SkillManager>
     public void ClickActSkillButton(int buttonIndex)
     {
         float cooltime = ActiveSkill(actSkillButtonNumber[buttonIndex]);
-
         StartCoroutine(SkillCoolDown(buttonIndex, cooltime));
     }
 
@@ -366,8 +379,11 @@ public class SkillManager : Singleton<SkillManager>
                 cooltime = 5f;
                 break;
             case Skills.Teleport:
-                SkillTeleport();
+                SkillTeleport(4f);
+                if(isTeleport)
+                    return 0;
                 cooltime = 5f;
+                teleportCoolTime = cooltime;
                 break;
             case Skills.Shield:
                 SkillShield(1);
@@ -447,8 +463,8 @@ public class SkillManager : Singleton<SkillManager>
     // 분신 소환 스킬
     public void SkillClone()
     {
-        Clone.transform.position = player.transform.position;
-        Clone.SetActive(true);
+        clone.transform.position = player.transform.position;
+        clone.SetActive(true);
     }
 
     // 탄막 터뜨리기
@@ -483,8 +499,7 @@ public class SkillManager : Singleton<SkillManager>
         while (time < duration)
         {
             if (time < 1f)
-                player.transform.localScale = Vector3.Lerp(origin * increment, origin
-                    , Time.fixedDeltaTime);
+                player.transform.localScale = Vector3.Lerp(origin * increment, origin, Time.fixedDeltaTime);
             time += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
@@ -492,11 +507,57 @@ public class SkillManager : Singleton<SkillManager>
     }
 
     // 텔레포트 스킬
-    public void SkillTeleport()
+    public void SkillTeleport(float time)
     {
+        if (isTeleport)
+        {
+            TeleportEnd();
+            return;
+        }
 
+        Renderer mesh = player.GetComponent<MeshRenderer>();
+        Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f , 0f);
+        mesh.material.color = color;
+
+        Button[] button = GameManager.Instance.activeSkillButtons;
+        for(int i=0;i< button.Length; i++)
+        {
+            if(i != teleportButtonIndex)
+                button[i].interactable = false;
+        }
+
+        player.gameObject.layer = 9;
+        teleportPoint.SetActive(true);
+        isTeleport = true;
+        Invoke("TeleportEnd", time);
     }
 
+    public void TeleportEnd()
+    {
+        Renderer mesh = player.GetComponent<MeshRenderer>();
+        Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f, 255f);
+        mesh.material.color = color;
+
+        Button[] button = GameManager.Instance.activeSkillButtons;
+        for (int i = 0; i < button.Length; i++)
+        {
+            if (i != teleportButtonIndex)
+                button[i].interactable = true;
+        }
+
+        player.gameObject.layer = 10;
+        player.transform.position = teleportPoint.transform.position;
+        isTeleport = false;
+        teleportPoint.SetActive(false);
+
+        if (IsInvoking("TeleportEnd"))
+        {
+            CancelInvoke("TeleportEnd");
+            return;
+        }
+
+        isTeleportInvokeEnd = true;
+    }
     // 쉴드 스킬
     public void SkillShield(int maxCount)
     {
@@ -518,40 +579,46 @@ public class SkillManager : Singleton<SkillManager>
     public void SkillWall(float time)
     {
         float directX = player.transform.forward.x;
-        float directZ = player.transform.forward.z;
+        float directZ = player.transform.forward.z; 
+        int directIntX = (int)(directX * 10);
+        int directIntZ = (int)(directZ * 10);
 
         int posX = (int)player.transform.position.x / 5 * 5;
         int posZ = (int)player.transform.position.z / 5 * 5;
 
 
-        if (-0.5f <= directX && directX <= 0.5f)
+        debugText.text = "" + directIntX;
+        debugText.text += "\n" + directIntZ;
+
+
+        if (-7 <= directIntX && directIntX <= 7)
         {
-            if(directZ >= 0.5f)
+            if(directIntZ >= 6)
                 posZ += 10;
-            else if(directZ <= -0.5f)
+            else if(directIntZ <= -6)
                 posZ -= 10;
 
-            Wall.transform.eulerAngles = new Vector3(0, 90f, 0);
+            wall.transform.eulerAngles = new Vector3(0, 90f, 0);
         }
-        else if (-0.5f <= directZ && directZ <= 0.5f)
+        else if(-7 <= directIntZ && directIntZ <= 7)
         {
-            if(directX >= 0.5f)
+            if (directIntX >= 6)
                 posX += 10;
-            else if (directX <= -0.5f)
+            else if(directIntX <= -6)
                 posX -= 10;
 
-            Wall.transform.eulerAngles = new Vector3(0, 0, 0);
+            wall.transform.eulerAngles = new Vector3(0, 0, 0);
         }
 
-        Wall.transform.position = new Vector3(posX, sPos.position.y + 5f, posZ);
-        Wall.SetActive(true);
+        wall.transform.position = new Vector3(posX, sPos.position.y + 5f, posZ);
+        wall.SetActive(true);
         Invoke("RemoveWall", time);
     }
 
     // 벽 없애기(Invoke 용)
     public void RemoveWall()
     {
-        Wall.SetActive(false);
+        wall.SetActive(false);
     }
 
     //변신
