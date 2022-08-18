@@ -7,7 +7,7 @@ public class SkillManager : Singleton<SkillManager>
 {
     public Text debugText;
     // 스킬의 Index
-    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
+    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
     public List<string> skillNames; // 스킬 이름을 담는 List
     public List<string> skill_Info; // 스킬의 정보를 담는 List
@@ -27,16 +27,19 @@ public class SkillManager : Singleton<SkillManager>
     public int HpIncrement;
     public int HealIncrement;
     public float speedIncrement;
-    public float skillExpIncrement;
+    public float coolTimeDecrease;
     public float onHitInvincibilityTimeIncrement;
-    public float downSizeIncrement;
+    public float skillExpIncrement;
+    public float coolTimeDecrement;
+    public float jumpIncrement;
 
     // 각 패시브 스킬 최대값
     public int maxHpLevel;
     public int maxSpeedLevel;
     public int maxSkillExpLevel;
     public int maxOnHitInvincibilityTimeLevel;
-    public int maxDownSizeLevel;
+    public int maxCoolTimeLevel;
+    public int maxJumpLevel;
 
     [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
     [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
@@ -83,6 +86,9 @@ public class SkillManager : Singleton<SkillManager>
         SetSkillsInfo("피격무적 시간 증가", "피격무격 시간을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/InvincibleTimeUpOnHit"));
         SetSkillsInfo("Speed 증가", "Speed를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SpeedUp"));
         SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("스킬 쿨타임 감소", "스킬 쿨타임이 10% 감소한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("점프력 증가", "점프 높이가 상승한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        
         SetSkillsInfo("Hp 회복", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Heal"));
 
         SetSkillsInfo("ExpBall", "ExpBall", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
@@ -112,15 +118,16 @@ public class SkillManager : Singleton<SkillManager>
         speedIncrement = 2f;
         onHitInvincibilityTimeIncrement = 1f;
         skillExpIncrement = 1f;
-        downSizeIncrement = 0.8f;
-
+        coolTimeDecrement = 10f;
+        jumpIncrement = 200f;
 
         // 각 패시브 스킬 최대값 초기화
         maxHpLevel = 8;
         maxSpeedLevel = 5;
         maxOnHitInvincibilityTimeLevel = 5;
         maxSkillExpLevel = 5;
-        maxDownSizeLevel = 5;
+        maxCoolTimeLevel = 5;
+        maxJumpLevel = 5;
     }
 
     // 스킬 정보 설정 함수
@@ -181,6 +188,14 @@ public class SkillManager : Singleton<SkillManager>
             case Skills.IncreaseExp:
                 IncreaseSkillExp(maxSkillExpLevel, skillExpIncrement);
                 break;
+            // 증가 스킬
+            case Skills.DecreaseCoolTime:
+                IncreaseSkillExp(maxCoolTimeLevel, coolTimeDecrease);
+                break;
+            // 점프력 증가 스킬
+            case Skills.IncreaseJump:
+                IncreaseSkillExp(maxJumpLevel, jumpIncrement);
+                break;
             // Hp 회복 스킬
             case Skills.Heal:
                 Heal(HealIncrement);
@@ -220,7 +235,7 @@ public class SkillManager : Singleton<SkillManager>
     // 스피드 증가
     public void IncreaseSpeed(int maxLevel, float increment)
     {
-        player.speed = player.speed + speedIncrement;
+        player.speed = player.speed + increment;
 
         skillLevel[(int)Skills.IncreaseSpeed]++;
         // 스킬이 max치가 되면
@@ -241,6 +256,34 @@ public class SkillManager : Singleton<SkillManager>
         if (skillLevel[(int)Skills.IncreaseExp] >= maxLevel)
         {
             isMaxSkillLevel[(int)Skills.IncreaseExp] = true;
+            maxSkillCount++;
+        }
+    }
+
+    // 쿨타임 감소
+    public void DecreaseCoolTime(int maxLevel, float decrement)
+    {
+        player.speed = player.coolTimeDecrement + decrement;
+
+        skillLevel[(int)Skills.DecreaseCoolTime]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.DecreaseCoolTime] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.DecreaseCoolTime] = true;
+            maxSkillCount++;
+        }
+    }
+
+    // 점프력 증가
+    public void IncreaseJump(int maxLevel, float increment)
+    {
+        player.speed = player.jumpPower + increment;
+
+        skillLevel[(int)Skills.IncreaseJump]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.IncreaseJump] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.IncreaseJump] = true;
             maxSkillCount++;
         }
     }

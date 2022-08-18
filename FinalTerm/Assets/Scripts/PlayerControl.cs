@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] float jumpPower;
+    [SerializeField] public float jumpPower;
     // 조이스틱 변수
     [SerializeField] public FloatingJoystick joystick;
     [SerializeField] public ParticleSystem damageObject;
@@ -31,6 +31,7 @@ public class PlayerControl : MonoBehaviour
     public float skillExp; // 경험치 증가 스킬로 얻는 추가 경험치량
     public float onHitInvincibilityTime; // 피격 무적 시간
     public float skillInvincibilityTime; // 스킬 무적 시간
+    public float coolTimeDecrement;
     public bool isSkillInvincibility;
     public bool isOnHitInvincibility;
 
@@ -67,7 +68,8 @@ public class PlayerControl : MonoBehaviour
         skillExp = 0;
         onHitInvincibilityTime = 2f;
         skillInvincibilityTime = 5f;
-        
+        coolTimeDecrement = 0;
+
         // 경험치 관련 변수들 초기화
         patternExp = 0;
         timePerExp = 0;

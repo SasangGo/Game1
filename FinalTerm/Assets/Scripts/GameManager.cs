@@ -258,10 +258,12 @@ public class GameManager : Singleton<GameManager>
     public void SetAchieveItem(int index, Achievement achieve)
     {
         Text[] texts = AchieveItem[index].GetComponentsInChildren<Text>();
+        Image[] image = AchieveItem[index].GetComponentsInChildren<Image>();
 
         texts[0].text = achieve.achieveTitle;
         texts[1].text = achieve.achieveExplane + "\n";
         texts[2].text = "\n" + achieve.achieveEffect;
+        image[3].sprite = AchieveManager.Instance.AchieveImageList[index];
     }
 
     // 스코어 기록 함수
