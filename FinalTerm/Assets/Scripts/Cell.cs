@@ -15,4 +15,14 @@ public class Cell : MonoBehaviour
         newColor = color;
         mesh.material.color = newColor;
     }
+
+    // Wall 스킬 때 벽으로 막기 위함
+    public void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Bullet")
+        {
+            AObstacle obj = other.GetComponent<AObstacle>();
+            StartCoroutine(obj.ReturnObstacle(0, obj.Index));
+        }
+    }
 }

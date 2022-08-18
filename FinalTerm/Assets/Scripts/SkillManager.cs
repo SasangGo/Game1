@@ -7,7 +7,7 @@ public class SkillManager : Singleton<SkillManager>
 {
     public Text debugText;
     // 스킬의 Index
-    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
+    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
     public List<string> skillNames; // 스킬 이름을 담는 List
     public List<string> skill_Info; // 스킬의 정보를 담는 List
@@ -27,20 +27,28 @@ public class SkillManager : Singleton<SkillManager>
     public int HpIncrement;
     public int HealIncrement;
     public float speedIncrement;
-    public float skillExpIncrement;
+    public float coolTimeDecrease;
     public float onHitInvincibilityTimeIncrement;
-    public float downSizeIncrement;
+    public float skillExpIncrement;
+    public float coolTimeDecrement;
+    public float jumpIncrement;
 
     // 각 패시브 스킬 최대값
     public int maxHpLevel;
     public int maxSpeedLevel;
     public int maxSkillExpLevel;
     public int maxOnHitInvincibilityTimeLevel;
-    public int maxDownSizeLevel;
+    public int maxCoolTimeLevel;
+    public int maxJumpLevel;
 
+    [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
+    [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
     [SerializeField] PlayerControl player; // player의 정보를 가지고 오기 위한 변수
-    [SerializeField] MeshFilter[] types;
-    [SerializeField] ParticleSystem changeEffect;
+    [SerializeField] GameObject Clone;
+    [SerializeField] GameObject Wall;
+    [SerializeField] MeshFilter[] types;    
+
+    private const float HEIGHT = -7f;
 
     void Start()
     {
@@ -60,7 +68,8 @@ public class SkillManager : Singleton<SkillManager>
             skillLevel[i] = 1;
         }
 
-        GetActiveSkill(Skills.SizeDown);
+        GetActiveSkill(Skills.Clone);
+        GetActiveSkill(Skills.Wall);
 
     }
 
@@ -77,6 +86,9 @@ public class SkillManager : Singleton<SkillManager>
         SetSkillsInfo("피격무적 시간 증가", "피격무격 시간을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/InvincibleTimeUpOnHit"));
         SetSkillsInfo("Speed 증가", "Speed를 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/SpeedUp"));
         SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("스킬 쿨타임 감소", "스킬 쿨타임이 10% 감소한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        SetSkillsInfo("점프력 증가", "점프 높이가 상승한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+        
         SetSkillsInfo("Hp 회복", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Heal"));
 
         SetSkillsInfo("ExpBall", "ExpBall", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
@@ -87,9 +99,10 @@ public class SkillManager : Singleton<SkillManager>
 
         SetSkillsInfo("SizeDown", "SizeDown", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
         SetSkillsInfo("DoubleJump", "DoubleJump", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
-        SetSkillsInfo("SkillHeal", "SkillHeal", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+        SetSkillsInfo("SkillHeal", "SkillHeal", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
         SetSkillsInfo("Teleport", "Teleport", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
         SetSkillsInfo("Shield", "Shield", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
+
         SetSkillsInfo("InvincibilitySkill", "InvincibilitySkill", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
         SetSkillsInfo("Wall", "Wall", Resources.Load<Sprite>("Sprites/SkillSprites/SizeDown"));
         SetSkillsInfo("폰", "폰으로 변신한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
@@ -105,15 +118,16 @@ public class SkillManager : Singleton<SkillManager>
         speedIncrement = 2f;
         onHitInvincibilityTimeIncrement = 1f;
         skillExpIncrement = 1f;
-        downSizeIncrement = 0.8f;
-
+        coolTimeDecrement = 10f;
+        jumpIncrement = 200f;
 
         // 각 패시브 스킬 최대값 초기화
         maxHpLevel = 8;
         maxSpeedLevel = 5;
         maxOnHitInvincibilityTimeLevel = 5;
         maxSkillExpLevel = 5;
-        maxDownSizeLevel = 5;
+        maxCoolTimeLevel = 5;
+        maxJumpLevel = 5;
     }
 
     // 스킬 정보 설정 함수
@@ -174,6 +188,14 @@ public class SkillManager : Singleton<SkillManager>
             case Skills.IncreaseExp:
                 IncreaseSkillExp(maxSkillExpLevel, skillExpIncrement);
                 break;
+            // 증가 스킬
+            case Skills.DecreaseCoolTime:
+                IncreaseSkillExp(maxCoolTimeLevel, coolTimeDecrease);
+                break;
+            // 점프력 증가 스킬
+            case Skills.IncreaseJump:
+                IncreaseSkillExp(maxJumpLevel, jumpIncrement);
+                break;
             // Hp 회복 스킬
             case Skills.Heal:
                 Heal(HealIncrement);
@@ -213,7 +235,7 @@ public class SkillManager : Singleton<SkillManager>
     // 스피드 증가
     public void IncreaseSpeed(int maxLevel, float increment)
     {
-        player.speed = player.speed + speedIncrement;
+        player.speed = player.speed + increment;
 
         skillLevel[(int)Skills.IncreaseSpeed]++;
         // 스킬이 max치가 되면
@@ -234,6 +256,34 @@ public class SkillManager : Singleton<SkillManager>
         if (skillLevel[(int)Skills.IncreaseExp] >= maxLevel)
         {
             isMaxSkillLevel[(int)Skills.IncreaseExp] = true;
+            maxSkillCount++;
+        }
+    }
+
+    // 쿨타임 감소
+    public void DecreaseCoolTime(int maxLevel, float decrement)
+    {
+        player.speed = player.coolTimeDecrement + decrement;
+
+        skillLevel[(int)Skills.DecreaseCoolTime]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.DecreaseCoolTime] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.DecreaseCoolTime] = true;
+            maxSkillCount++;
+        }
+    }
+
+    // 점프력 증가
+    public void IncreaseJump(int maxLevel, float increment)
+    {
+        player.speed = player.jumpPower + increment;
+
+        skillLevel[(int)Skills.IncreaseJump]++;
+        // 스킬이 max치가 되면
+        if (skillLevel[(int)Skills.IncreaseJump] >= maxLevel)
+        {
+            isMaxSkillLevel[(int)Skills.IncreaseJump] = true;
             maxSkillCount++;
         }
     }
@@ -286,34 +336,49 @@ public class SkillManager : Singleton<SkillManager>
         switch (skill)
         {
             case Skills.ExpBall:
+                SkillExpBall(5, 5f);
+                cooltime = 5f;
                 break;
             case Skills.RandomAll:
                 SkillRandomAll(Skills.ExpBall, Skills.Wall);
+                cooltime = 5f;
                 break;
             case Skills.Clone:
+                SkillClone();
+                cooltime = 5f;
                 break;
             case Skills.Bomb:
+                SkillBomb();
+                cooltime = 5f;
                 break;
             case Skills.Dash:
-                SkillDash(100000f);
+                SkillDash(100000f, 1500f);
                 break;
             case Skills.SizeDown:
                 SkillSizeDown(0.5f, 5f);
                 cooltime = 5f;
                 break;
             case Skills.DoubleJump:
+                // 구현 완료
                 break;
             case Skills.SkillHeal:
+                Heal(1);
+                cooltime = 5f;
                 break;
             case Skills.Teleport:
+                SkillTeleport();
+                cooltime = 5f;
                 break;
             case Skills.Shield:
+                SkillShield(1);
                 break;
             case Skills.InvincibilitySkill:
                 SkillInvincibility();
                 cooltime = 5f;
                 break;
             case Skills.Wall:
+                SkillWall(5f);
+                cooltime = 5f;
                 break;
             case Skills.PAWN:
                 ChangeType(PlayerControl.State.PAWN);
@@ -340,12 +405,32 @@ public class SkillManager : Singleton<SkillManager>
         return cooltime;
     }
 
-    public void SkillDash(float power)
+    // 경험치 구슬 스킬
+    public void SkillExpBall(int count, float time)
     {
-        player.rigid.AddForce(player.transform.up * 2000f);
-        player.rigid.AddForce(player.transform.forward * power);
+        ExpBall expBall;
+        for (int i = 0; i<count; i++)
+        {
+            expBall = ObjectPool.Instance.GetObject(3).GetComponent<ExpBall>();
+            StartCoroutine(expBall.ReturnObstacle(time, 3));
+        }
     }
 
+    // 필드 중 랜덤 위치 생성
+    public Vector3 GetRandomPosition()
+    {
+        Vector3 start = transform.TransformDirection(sPos.position);
+        Vector3 end = transform.TransformDirection(ePos.position);
+
+        // 셀 범위 내에서 랜덤한 위치에 공이 생성되고 떨어짐
+        float x = Random.Range(start.x - 5, end.x + 5);
+        float z = Random.Range(start.z - 5, end.z + 5);
+
+        int posX = (int)x / 5 * 5;
+        int posZ = (int)z / 5 * 5;
+
+        return new Vector3(posX, HEIGHT, posZ);
+    }
 
     // ??? 스킬
     public void SkillRandomAll(Skills start, Skills end)
@@ -358,6 +443,29 @@ public class SkillManager : Singleton<SkillManager>
 
         ActiveSkill((Skills)random);
     }
+
+    // 분신 소환 스킬
+    public void SkillClone()
+    {
+        Clone.transform.position = player.transform.position;
+        Clone.SetActive(true);
+    }
+
+    // 탄막 터뜨리기
+    public void SkillBomb()
+    {
+        player.BombEffect.transform.position = player.transform.position;
+        player.BombEffect.Play();
+    }
+
+    // 대쉬 스킬
+    public void SkillDash(float xPower, float yPower)
+    {
+        player.rigid.AddForce(player.transform.forward * xPower);
+        player.rigid.AddForce(player.transform.up * yPower);
+    }
+
+    // 소소화
     public void SkillSizeDown(float increment, float duration)
     {
         float x = player.gameObject.transform.localScale.x;
@@ -365,20 +473,39 @@ public class SkillManager : Singleton<SkillManager>
         float z = player.gameObject.transform.localScale.z;
         Vector3 origin = new Vector3(x, y, z);
 
-        player.gameObject.transform.localScale = origin * increment;
-        StartCoroutine(DurationSizeDown(duration, origin));
+        StartCoroutine(DurationSizeDown(origin, increment, duration));
     }
-    public IEnumerator DurationSizeDown(float duration, Vector3 origin)
+
+    // 소소화 지속 시간
+    public IEnumerator DurationSizeDown(Vector3 origin, float increment, float duration)
     {
         float time = 0f;
         while (time < duration)
         {
+            if (time < 1f)
+                player.transform.localScale = Vector3.Lerp(origin * increment, origin
+                    , Time.fixedDeltaTime);
             time += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
         player.gameObject.transform.localScale = origin;
     }
 
+    // 텔레포트 스킬
+    public void SkillTeleport()
+    {
+
+    }
+
+    // 쉴드 스킬
+    public void SkillShield(int maxCount)
+    {
+        player.shieldCount++;
+        if (player.shieldCount > maxCount)
+            player.shieldCount = maxCount;
+        Renderer mesh = player.GetComponentInChildren<MeshRenderer>();
+        mesh.material.color = Color.yellow;
+    }
 
     // 무적 스킬
     public void SkillInvincibility()
@@ -387,6 +514,47 @@ public class SkillManager : Singleton<SkillManager>
         StartCoroutine(player.Invincibility(player.skillInvincibilityTime));
     }
 
+    // 벽 세우기 스킬
+    public void SkillWall(float time)
+    {
+        float directX = player.transform.forward.x;
+        float directZ = player.transform.forward.z;
+
+        int posX = (int)player.transform.position.x / 5 * 5;
+        int posZ = (int)player.transform.position.z / 5 * 5;
+
+
+        if (-0.5f <= directX && directX <= 0.5f)
+        {
+            if(directZ >= 0.5f)
+                posZ += 10;
+            else if(directZ <= -0.5f)
+                posZ -= 10;
+
+            Wall.transform.eulerAngles = new Vector3(0, 90f, 0);
+        }
+        else if (-0.5f <= directZ && directZ <= 0.5f)
+        {
+            if(directX >= 0.5f)
+                posX += 10;
+            else if (directX <= -0.5f)
+                posX -= 10;
+
+            Wall.transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+
+        Wall.transform.position = new Vector3(posX, sPos.position.y + 5f, posZ);
+        Wall.SetActive(true);
+        Invoke("RemoveWall", time);
+    }
+
+    // 벽 없애기(Invoke 용)
+    public void RemoveWall()
+    {
+        Wall.SetActive(false);
+    }
+
+    //변신
     public void ChangeType(PlayerControl.State state)
     {
         int index = (int)state;
@@ -401,8 +569,8 @@ public class SkillManager : Singleton<SkillManager>
             pCollider.sharedMesh = model;
 
             player.state = (PlayerControl.State)index;
-            changeEffect.transform.position = player.transform.position;
-            changeEffect.Play();
+            player.changeEffect.transform.position = player.transform.position;
+            player.changeEffect.Play();
         }
     }
 
