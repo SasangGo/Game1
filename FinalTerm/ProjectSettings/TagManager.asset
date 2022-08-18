@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - ExpBall
-  - Bullet
   - Wall
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -17,9 +17,9 @@ TagManager:
   - 
   - 
   - Ground
-  - Projectile
+  - Invincibility
   - Player
-  - 
+  - Projectile
   - 
   - 
   - 

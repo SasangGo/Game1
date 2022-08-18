@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 public abstract class ABoss : MonoBehaviour
 {
+    [SerializeField] Material originColor;
+    [SerializeField] Material damagedColor;
     protected int health;
     protected int speed;
+    protected int cntHealth;
     protected Transform target;// 타겟
     protected Rigidbody rigid;
+    protected int action;
+    protected MeshRenderer mesh;
+    protected int[] dirX = { 1, 1, -1, -1 };
+    protected int[] dirZ = { -1, 1, 1, -1 };
 
     // 인식 타겟 방향
     private const int FRONT = -180;
@@ -14,10 +21,10 @@ public abstract class ABoss : MonoBehaviour
     private const int LEFT = -90;
     private const int BACK = 0;
     private const int OFFSETY = -5;
+    private const float ERORR_FIX_DELAY = 0.5F;
 
+    private Animator anim;
     //방향 도움 배열 변수
-    protected int[] dirX = { 1, 1, -1, -1 };
-    protected int[] dirZ = { -1, 1, 1, -1 };
 
     //이동 방향 리스트를 담는 배열
     protected List<Vector3Int> moveList = new List<Vector3Int>();
@@ -27,19 +34,23 @@ public abstract class ABoss : MonoBehaviour
     {
         idle,trace,attack,dead
     }
-    BossState bossState = BossState.idle;
+    protected BossState bossState = BossState.idle;
     protected virtual void Start()
     {
+        mesh = GetComponent<MeshRenderer>();
         rigid = GetComponent<Rigidbody>();
-
+        anim = GetComponent<Animator>();
         //3초마다 타겟 쫓아감
-        Invoke("UpdateTarget", 3);
+        InvokeRepeating("UpdateTarget", 0.5f, 1);
+        InvokeRepeating("OnAction", 3, 3);
+        
     }
 
     // Update is called once per frame
     protected virtual void Update()
     {
         if (target == null) return;
+        Rotate(target.position);
     }
     protected virtual void UpdateTarget()
     {
@@ -52,7 +63,6 @@ public abstract class ABoss : MonoBehaviour
             {
                 //타겟을 발견하면 Trace()
                 target = newTarget.transform;
-                Trace(target.position);
                 return;
             }
         }
@@ -63,6 +73,7 @@ public abstract class ABoss : MonoBehaviour
     {
         // 보스를 추적 상태로 바꿈
         bossState = BossState.trace;
+        anim.SetBool("Trace", true);
     }
     // 보스 움직임 액션
     protected IEnumerator MovingAction(Vector3 movePos)
@@ -70,25 +81,32 @@ public abstract class ABoss : MonoBehaviour
 
         // 중력을 꺼둬 Slerp에 방해되지 않게 함
         rigid.useGravity = false;
-        while(Vector3.Distance(transform.position,movePos) > 0.5f)
+        float cnt = 0;
+        while(Vector3.Distance(transform.position,movePos) > 0.5f && cnt < ERORR_FIX_DELAY)
         {
+            cnt += Time.deltaTime;
             transform.position = Vector3.Slerp(transform.position, movePos, 0.1f);
             yield return null;
-            Debug.Log("실행중");
         }
         transform.position = movePos;
         rigid.useGravity = true;
-        Debug.Log("이동종료");
+        bossState = BossState.idle;
+        anim.SetBool("Trace", false);
         Invoke("UpdateTarget", 3);
     }
 
     // 이동 방향을 바라보도록 회전
-    protected virtual void Rotate()
+    protected virtual void Rotate(Vector3 location)
     {
-        if (target == null) return;
-        Vector3 pos = new Vector3(target.position.x, 0, target.position.z);
-        Quaternion newRot = Quaternion.LookRotation(pos.normalized);
-        rigid.rotation = Quaternion.Slerp(rigid.rotation, newRot, Time.deltaTime * speed);
+        if (target == null || bossState != BossState.trace) return;
+        if (location == Vector3.zero) return;
+        location = new Vector3(location.x, 0, location.z);
+        Quaternion dir = Quaternion.LookRotation(location).normalized;
+        Vector3 v = dir.eulerAngles;
+        dir = Quaternion.Euler(new Vector3(v.x, v.y, v.z));
+        rigid.rotation = Quaternion.Lerp(rigid.rotation, dir, 1f) ;
+        Debug.Log("회전");
+
     }
 
     // 현재위치에서 가로 x칸 세로 z칸 만큼 이동
@@ -123,12 +141,53 @@ public abstract class ABoss : MonoBehaviour
         return new Vector3Int(Mathf.RoundToInt(fixedPos.x/5)*5, OFFSETY, Mathf.RoundToInt(fixedPos.z/5)*5);
     }
 
+    protected virtual void OnAction()
+    { }
+
     //이동할 위치에 땅이 있는지 체크
     protected bool CheckIsGround(Vector3 pos)
     {
-        Collider[] hit = Physics.OverlapBox(pos, new Vector3(1, 1, 1), Quaternion.identity, LayerMask.GetMask("Ground"));
-        Debug.Log(hit.Length);
-        if (hit.Length > 0) return true;
+        if (Physics.Raycast(pos+Vector3.up,Vector3.down,Mathf.Infinity,LayerMask.GetMask("Ground"))) return true;
         else return false;
+    }
+    protected virtual void OnDamaged(Vector3 pos)
+    {
+        cntHealth--;
+        if (cntHealth <= 0) Die();
+        else
+        {
+            StartCoroutine(DamagedEffect(2f));
+        }
+    }
+    protected virtual IEnumerator DamagedEffect(float time)
+    {
+        gameObject.layer = 9;
+        while (time-- > 0)
+        {
+            mesh.material.color = damagedColor.color;
+            yield return new WaitForSeconds(0.5f);
+            mesh.material.color = originColor.color;
+            yield return new WaitForSeconds(0.5f);
+        }
+        gameObject.layer = 0;
+        float percent = (health - cntHealth) / (float)health;
+        mesh.material.color = Color.Lerp(originColor.color, damagedColor.color, percent);
+    }
+    protected virtual void OnCollisionEnter(Collision collision)
+    {
+        PlayerControl player = collision.collider.GetComponent<PlayerControl>();
+        if (player == null) return;
+        if(collision.GetContact(0).normal.y < -0.5f) 
+        {
+            OnDamaged(collision.GetContact(0).point);
+        }
+    }
+    protected virtual void Die()
+    {
+        gameObject.layer = 9;
+        bossState = BossState.dead;
+        anim.SetBool("Dead", true);
+        CancelInvoke();
+        Destroy(gameObject, 2f);
     }
 }
