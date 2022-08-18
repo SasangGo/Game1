@@ -242,7 +242,8 @@ public class PlayerControl : MonoBehaviour
         else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)
             exp = maxExp;
         // 스킬 선택창 띄우기
-        GameManager.Instance.ActivateSkillChoicePanel(true);
+        GameManager.Instance.SetSkillPanels();
+        GameManager.Instance.ActivePanel(GameManager.Instance.skillChoicePanel, true);
         SoundManager.Instance.StopSound(SoundManager.Instance.playerAudioSource);
         SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.LevelUpSound);
     }

@@ -7,6 +7,7 @@ public class TurretPattern : APattern
     [SerializeField] GameObject turret;
     [SerializeField] GameObject shotPoint;
     [SerializeField] GameObject player;
+    [SerializeField] GameObject clone;
 
     private const float PHASETIME = 10f;
     private Vector3 bulletRot;
@@ -30,7 +31,11 @@ public class TurretPattern : APattern
     private void ShootBullet()
     {
         GameObject bullet = ObjectPool.Instance.GetObject(0);
-        bulletRot = player.transform.position;
+        if(clone.activeSelf)
+            bulletRot = clone.transform.position;
+        else
+            bulletRot = player.transform.position;
+
         bullet.transform.position = shotPoint.transform.position;
         bulletRot.y = shotPoint.transform.position.y;
         bullet.transform.LookAt(bulletRot);

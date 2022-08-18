@@ -42,6 +42,7 @@ public class SkillManager : Singleton<SkillManager>
     [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
     [SerializeField] PlayerControl player; // player의 정보를 가지고 오기 위한 변수
     [SerializeField] GameObject Clone;
+    [SerializeField] GameObject Wall;
     [SerializeField] MeshFilter[] types;    
 
     private const float HEIGHT = -7f;
@@ -65,7 +66,7 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         GetActiveSkill(Skills.Clone);
-        GetActiveSkill(Skills.SkillHeal);
+        GetActiveSkill(Skills.Wall);
 
     }
 
@@ -333,7 +334,7 @@ public class SkillManager : Singleton<SkillManager>
                 cooltime = 5f;
                 break;
             case Skills.Wall:
-                SkillWall();
+                SkillWall(5f);
                 cooltime = 5f;
                 break;
             case Skills.PAWN:
@@ -381,8 +382,6 @@ public class SkillManager : Singleton<SkillManager>
         // 셀 범위 내에서 랜덤한 위치에 공이 생성되고 떨어짐
         float x = Random.Range(start.x - 5, end.x + 5);
         float z = Random.Range(start.z - 5, end.z + 5);
-
-        Vector3 offset = transform.TransformDirection(sPos.position);
 
         int posX = (int)x / 5 * 5;
         int posZ = (int)z / 5 * 5;
@@ -465,7 +464,6 @@ public class SkillManager : Singleton<SkillManager>
         mesh.material.color = Color.yellow;
     }
 
-
     // 무적 스킬
     public void SkillInvincibility()
     {
@@ -474,11 +472,46 @@ public class SkillManager : Singleton<SkillManager>
     }
 
     // 벽 세우기 스킬
-    public void SkillWall()
+    public void SkillWall(float time)
     {
+        float directX = player.transform.forward.x;
+        float directZ = player.transform.forward.z;
 
+        int posX = (int)player.transform.position.x / 5 * 5;
+        int posZ = (int)player.transform.position.z / 5 * 5;
+
+
+        if (-0.5f <= directX && directX <= 0.5f)
+        {
+            if(directZ >= 0.5f)
+                posZ += 10;
+            else if(directZ <= -0.5f)
+                posZ -= 10;
+
+            Wall.transform.eulerAngles = new Vector3(0, 90f, 0);
+        }
+        else if (-0.5f <= directZ && directZ <= 0.5f)
+        {
+            if(directX >= 0.5f)
+                posX += 10;
+            else if (directX <= -0.5f)
+                posX -= 10;
+
+            Wall.transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+
+        Wall.transform.position = new Vector3(posX, sPos.position.y + 5f, posZ);
+        Wall.SetActive(true);
+        Invoke("RemoveWall", time);
     }
 
+    // 벽 없애기(Invoke 용)
+    public void RemoveWall()
+    {
+        Wall.SetActive(false);
+    }
+
+    //변신
     public void ChangeType(PlayerControl.State state)
     {
         int index = (int)state;

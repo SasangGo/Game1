@@ -14,8 +14,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] Text resultText;
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject optionPanel;
-    [SerializeField] GameObject skillChoicePanel;
+    [SerializeField] GameObject AchievementPanel;
+    [SerializeField] public GameObject skillChoicePanel;
     [SerializeField] public GameObject[] skillPanel;
+    [SerializeField] public GameObject[] AchieveItem;
     [SerializeField] public Text[] skillPanelHeadText;
     [SerializeField] public Text[] skillPanelInfoText;
     [SerializeField] public Image[] skillPanelImage;
@@ -49,13 +51,18 @@ public class GameManager : Singleton<GameManager>
         // GameOver함수에서 timeScale이 0이 된 경우 방지
         Time.timeScale = 1f;
 
-        StartCoroutine(StartGame());
+        //StartCoroutine(StartGame());
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            ActiveOptionPanel();
+        {
+            if(AchievementPanel.activeSelf)
+                ActivePanel(AchievementPanel, !AchievementPanel.activeSelf);
+            else
+                ActivePanel(optionPanel, !optionPanel.activeSelf);
+        }
 
         LevelBarUpdate();
     }
@@ -117,36 +124,59 @@ public class GameManager : Singleton<GameManager>
         CancelInvoke(); // 모든 함수 종료
     }
     // 게임 재시작
-    public void ReStartGame()
+    public void ClickReStartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
     }
     // 게임 나가기
-    public void ExitGame()
+    public void ClickExitGame()
     {
         SceneManager.LoadScene(STARTSCENENUMBER);
     }
     // optiomButtom 클릭 이벤트
-    public void OptionButton()
+    public void ClickOptionButton()
     {
-        ActiveOptionPanel();
+        ActivePanel(optionPanel, !optionPanel.activeSelf);
+        if(AchievementPanel.activeSelf)
+            AchievementPanel.SetActive(false);
+    }
+    // AchieveButton 클릭 이벤트
+    public void ClickAchievementButton()
+    {
+        ActivePanel(AchievementPanel, !AchievementPanel.activeSelf);
+        if (optionPanel.activeSelf)
+            optionPanel.SetActive(false);
     }
 
-    // 옵션 창 띄우기
-    private void ActiveOptionPanel()
+    // 캔슬 버튼 클릭 이벤트
+    public void ClickCancleButton(string button)
     {
-        if (!optionPanel.activeSelf)
+        switch (button)
         {
-            optionPanel.gameObject.SetActive(true);
+            case "Option":
+                ActivePanel(optionPanel, !optionPanel.activeSelf);
+                break;
+            case "Achievement":
+                ActivePanel(AchievementPanel, !AchievementPanel.activeSelf);
+                break;
+        }
+    }
+
+    public void ActivePanel(GameObject panel, bool togleActive)
+    {
+        if (togleActive)
+        {
             joystick.UseJoystick(false);
-            Time.timeScale = 0f;
+            panel.SetActive(true);
+
+            Time.timeScale = 0;
         }
         else
         {
-            optionPanel.gameObject.SetActive(false);
             joystick.UseJoystick(true);
-            // 게임 오버 상태 체크 : 게임 오버 후 움직이번 안되니께
+            panel.SetActive(false);
+
             if (!isGameOver)
                 Time.timeScale = 1f;
         }
@@ -186,24 +216,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    // 레벨 업 할 때 스킬 선택창 띄우기
-    public void ActivateSkillChoicePanel(bool isAcive)
-    {
-        if (isAcive)
-        {
-            joystick.UseJoystick(false);
-            Time.timeScale = 0;
-            SetSkillPanels();
-            skillChoicePanel.SetActive(true);
-        }
-        else
-        {
-            joystick.UseJoystick(true);
-            Time.timeScale = 1;
-            skillChoicePanel.SetActive(false);
-        }
-    }
-
     // 스킬 패널 세팅
     public void SetSkillPanels()
     {
@@ -228,7 +240,7 @@ public class GameManager : Singleton<GameManager>
     {
         // 스킬매니저에서 선택한 스킬을 적용함
         SkillManager.Instance.ChoiceSkillApply((SkillManager.Skills)randomSkillNumbers[skillIndex]);
-        ActivateSkillChoicePanel(false);
+        ActivePanel(skillChoicePanel, false);
         SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.SkillGetSound);
     }
 
@@ -241,6 +253,15 @@ public class GameManager : Singleton<GameManager>
     public void ShowLeftCoolTime(int index, float currentCoolTime, float maxCoolTime)
     {
         activeSkillCoolTimeImage[index].fillAmount = currentCoolTime / maxCoolTime;
+    }
+
+    public void SetAchieveItem(int index, Achievement achieve)
+    {
+        Text[] texts = AchieveItem[index].GetComponentsInChildren<Text>();
+
+        texts[0].text = achieve.achieveTitle;
+        texts[1].text = achieve.achieveExplane + "\n";
+        texts[2].text = "\n" + achieve.achieveEffect;
     }
 
     // 스코어 기록 함수
