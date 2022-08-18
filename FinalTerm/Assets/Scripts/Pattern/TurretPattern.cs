@@ -6,14 +6,10 @@ public class TurretPattern : APattern
 {
     [SerializeField] GameObject turret;
     [SerializeField] GameObject shotPoint;
-<<<<<<< HEAD
     [SerializeField] float attackRange;
     [SerializeField] int amountRandomBullet;
-=======
     [SerializeField] GameObject player;
     [SerializeField] GameObject clone;
->>>>>>> feature/SkillSystem
-
     private const float PHASETIME = 10f;
     private Vector3 bulletRot;
     private Transform target;
@@ -39,15 +35,11 @@ public class TurretPattern : APattern
     {
         if (target == null) return;
         GameObject bullet = ObjectPool.Instance.GetObject(0);
-<<<<<<< HEAD
         bulletRot = target.position;
-=======
         if(clone.activeSelf)
             bulletRot = clone.transform.position;
         else
             bulletRot = player.transform.position;
-
->>>>>>> feature/SkillSystem
         bullet.transform.position = shotPoint.transform.position;
         bulletRot.y = shotPoint.transform.position.y;
         bullet.transform.LookAt(bulletRot);
