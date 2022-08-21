@@ -15,6 +15,9 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject optionPanel;
     [SerializeField] GameObject AchievementPanel;
+    [SerializeField] public GameObject AchievePopUpPanel;
+    [SerializeField] Text PopUpAchieveText;
+    [SerializeField] Image PopUpAchieveImage;
     [SerializeField] public GameObject skillChoicePanel;
     [SerializeField] public GameObject[] skillPanel;
     [SerializeField] public GameObject[] AchieveItem;
@@ -130,6 +133,7 @@ public class GameManager : Singleton<GameManager>
     // 게임 오버
     public void GameOver()
     {
+        DataManager.Instance.SaveAchieve();
         Debug.Log("게임오버");
         gameOverPanel.gameObject.SetActive(true);
         resultText.text = Mathf.CeilToInt(Score) + "초";
@@ -270,17 +274,43 @@ public class GameManager : Singleton<GameManager>
         activeSkillCoolTimeImage[index].fillAmount = currentCoolTime / maxCoolTime;
     }
 
-    public void SetAchieveItem(int index, Achievement achieve)
+    public void SetAchieveItem(Achievement achieve)
     {
-        Text[] texts = AchieveItem[index].GetComponentsInChildren<Text>();
-        Image[] image = AchieveItem[index].GetComponentsInChildren<Image>();
+        Text[] texts = AchieveItem[achieve.index].GetComponentsInChildren<Text>();
+        Image[] image = AchieveItem[achieve.index].GetComponentsInChildren<Image>();
 
         texts[0].text = achieve.achieveTitle;
-        texts[1].text = achieve.achieveExplane;
-        texts[2].text = "효과 : " + achieve.achieveEffect;
-        image[3].sprite = AchieveManager.Instance.AchieveImageList[index];
+        if (achieve.isAchieve)
+        {
+            texts[1].text = achieve.achieveExplane;
+            texts[2].text = "효과 : " + achieve.achieveEffect;
+            image[3].sprite = AchieveManager.Instance.achieveImageList[achieve.index];
+        }
+        else
+        {
+            texts[1].text = "???";
+            texts[2].text = "효과 : ???";
+            image[3].sprite = AchieveManager.Instance.noAchieveSprite;
+
+        }
     }
 
+    public void PopUpAchieve(Achievement achieve)
+    {
+        PopUpAchieveText.text = achieve.achieveTitle;
+        PopUpAchieveImage.sprite = AchieveManager.Instance.achieveImageList[achieve.index];
+
+        AchievePopUpPanel.SetActive(true);
+
+        StopCoroutine(PopDownAchieve());
+        StartCoroutine(PopDownAchieve());
+    }
+
+    public IEnumerator PopDownAchieve()
+    {
+        yield return new WaitForSecondsRealtime(3f);
+        AchievePopUpPanel.SetActive(false);
+    }
     // 스코어 기록 함수
     private void RecordScore()
     {

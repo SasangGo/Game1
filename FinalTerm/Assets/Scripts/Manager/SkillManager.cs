@@ -59,6 +59,12 @@ public class SkillManager : Singleton<SkillManager>
     void Start()
     {
         InitSkill();
+        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxOnHit].isAchieve) maxOnHitInvincibilityTimeLevel += 1;
+        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxSpeed].isAchieve) maxSpeedLevel += 1;
+        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxExpSkill].isAchieve) maxSkillExpLevel += 1;
+        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxCoolTime].isAchieve) maxCoolTimeLevel += 1;
+        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxJump].isAchieve) maxJumpLevel += 1;
+
         totalSkillsCount = (int)Skills.Heal + 1;
 
         ActSkillIndex = 0;
@@ -157,7 +163,7 @@ public class SkillManager : Singleton<SkillManager>
         List<int> randomNum = new List<int>();
 
         // Max치가 정해져 있는 스킬들이 Max상태 일 경우
-        if (totalSkillsCount - maxSkillCount == 1)
+        if (totalSkillsCount - maxSkillCount <= 1)
         {
             for (int i = 0; i < N; i++)
                 randomNum.Add((int)Skills.Heal);
@@ -169,7 +175,7 @@ public class SkillManager : Singleton<SkillManager>
         for (int i = 0; i < N; i++)
         {
             // List에 포함되 있는지, 뽑은 스킬이 이미 Max인지 체크 해서 제외시키기
-            while (randomNum.Contains(temp) || isMaxSkillLevel[temp])
+            while (randomNum.Contains(temp) || isMaxSkillLevel[temp] || (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxHp].isAchieve && temp == (int)Skills.Heal))
                 temp = Random.Range(0, totalSkillsCount);
 
             randomNum.Add(temp);
@@ -201,11 +207,11 @@ public class SkillManager : Singleton<SkillManager>
                 break;
             // 증가 스킬
             case Skills.DecreaseCoolTime:
-                IncreaseSkillExp(maxCoolTimeLevel, coolTimeDecrease);
+                DecreaseCoolTime(maxCoolTimeLevel, coolTimeDecrease);
                 break;
             // 점프력 증가 스킬
             case Skills.IncreaseJump:
-                IncreaseSkillExp(maxJumpLevel, jumpIncrement);
+                IncreaseJump(maxJumpLevel, jumpIncrement);
                 break;
             // Hp 회복 스킬
             case Skills.Heal:
@@ -225,6 +231,10 @@ public class SkillManager : Singleton<SkillManager>
         {
             isMaxSkillLevel[(int)Skills.IncreaseMaxHp] = true;
             maxSkillCount++;
+            if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxHp].isAchieve)
+            {
+                AchieveManager.Instance.AchieveMaxHp();
+            }
         }
         GameManager.Instance.HpImageUpdate();
     }
@@ -238,8 +248,15 @@ public class SkillManager : Singleton<SkillManager>
         // 스킬이 max치가 되면
         if (skillLevel[(int)Skills.IncreaseInvincibilityTime] >= maxLevel)
         {
-            isMaxSkillLevel[(int)Skills.IncreaseInvincibilityTime] = true;
-            maxSkillCount++;
+            if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxOnHit].isAchieve)
+            {
+                AchieveManager.Instance.AchieveMaxOnHit();
+            }
+            else
+            {
+                isMaxSkillLevel[(int)Skills.IncreaseInvincibilityTime] = true;
+                maxSkillCount++;
+            }
         }
     }
 
@@ -252,8 +269,15 @@ public class SkillManager : Singleton<SkillManager>
         // 스킬이 max치가 되면
         if (skillLevel[(int)Skills.IncreaseSpeed] >= maxLevel)
         {
-            isMaxSkillLevel[(int)Skills.IncreaseSpeed] = true;
-            maxSkillCount++;
+            if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxSpeed].isAchieve)
+            {
+                AchieveManager.Instance.AchieveMaxSpeed();
+            }
+            else
+            {
+                isMaxSkillLevel[(int)Skills.IncreaseSpeed] = true;
+                maxSkillCount++;
+            }
         }
     }
 
@@ -266,8 +290,15 @@ public class SkillManager : Singleton<SkillManager>
         // 스킬이 max치가 되면
         if (skillLevel[(int)Skills.IncreaseExp] >= maxLevel)
         {
-            isMaxSkillLevel[(int)Skills.IncreaseExp] = true;
-            maxSkillCount++;
+            if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxExpSkill].isAchieve)
+            {
+                AchieveManager.Instance.AchieveMaxExpSkill();
+            }
+            else
+            {
+                isMaxSkillLevel[(int)Skills.IncreaseExp] = true;
+                maxSkillCount++;
+            }
         }
     }
 
@@ -280,22 +311,36 @@ public class SkillManager : Singleton<SkillManager>
         // 스킬이 max치가 되면
         if (skillLevel[(int)Skills.DecreaseCoolTime] >= maxLevel)
         {
-            isMaxSkillLevel[(int)Skills.DecreaseCoolTime] = true;
-            maxSkillCount++;
+            if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxCoolTime].isAchieve)
+            {
+                AchieveManager.Instance.AchieveMaxCoolTime();
+            }
+            else
+            {
+                isMaxSkillLevel[(int)Skills.DecreaseCoolTime] = true;
+                maxSkillCount++;
+            }
         }
     }
 
     // 점프력 증가
     public void IncreaseJump(int maxLevel, float increment)
     {
-        player.speed = player.jumpPower + increment;
+        player.jumpPower = player.jumpPower + increment;
 
         skillLevel[(int)Skills.IncreaseJump]++;
         // 스킬이 max치가 되면
         if (skillLevel[(int)Skills.IncreaseJump] >= maxLevel)
         {
-            isMaxSkillLevel[(int)Skills.IncreaseJump] = true;
-            maxSkillCount++;
+            if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxJump].isAchieve)
+            {
+                AchieveManager.Instance.AchieveMaxJump();
+            }
+            else
+            {
+                isMaxSkillLevel[(int)Skills.IncreaseJump] = true;
+                maxSkillCount++;
+            }
         }
     }
 

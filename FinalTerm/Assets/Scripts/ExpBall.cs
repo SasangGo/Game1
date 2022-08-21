@@ -8,7 +8,7 @@ public class ExpBall : AObstacle
     public float time = 0;
     public int exp = 5;
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
         base.OnEnable();
         transform.position = SkillManager.Instance.GetRandomPosition();

@@ -60,9 +60,10 @@ public class PlayerControl : MonoBehaviour
         maxHp = 3;
         hp = maxHp;
         maxLevel = 30;
+        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve) maxLevel += 10;
         level = 1;
         shieldCount = 0;
-        maxExp = 5f;
+        maxExp = 3f;
         exp = 0;
         speed = 20f;
         skillExp = 0;
@@ -80,11 +81,15 @@ public class PlayerControl : MonoBehaviour
 
     private void Update()
     {
-        if(level < maxLevel) // 레벨이 최대치에 도달했는지 체크
+        if (level < maxLevel) // 레벨이 최대치에 도달했는지 체크
         {
             GetExp(0.25f);
             if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
                 LevelUp();
+        }
+        else if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve)
+        {
+            AchieveManager.Instance.AchieveMaxLevel();
         }
     }
 
@@ -241,7 +246,7 @@ public class PlayerControl : MonoBehaviour
         if (level < maxLevel)
         {
             exp = exp - maxExp;
-            maxExp = maxExp * 1.15f + level;
+            //maxExp = maxExp * 1.15f + level;
             Debug.Log("MaxExp : " + maxExp);
         }
         else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)
