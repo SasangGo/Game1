@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 87.5, y: -24}
-  m_SizeDelta: {x: 530, y: 108}
+  m_AnchoredPosition: {x: 87.5, y: -51}
+  m_SizeDelta: {x: 530, y: 54}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1791789435539261045
 CanvasRenderer:
@@ -68,16 +68,16 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 617e0f4288c4b3645aa23c21a4137dcf, type: 3}
     m_FontSize: 30
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 3
-    m_MaxSize: 125
+    m_BestFit: 1
+    m_MinSize: 25
+    m_MaxSize: 30
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 1
-    m_VerticalOverflow: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\n\uD6A8\uACFC : \uCD5C\uB300 \uB808\uBCA8\uC774 10\uC99D\uAC00\uD55C\uB2E4."
+  m_Text: "\uD6A8\uACFC : \uCD5C\uB300 \uB808\uBCA8\uC774 10\uC99D\uAC00\uD55C\uB2E4."
 --- !u!1 &1791789436705933578
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,14 +146,14 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 617e0f4288c4b3645aa23c21a4137dcf, type: 3}
     m_FontSize: 40
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 4
-    m_MaxSize: 125
+    m_BestFit: 1
+    m_MinSize: 25
+    m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 1
-    m_VerticalOverflow: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\uB0B4\uAC00.. \uB9CC\uB819?"
 --- !u!1 &1791789437000077518
@@ -343,8 +343,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 87.5, y: -24}
-  m_SizeDelta: {x: 530, y: 108}
+  m_AnchoredPosition: {x: 87.5, y: 3}
+  m_SizeDelta: {x: 530, y: 54}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1791789437251534225
 CanvasRenderer:
@@ -377,17 +377,17 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 617e0f4288c4b3645aa23c21a4137dcf, type: 3}
     m_FontSize: 30
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 3
-    m_MaxSize: 125
+    m_BestFit: 1
+    m_MinSize: 25
+    m_MaxSize: 30
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 1
-    m_VerticalOverflow: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\uCD5C\uB300 \uB808\uBCA8\uC744 \uB2EC\uC131\uD55C \uC790\uC5D0\uAC8C
-    \uC8FC\uB294 \uC5C5\uC801\n"
+    \uC8FC\uB294 \uC5C5\uC801"
 --- !u!1 &3033406007381586062
 GameObject:
   m_ObjectHideFlags: 0

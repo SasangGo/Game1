@@ -55,7 +55,7 @@ public class GameManager : Singleton<GameManager>
         // GameOver함수에서 timeScale이 0이 된 경우 방지
         Time.timeScale = 1f;
 
-        //StartCoroutine(StartGame());
+        StartCoroutine(StartGame());
     }
 
     private void Update()
@@ -276,8 +276,8 @@ public class GameManager : Singleton<GameManager>
         Image[] image = AchieveItem[index].GetComponentsInChildren<Image>();
 
         texts[0].text = achieve.achieveTitle;
-        texts[1].text = achieve.achieveExplane + "\n";
-        texts[2].text = "\n" + achieve.achieveEffect;
+        texts[1].text = achieve.achieveExplane;
+        texts[2].text = "효과 : " + achieve.achieveEffect;
         image[3].sprite = AchieveManager.Instance.AchieveImageList[index];
     }
 

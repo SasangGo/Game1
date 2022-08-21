@@ -75,15 +75,13 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         GetActiveSkill(Skills.RandomAll);
-        GetActiveSkill(Skills.Teleport);
+        GetActiveSkill(Skills.Bomb);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        debugText2.text = "" + (player.transform.forward*10);
-
         if (isTeleportInvokeEnd)
         {
             isTeleportInvokeEnd = false;
@@ -456,7 +454,7 @@ public class SkillManager : Singleton<SkillManager>
         {
             random = Random.Range((int)start, (int)end + 1);
         } while (random == (int)Skills.RandomAll);
-
+        debugText2.text = "" + (Skills)random;
         ActiveSkill((Skills)random);
     }
 
@@ -527,6 +525,7 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         player.gameObject.layer = 9;
+        player.rigid.isKinematic = true;
         teleportPoint.SetActive(true);
         isTeleport = true;
         Invoke("TeleportEnd", time);
@@ -546,6 +545,7 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         player.gameObject.layer = 10;
+        player.rigid.isKinematic = false;
         player.transform.position = teleportPoint.transform.position;
         isTeleport = false;
         teleportPoint.SetActive(false);

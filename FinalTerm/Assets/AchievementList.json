@@ -1,0 +1,16 @@
+{
+    "achieveTitle": "내가 만렙..?",
+    "achieveExplane": "플레이어 최대 레벨 달성 할 때 주는 업적",
+    "achieveEffect": "플레이어 최대 레벨이 10 상승한다.",
+    "isAchieve": true
+}{
+    "achieveTitle": "아프니까 청춘이다!",
+    "achieveExplane": "피격무적 시간 증가 스킬 최대 레벨을 달성 할 때 주는 업적",
+    "achieveEffect": "피격무적 시간 증가 스킬 최대 레벨이 1 상승한다.",
+    "isAchieve": false
+}{
+    "achieveTitle": "그건 제.. 잔상입니다만?",
+    "achieveExplane": "스피드 증가 스킬 최대 레벨을 달성 할 때 주는 업적",
+    "achieveEffect": "스피드 증가 스킬 최대 레벨이 1 상승한다.",
+    "isAchieve": false
+}

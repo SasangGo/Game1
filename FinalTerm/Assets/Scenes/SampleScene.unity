@@ -1230,7 +1230,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &108962831
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9715,6 +9715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f45993566bb7b044b066385551861da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AchieveList: []
   AchieveImageList: []
   player: {fileID: 787391706}
 --- !u!4 &1016814608 stripped
@@ -20742,6 +20743,7 @@ GameObject:
   - component: {fileID: 1693272067}
   - component: {fileID: 1693272069}
   - component: {fileID: 1693272068}
+  - component: {fileID: 1693272070}
   m_Layer: 0
   m_Name: BombEffect
   m_TagString: Untagged
@@ -21078,7 +21080,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 4.5
+      scalar: 10
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -25448,6 +25450,18 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &1693272070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693272066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c96f290984fc34cae9fe431171a119, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1696122436
 GameObject:
   m_ObjectHideFlags: 0
