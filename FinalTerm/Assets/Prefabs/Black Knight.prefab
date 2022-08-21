@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4167981206909836442}
   - component: {fileID: 4167981206909836443}
   - component: {fileID: 1769106892}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Black Knight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,7 +130,10 @@ MonoBehaviour:
   damagedColor: {fileID: 2100000, guid: 5e223f03cc8897f4687e4d1f3f35af05, type: 2}
   sPos: {fileID: 0}
   ePos: {fileID: 0}
-  rushEffect: {fileID: 0}
+  rushEffect: {fileID: 5964354542819732913}
+  pawnPrefab: {fileID: 1507265831186944045, guid: 95d1c1e9ea3d0d44d878cc5d23a4ca46,
+    type: 3}
+  amountOfPawn: 10
 --- !u!95 &1769106892
 Animator:
   serializedVersion: 3
@@ -167,7 +170,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1144653143083275971
 Transform:
   m_ObjectHideFlags: 0
@@ -190,8 +193,8 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9090397636156582424}
   serializedVersion: 6
-  lengthInSec: 5
-  simulationSpeed: 1
+  lengthInSec: 3
+  simulationSpeed: 3
   stopAction: 0
   cullingMode: 3
   ringBufferMode: 0
@@ -265,7 +268,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -318,7 +321,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3
+      scalar: 2
       minScalar: 5
       maxCurve:
         serializedVersion: 2

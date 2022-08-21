@@ -5,6 +5,9 @@ public abstract class ABoss : MonoBehaviour
 {
     [SerializeField] Material originColor;
     [SerializeField] Material damagedColor;
+    [SerializeField] protected Transform sPos;
+    [SerializeField] protected Transform ePos;
+
     protected int health;
     protected int speed;
     protected int cntHealth;
@@ -13,10 +16,9 @@ public abstract class ABoss : MonoBehaviour
     protected Rigidbody rigid;
     protected int action;
     protected MeshRenderer mesh;
-    protected int[] dx = { 5, 5, -5, -5 };
-    protected int[] dz = { -5, 5, 5, -5 };
+    protected int[] dx = { 1, 1, -1, -1 };
+    protected int[] dz = { -1, 1, 1, -1 };
 
-    protected const int OFFSETY = -6;
     // 인식 타겟 방향
     private const int FRONT = -180;
     private const int RIGHT = 90;
@@ -25,8 +27,6 @@ public abstract class ABoss : MonoBehaviour
     private const float ERORR_FIX_DELAY = 0.5F;
 
     private Animator anim;
-    //방향 도움 배열 변수
-
     //이동 방향 리스트를 담는 배열
     protected List<Vector3Int> moveList = new List<Vector3Int>();
 
@@ -36,21 +36,22 @@ public abstract class ABoss : MonoBehaviour
         idle,trace,attack,dead
     }
     protected BossState bossState = BossState.idle;
-    protected virtual void Start()
+    protected virtual void OnEnable()
     {
         mesh = GetComponent<MeshRenderer>();
         rigid = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         direction = 0;
-        //3초마다 타겟 쫓아감
-        InvokeRepeating("UpdateTarget", 0.5f, 1);
-        Invoke("OnAction", 3);
         
     }
 
-    // Update is called once per frame
     protected virtual void Update()
     {
+        if (bossState == BossState.dead) return;
+        if (transform.position.y < GameManager.Instance.DEADLINE)
+        {
+            Die();
+        }
         if (target == null) return;
         Rotate(target.position);
     }
@@ -111,8 +112,10 @@ public abstract class ABoss : MonoBehaviour
         // 중력을 꺼둬 Slerp에 방해되지 않게 함
         rigid.useGravity = false;
         float cnt = 0;
+        Debug.Log(movePos);
         while(Vector3.Distance(transform.position,movePos) > 0.5f && cnt < ERORR_FIX_DELAY)
         {
+            Debug.Log(cnt);
             cnt += Time.deltaTime;
             transform.position = Vector3.Slerp(transform.position, movePos, 0.1f);
             yield return null;
@@ -120,7 +123,7 @@ public abstract class ABoss : MonoBehaviour
         transform.position = movePos;
         rigid.useGravity = true;
         bossState = BossState.idle;
-        anim.SetBool("Trace", false);
+        if(anim != null)anim.SetBool("Trace", false);
     }
 
     // 이동 방향을 바라보도록 회전
@@ -136,17 +139,23 @@ public abstract class ABoss : MonoBehaviour
     // 현재위치에서 가로 x칸 세로 z칸 만큼 이동
     protected virtual Vector3Int GetMovePosition(int x, int z)
     {
+        int offset = GameManager.Instance.CELL_OFFSET_Y;
         Vector3 fixedPos = transform.position;
-        fixedPos = new Vector3(fixedPos.x + dx[direction] *x, OFFSETY, fixedPos.z + dz[direction] * z);
+        int cell = GameManager.Instance.CELL_SIZE;
+       fixedPos = new Vector3(fixedPos.x + dx[direction] * x * cell, offset, fixedPos.z + dz[direction] * z * cell);
         return ConvertCellPos(fixedPos);
     }
     protected virtual Vector3Int ConvertCellPos(Vector3 origin)
     {
-        return new Vector3Int(Mathf.RoundToInt(origin.x / 5) * 5, OFFSETY, Mathf.RoundToInt(origin.z / 5) * 5);
+        int offset = GameManager.Instance.CELL_OFFSET_Y;
+        int cell = GameManager.Instance.CELL_SIZE;
+        return new Vector3Int(Mathf.RoundToInt(origin.x / cell) * cell, offset, Mathf.RoundToInt(origin.z / cell) * cell);
     }
 
     protected virtual void OnAction()
-    { }
+    {
+        bossState = BossState.attack;
+    }
 
     //해당 위치로 이동할 수 있는지 확인
     protected bool CheckCanMove(Vector3 pos)
@@ -193,12 +202,12 @@ public abstract class ABoss : MonoBehaviour
             OnDamaged(collision.GetContact(0).point);
         }
     }
-    protected virtual void Die()
+    protected void Die()
     {
         gameObject.layer = 9;
         bossState = BossState.dead;
-        anim.SetBool("Dead", true);
+        if(anim != null) anim.SetBool("Dead", true);
         CancelInvoke();
-        Destroy(gameObject, 2f);
+        Destroy(gameObject, 2);
     }
 }

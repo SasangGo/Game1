@@ -5,26 +5,42 @@ using UnityEngine;
 public class Boss_Knight : ABoss
 {
     [SerializeField] ParticleSystem rushEffect;
+    [SerializeField] GameObject pawnPrefab;
+    [SerializeField] float rushDelay = 3f;
+    [SerializeField] int amountOfPawn = 10;
+
+    private float rushTime = 0;
+    private const int spawnOffsetX = -15;
     // 기본적인 정보
-    protected override void Start()
+    protected override void OnEnable()
     {
-        base.Start();
+        base.OnEnable();
+        InvokeRepeating("UpdateTarget", 0.5f, 1);
+        Invoke("OnAction", 3);
         speed = 50;
         health = 4;
         cntHealth = 2;
     }
     protected override void Update()
     {
+        rushTime += Time.deltaTime;
         if (target == null) return;
         Rotate(target.position);
 
         if (bossState != BossState.idle) return;
+
+
         Vector3Int targetPos = ConvertCellPos(target.position);
         if (ConvertCellPos(transform.position).x == targetPos.x
             || ConvertCellPos(transform.position).z == targetPos.z)
         {
-            Vector3 dir = (targetPos - ConvertCellPos(transform.position));
-            StartCoroutine(Rush((dir.normalized)));
+            // rushTime 마다 한번씩만 발동하도록 설정
+            if (rushTime > rushDelay)
+            {
+                rushTime = 0;
+                Vector3 dir = (targetPos - ConvertCellPos(transform.position));
+                StartCoroutine(Rush((dir.normalized)));
+            }
         }
     }
     protected override void Trace(Vector3 pos)
@@ -66,6 +82,7 @@ public class Boss_Knight : ABoss
                 }
                 break;
             case 1:
+                SpawnPawn();
                 break;
         }
         Invoke("OnAction", 3);
@@ -85,5 +102,32 @@ public class Boss_Knight : ABoss
         rushEffect.gameObject.SetActive(false);
         Invoke("OnAction", 3);
         InvokeRepeating("UpdateTarget", 0.5f, 1);
+    }
+    private void SpawnPawn()
+    {
+        int index = Random.Range(0, 4);
+        int sPosX = GameManager.Instance.MAP_START_X;
+        int sPosZ = GameManager.Instance.MAP_START_Z;
+        int ePosX = GameManager.Instance.MAP_END_X;
+        int ePosZ = GameManager.Instance.MAP_END_Z;
+        int offsetY = GameManager.Instance.CELL_OFFSET_Y;
+        int temp = 0;
+
+        for (int i = 0; i < amountOfPawn; i++)
+        {
+            GameObject pawn = Instantiate(pawnPrefab);
+            if (index == 0)
+                pawn.transform.position = ConvertCellPos(new Vector3(sPosX+ spawnOffsetX + temp, offsetY, sPosZ));
+            else if (index == 1)
+                pawn.transform.position = ConvertCellPos(new Vector3(sPosX + spawnOffsetX, offsetY, sPosZ+temp));
+            else if (index == 2)
+                pawn.transform.position = ConvertCellPos(new Vector3(sPosX + spawnOffsetX + temp, offsetY, ePosZ));
+            else
+                pawn.transform.position = ConvertCellPos(new Vector3(ePosX + spawnOffsetX, offsetY, sPosZ + temp));
+
+            pawn.transform.Rotate(Vector3.up, 90 * index);
+            temp += 5;
+        }
+        bossState = BossState.idle;
     }
 }

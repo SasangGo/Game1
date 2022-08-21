@@ -5,7 +5,18 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
+
 {
+    // 변하지 않아야 할 상수값들을 게임매니저에 정의해두고 사용
+    public int MAP_START_X { get; private set; } = -10;
+    public int MAP_START_Z { get; private set; } = -20;
+    public int MAP_END_X { get; private set; } = 35;
+    public int MAP_END_Z { get; private set; } = 25;
+    public int CELL_SIZE { get; private set; } = 5;
+    public int CELL_OFFSET_Y { get; private set; } = -6;
+
+    public int DEADLINE { get; private set; } = -17;
+
     public bool isPhaseEnd; //페이즈 체크
     public bool isGameOver; // 게임오버 체크
     public float Score { get; private set; } // 스코어
