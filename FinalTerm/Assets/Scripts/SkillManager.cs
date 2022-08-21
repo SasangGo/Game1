@@ -75,14 +75,14 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         GetActiveSkill(Skills.RandomAll);
-        GetActiveSkill(Skills.Teleport);
+        //GetActiveSkill(Skills.Teleport);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        debugText2.text = "" + (player.transform.forward*10);
+        //debugText2.text = "" + (player.transform.forward*10);
 
         if (isTeleportInvokeEnd)
         {

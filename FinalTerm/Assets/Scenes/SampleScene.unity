@@ -2964,7 +2964,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 1.22e-43}
+  m_BoundingSphereOverride: {x: -1, y: 4, z: 5, w: -5}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -5590,8 +5590,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f92a847df7fcbb449a0e33e4d40ea8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1884937077}
+  target:
+  - {fileID: 1884937077}
   topOffsetY: 30
+  topOffsetX: 0
+  topOffsetZ: -25
 --- !u!81 &557452584
 AudioListener:
   m_ObjectHideFlags: 0
@@ -6102,6 +6105,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2b5152543a71c843bb63e56a81259aa, type: 3}
+--- !u!198 &598219239 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5964354542819732913, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+    type: 3}
+  m_PrefabInstance: {fileID: 3222617444842055198}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &598753006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23612,6 +23621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugText: {fileID: 1192998044}
+  debugText2: {fileID: 0}
   skillNames: []
   skill_Info: []
   skillSprites: []
@@ -23623,6 +23633,10 @@ MonoBehaviour:
   skillLevel: 
   totalSkillsCount: 0
   maxSkillCount: 0
+  isTeleport: 0
+  isTeleportInvokeEnd: 0
+  teleportButtonIndex: 0
+  teleportCoolTime: 0
   HpIncrement: 0
   HealIncrement: 0
   speedIncrement: 0
@@ -23640,8 +23654,9 @@ MonoBehaviour:
   sPos: {fileID: 1518154135}
   ePos: {fileID: 714735642}
   player: {fileID: 787391706}
-  Clone: {fileID: 636846067}
-  Wall: {fileID: 390900718}
+  clone: {fileID: 636846067}
+  wall: {fileID: 390900718}
+  teleportPoint: {fileID: 0}
   types:
   - {fileID: 1461271879}
   - {fileID: 771111951}
@@ -31002,31 +31017,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2b5152543a71c843bb63e56a81259aa, type: 3}
---- !u!1 &1769106885 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1544362688469334663, guid: 67ff638d39dc8a240a6b00f3f261a68c,
-    type: 3}
-  m_PrefabInstance: {fileID: 3222617444842055198}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &1769106892
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769106885}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 70da7893cd41ef74f936042e32ce83e9, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!4 &1769385078 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8774601468721322398, guid: 00441b2c828373942a6a2ab19e228384,
@@ -35241,7 +35231,7 @@ PrefabInstance:
     - target: {fileID: 2067166179664973076, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 7.1
       objectReference: {fileID: 0}
     - target: {fileID: 2067166179664973076, guid: 67a2fbe8ddc3ece49b055b63e79146aa,
         type: 3}
@@ -35384,11 +35374,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1544362688469068867, guid: 67ff638d39dc8a240a6b00f3f261a68c,
         type: 3}
-      propertyPath: m_LocalScale.y
-      value: 4.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1544362688469068867, guid: 67ff638d39dc8a240a6b00f3f261a68c,
-        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -35400,7 +35385,7 @@ PrefabInstance:
     - target: {fileID: 1544362688469068867, guid: 67ff638d39dc8a240a6b00f3f261a68c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 1544362688469068867, guid: 67ff638d39dc8a240a6b00f3f261a68c,
         type: 3}
@@ -35441,6 +35426,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Black Knight
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167981206909836443, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: rushEffect
+      value: 
+      objectReference: {fileID: 598219239}
+    - target: {fileID: 5964354542819732913, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5964354542819732913, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: simulationSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5964354542819732913, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5964354542819732913, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090397636156582424, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67ff638d39dc8a240a6b00f3f261a68c, type: 3}

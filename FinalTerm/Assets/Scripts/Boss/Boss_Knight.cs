@@ -4,14 +4,28 @@ using UnityEngine;
 
 public class Boss_Knight : ABoss
 {
-    private const int OFFSET = 0;    
+    [SerializeField] ParticleSystem rushEffect;
     // 기본적인 정보
     protected override void Start()
     {
         base.Start();
-        speed = 5;
+        speed = 50;
         health = 4;
-        cntHealth = 1;
+        cntHealth = 2;
+    }
+    protected override void Update()
+    {
+        if (target == null) return;
+        Rotate(target.position);
+
+        if (bossState != BossState.idle) return;
+        Vector3Int targetPos = ConvertCellPos(target.position);
+        if (ConvertCellPos(transform.position).x == targetPos.x
+            || ConvertCellPos(transform.position).z == targetPos.z)
+        {
+            Vector3 dir = (targetPos - ConvertCellPos(transform.position));
+            StartCoroutine(Rush((dir.normalized)));
+        }
     }
     protected override void Trace(Vector3 pos)
     {
@@ -25,8 +39,10 @@ public class Boss_Knight : ABoss
         {
             int idx = Random.Range(0, moveList.Count);
             // 배열 중 이동 가능한 장소가 있으면 MovingAction을 실행하여 이동
-            if (CheckIsGround(moveList[idx]))
+            if (CheckCanMove(moveList[idx]))
             {
+                Debug.Log("움직임");
+
                 StartCoroutine(MovingAction(moveList[idx]));
                 break;
             }
@@ -41,7 +57,7 @@ public class Boss_Knight : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = Random.Range(0, 1);
+        action = Random.Range(0, 2);
         switch (action)
         {
             case 0:
@@ -49,6 +65,25 @@ public class Boss_Knight : ABoss
                     if (target != null) Trace(target.position);
                 }
                 break;
+            case 1:
+                break;
         }
+        Invoke("OnAction", 3);
+    }
+    private IEnumerator Rush(Vector3 dir)
+    {
+        bossState = BossState.attack;
+        CancelInvoke();
+        rushEffect.gameObject.SetActive(true);
+        while (CheckCanMove(ConvertCellPos(transform.position + dir)))
+        {
+            transform.Translate(dir * Time.deltaTime * speed);
+            yield return null;
+        }
+        transform.position = ConvertCellPos(transform.position);
+        bossState = BossState.idle;
+        rushEffect.gameObject.SetActive(false);
+        Invoke("OnAction", 3);
+        InvokeRepeating("UpdateTarget", 0.5f, 1);
     }
 }
