@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class SkillBomb : MonoBehaviour
 {
+    public float speed = 5f;
+    public GameObject effect;
 
-    void OnParticleCollision(GameObject other)
+    private void Update()
     {
-
-        SkillManager.Instance.debugText.text = "s"; 
-        if (other.gameObject.tag == "Bullet")
+        if (transform.localScale.x < 40f)
+            transform.localScale += new Vector3(speed, speed, speed) * Time.deltaTime;
+        else
         {
-            SkillManager.Instance.debugText.text = "ss";
-            AObstacle obj = other.GetComponent<AObstacle>();
-            StartCoroutine(obj.ReturnObstacle(0, obj.Index));
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            effect.SetActive(false);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        SkillManager.Instance.debugText.text = other.gameObject.tag;
+        if(other.gameObject.tag == "Bullet")
+        {
+            AObstacle obstacle = other.GetComponent<AObstacle>();
+            StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
         }
     }
 }

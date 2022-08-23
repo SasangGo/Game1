@@ -397,7 +397,7 @@ public class SkillManager : Singleton<SkillManager>
                 break;
             case Skills.Bomb:
                 SkillBomb();
-                cooltime = 5f;
+                cooltime = 0.5f;
                 break;
             case Skills.Dash:
                 SkillDash(100000f, 1500f);
@@ -506,6 +506,7 @@ public class SkillManager : Singleton<SkillManager>
     public void SkillBomb()
     {
         player.BombEffect.transform.position = player.transform.position;
+        player.BombEffect.gameObject.SetActive(true);
         player.BombEffect.Play();
     }
 
