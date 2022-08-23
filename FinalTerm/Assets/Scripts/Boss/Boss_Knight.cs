@@ -5,12 +5,15 @@ using UnityEngine;
 public class Boss_Knight : ABoss
 {
     [SerializeField] ParticleSystem rushEffect;
+    [SerializeField] ParticleSystem diveEffect;
     [SerializeField] GameObject pawnPrefab;
     [SerializeField] float rushDelay = 3f;
     [SerializeField] int amountOfPawn = 10;
 
     private float rushTime = 0;
     private const int spawnOffsetX = -15;
+    private const float divePower = 100f;
+    private int diveY = 20;
     // 기본적인 정보
     protected override void OnEnable()
     {
@@ -73,7 +76,8 @@ public class Boss_Knight : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = Random.Range(0, 2);
+        action = 2;
+        //action = Random.Range(0, 2);
         switch (action)
         {
             case 0:
@@ -84,8 +88,10 @@ public class Boss_Knight : ABoss
             case 1:
                 SpawnPawn();
                 break;
+            case 2:
+                if (target != null) StartCoroutine(Dive(target.position));
+                break;
         }
-        Invoke("OnAction", 3);
     }
     private IEnumerator Rush(Vector3 dir)
     {
@@ -129,5 +135,30 @@ public class Boss_Knight : ABoss
             temp += 5;
         }
         bossState = BossState.idle;
+    }
+    private IEnumerator Dive(Vector3 location)
+    {
+        rigid.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
+        yield return new WaitForSeconds(2f);
+
+        location = ConvertCellPos(location) + Vector3.up * diveY;
+        transform.position = location;
+        rigid.velocity = Vector3.zero;
+        rigid.AddForce(Vector3.down * divePower/2f, ForceMode.VelocityChange);
+        Ray ray = new Ray(transform.position, Vector3.down);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity,LayerMask.GetMask("Ground")))
+        {
+            Cell cell = hit.collider.GetComponent<Cell>();
+            if(cell != null)
+            {
+                cell.ChangeColor(cell.hazardColor);
+                yield return new WaitWhile(() => Vector3.Distance(transform.position, cell.transform.position) > 3.3f);
+                //땅과 부딪힐 시
+                cell.ChangeColor(cell.originColor);
+                diveEffect.Play();
+
+            }
+        }
     }
 }
