@@ -12,7 +12,6 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] public ParticleSystem BombEffect;
     [SerializeField] GameObject[] checkPoints;
 
-    private const float DEADLINE = -17f;
     private Animator anim;
     public bool isDoubleJump;
     public Rigidbody rigid;
@@ -99,7 +98,7 @@ public class PlayerControl : MonoBehaviour
 
         //물리작용이므로 FixedUpdated에서 관리
         Move();
-        if (transform.position.y < DEADLINE)
+        if (transform.position.y < GameManager.Instance.DEADLINE)
         {
             OnDamaged();
             Respawn();
@@ -287,6 +286,11 @@ public class PlayerControl : MonoBehaviour
         {
             AObstacle obstacle = obj.GetComponent<AObstacle>();
             StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
+        }
+        //Layer == 12 -> Enemy
+        else if(collision.gameObject.layer == 12)
+        { 
+            OnDamaged();
         }
     }
 

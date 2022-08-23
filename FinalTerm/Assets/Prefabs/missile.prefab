@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 410854343067813543}
   - component: {fileID: 1214229218914098814}
   - component: {fileID: 6800391466629896484}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 3079943551087871314}
   - component: {fileID: 6395051834740087991}
   - component: {fileID: 5446304241362774052}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.008"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 6179790432583019003}
   - component: {fileID: 4549084742957337556}
   - component: {fileID: 3339227939885274015}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.007"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 7752390383375128687}
   - component: {fileID: 7348583420692435879}
   - component: {fileID: 7878862571485034182}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.006"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 4944307147686390545}
   - component: {fileID: 6923995066227657181}
   - component: {fileID: -7223122332615772527}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: missile
   m_TagString: Bullet
   m_Icon: {fileID: 0}
@@ -494,7 +494,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5967628229348598822}
   - component: {fileID: 697468816684269618}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -587,7 +587,7 @@ GameObject:
   - component: {fileID: 8557036777023994690}
   - component: {fileID: 7869415466546409110}
   - component: {fileID: 4716013132847833210}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -666,7 +666,7 @@ GameObject:
   - component: {fileID: 4997282437537807420}
   - component: {fileID: 929790047655354937}
   - component: {fileID: 5078591438540541079}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.005"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -745,7 +745,7 @@ GameObject:
   - component: {fileID: 4907654141730887130}
   - component: {fileID: 7289199624510163297}
   - component: {fileID: 7549563444755559951}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.002"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -824,7 +824,7 @@ GameObject:
   - component: {fileID: 7100315667737971591}
   - component: {fileID: 2378149989562136037}
   - component: {fileID: 118207337481840844}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.003"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -903,7 +903,7 @@ GameObject:
   - component: {fileID: 4387700376928513545}
   - component: {fileID: 776993699513986108}
   - component: {fileID: 4806419383413567473}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.001"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -982,7 +982,7 @@ GameObject:
   - component: {fileID: 780462168403985376}
   - component: {fileID: 5865666305753007005}
   - component: {fileID: 6840985320304894756}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: "\uD050\uBE0C.004"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1061,7 +1061,7 @@ GameObject:
   - component: {fileID: 4410341764647363797}
   - component: {fileID: 7328528555571078529}
   - component: {fileID: 7530901088677641748}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: body.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
