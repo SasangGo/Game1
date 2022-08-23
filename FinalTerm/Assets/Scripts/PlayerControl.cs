@@ -110,6 +110,7 @@ public class PlayerControl : MonoBehaviour
         if (SkillManager.Instance.isTeleport)
             return;
 
+        SkillManager.Instance.debugText.text = "Move";
         float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
         float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
 

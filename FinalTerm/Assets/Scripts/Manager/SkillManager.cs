@@ -10,41 +10,33 @@ public class SkillManager : Singleton<SkillManager>
     // 스킬의 Index
     public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
+    // 스킬 세팅
     public List<string> skillNames; // 스킬 이름을 담는 List
     public List<string> skill_Info; // 스킬의 정보를 담는 List
     public List<Sprite> skillSprites; // 스킬의 이미지를 담는 List
 
     public Skills[] actSkillButtonNumber; // 엑티브 스킬 버튼 i번째에 담긴 스킬 정보
     public int ActSkillIndex; // 엑티브 스킬 버튼 인덱스
-    public int transformSkillIndex; // 엑티브 스킬 버튼 인덱스
+    public int transformSkillIndex; // 변신 스킬 버튼 인덱스
 
     public bool[] isGetTransformSkill; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
     public bool[] isMaxSkillLevel; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
     public int[] skillLevel; // 각 스킬들 레벨을 체크하는 배열
     public int totalSkillsCount; // 이 게임에 존재하는 Skill 개수 변수
     public int maxSkillCount; // Max가 된 스킬들이 몇개인지 체크하기 위한 변수
+
+    // 텔레포트 관련 변수
     public bool isTeleport;
     public bool isTeleportInvokeEnd;
     public int teleportButtonIndex;
     public float teleportCoolTime;
 
     // 각 패시브 스킬 증가량
-    public int HpIncrement;
-    public int HealIncrement;
-    public float speedIncrement;
-    public float coolTimeDecrease;
-    public float onHitInvincibilityTimeIncrement;
-    public float skillExpIncrement;
-    public float coolTimeDecrement;
-    public float jumpIncrement;
+    public int HpIncrement, HealIncrement;
+    public float speedIncrement, coolTimeDecrease, onHitInvincibilityTimeIncrement, skillExpIncrement, jumpIncrement;
 
     // 각 패시브 스킬 최대값
-    public int maxHpLevel;
-    public int maxSpeedLevel;
-    public int maxSkillExpLevel;
-    public int maxOnHitInvincibilityTimeLevel;
-    public int maxCoolTimeLevel;
-    public int maxJumpLevel;
+    public int maxHpLevel, maxSpeedLevel, maxSkillExpLevel, maxOnHitInvincibilityTimeLevel, maxCoolTimeLevel, maxJumpLevel;
 
     [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
     [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
@@ -135,7 +127,7 @@ public class SkillManager : Singleton<SkillManager>
         speedIncrement = 2f;
         onHitInvincibilityTimeIncrement = 1f;
         skillExpIncrement = 1f;
-        coolTimeDecrement = 10f;
+        coolTimeDecrease = 10f;
         jumpIncrement = 200f;
 
         // 각 패시브 스킬 최대값 초기화
@@ -205,7 +197,7 @@ public class SkillManager : Singleton<SkillManager>
             case Skills.IncreaseExp:
                 IncreaseSkillExp(maxSkillExpLevel, skillExpIncrement);
                 break;
-            // 증가 스킬
+            // 쿨타임 감소 스킬
             case Skills.DecreaseCoolTime:
                 DecreaseCoolTime(maxCoolTimeLevel, coolTimeDecrease);
                 break;
@@ -305,7 +297,7 @@ public class SkillManager : Singleton<SkillManager>
     // 쿨타임 감소
     public void DecreaseCoolTime(int maxLevel, float decrement)
     {
-        player.speed = player.coolTimeDecrement + decrement;
+        player.coolTimeDecrement = player.coolTimeDecrement + decrement;
 
         skillLevel[(int)Skills.DecreaseCoolTime]++;
         // 스킬이 max치가 되면
@@ -461,7 +453,7 @@ public class SkillManager : Singleton<SkillManager>
                 break;
         }
 
-        return cooltime;
+        return cooltime * (1 - player.coolTimeDecrement / 100);
     }
 
     // 경험치 구슬 스킬
