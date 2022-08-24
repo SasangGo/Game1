@@ -14,6 +14,8 @@ public class Boss_Knight : ABoss
     private const int spawnOffsetX = -15;
     private const float divePower = 100f;
     private int diveY = 20;
+    private const float MIN_DIVE_RANGE = 0.5f;
+    private const float MAX_DIVE_RANGE = 500f;
     // 기본적인 정보
     protected override void OnEnable()
     {
@@ -156,9 +158,38 @@ public class Boss_Knight : ABoss
                 yield return new WaitWhile(() => Vector3.Distance(transform.position, cell.transform.position) > 3.3f);
                 //땅과 부딪힐 시
                 cell.ChangeColor(cell.originColor);
-                diveEffect.Play();
-
+                yield return StartCoroutine(DiveEffect(1.5f));
             }
+        }
+    }
+    private IEnumerator DiveEffect(float t)
+    {
+        diveEffect.Play();
+        float cnt = 0;
+
+        Collider[] hits = new Collider[10]; 
+        float radius = MIN_DIVE_RANGE;
+        while(cnt < t)
+        {
+            Debug.Log("시간");
+            cnt += Time.deltaTime;
+            radius = Mathf.Lerp(radius, MAX_DIVE_RANGE, Time.deltaTime);
+            int num = Physics.OverlapSphereNonAlloc(transform.position, radius, hits, LayerMask.GetMask("Player"));
+            if(num > 0)
+            {
+                for(int i = 0; i < num; i++)
+                {
+                    Rigidbody rigid = hits[i].GetComponent<Rigidbody>();
+                    if (rigid != null && rigid.position.y < -5f)
+                    {
+                        Debug.Log("폭발");
+                        rigid.AddExplosionForce(4000f, transform.position, 1000f, 0.75f);
+                        rigid.GetComponent<PlayerControl>().jumpCount++;
+                        break;
+                    }
+                }
+            }
+            yield return null;
         }
     }
 }

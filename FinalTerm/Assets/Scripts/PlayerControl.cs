@@ -96,6 +96,9 @@ public class PlayerControl : MonoBehaviour
     {
         if (GameManager.Instance.isGameOver) return;
 
+        if (Input.GetKeyDown(KeyCode.Space))
+            Jump();
+
         //물리작용이므로 FixedUpdated에서 관리
         Move();
         if (transform.position.y < GameManager.Instance.DEADLINE)
