@@ -31391,6 +31391,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 305151142016981973, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: m_Name
+      value: HitBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 305151142016981973, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: m_TagString
+      value: Damagable
+      objectReference: {fileID: 0}
     - target: {fileID: 1544362688469068867, guid: 67ff638d39dc8a240a6b00f3f261a68c,
         type: 3}
       propertyPath: m_RootOrder
@@ -31514,7 +31524,7 @@ PrefabInstance:
     - target: {fileID: 3222617444317050555, guid: 67ff638d39dc8a240a6b00f3f261a68c,
         type: 3}
       propertyPath: simulationSpeed
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3222617444317050557, guid: 67ff638d39dc8a240a6b00f3f261a68c,
         type: 3}
@@ -31536,7 +31546,18 @@ PrefabInstance:
       propertyPath: diveEffect
       value: 
       objectReference: {fileID: 29534000}
-    m_RemovedComponents: []
+    - target: {fileID: 4340669802575117814, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6022074392689353885, guid: 67ff638d39dc8a240a6b00f3f261a68c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.75
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 2624367337672114220, guid: 67ff638d39dc8a240a6b00f3f261a68c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 67ff638d39dc8a240a6b00f3f261a68c, type: 3}
 --- !u!1001 &4581784225700407403
 PrefabInstance:

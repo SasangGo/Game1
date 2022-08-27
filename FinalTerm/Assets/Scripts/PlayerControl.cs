@@ -297,7 +297,6 @@ public class PlayerControl : MonoBehaviour
             ABoss enemy = obj.GetComponent<ABoss>();
             if (collision.collider.CompareTag("Damagable"))
             {
-                Debug.Log("데미지");
                 enemy.OnDamaged(Vector3.zero);
                 rigid.AddForce(Vector3.up * REBOUND, ForceMode.VelocityChange);
             }

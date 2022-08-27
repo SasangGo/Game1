@@ -7,6 +7,7 @@ TagManager:
   - ExpBall
   - Wall
   - Bullet
+  - Damagable
   layers:
   - Default
   - TransparentFX

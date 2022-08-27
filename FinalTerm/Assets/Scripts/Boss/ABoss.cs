@@ -189,7 +189,7 @@ public abstract class ABoss : MonoBehaviour
             mesh.material.color = originColor.color;
             yield return new WaitForSeconds(0.5f);
         }
-        gameObject.layer = 0;
+        gameObject.layer = 12;
         float percent = (health - cntHealth) / (float)health;
         mesh.material.color = Color.Lerp(originColor.color, damagedColor.color, percent);
     }

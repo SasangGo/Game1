@@ -15,7 +15,7 @@ public class Boss_Knight : ABoss
     private const float divePower = 100f;
     private int diveY = 20;
     private const float MIN_DIVE_RANGE = 0.5f;
-    private const float MAX_DIVE_RANGE = 500f;
+    private const float MAX_DIVE_RANGE = 100f;
     // 기본적인 정보
     protected override void OnEnable()
     {
@@ -77,7 +77,7 @@ public class Boss_Knight : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = Random.Range(0, 2);
+        action = Random.Range(0, 3);
         switch (action)
         {
             case 0:
@@ -96,15 +96,16 @@ public class Boss_Knight : ABoss
     }
     private IEnumerator Rush(Vector3 dir)
     {
+        if (dir == Vector3.zero) yield break;
         bossState = BossState.attack;
         CancelInvoke();
         rushEffect.gameObject.SetActive(true);
         while (CheckCanMove(ConvertCellPos(transform.position + dir)))
         {
-            transform.Translate(dir * Time.deltaTime * speed);
+            transform.Translate(speed * Time.deltaTime * dir);
             yield return null;
         }
-        transform.position = ConvertCellPos(transform.position);
+        transform.position = ConvertCellPos(transform.position - dir);
         bossState = BossState.idle;
         rushEffect.gameObject.SetActive(false);
         Invoke("OnAction", 3);
@@ -140,7 +141,10 @@ public class Boss_Knight : ABoss
     private IEnumerator Dive(Vector3 location)
     {
         rigid.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
+        // 보스 추락 방지
+        if (!CheckCanMove(location)) location = transform.position;
         location = ConvertCellPos(location) + Vector3.up * diveY;
+
         rigid.velocity = Vector3.zero;
         Ray ray = new Ray(location, Vector3.down);
         RaycastHit hit;
@@ -153,6 +157,7 @@ public class Boss_Knight : ABoss
                 yield return new WaitForSeconds(2f);
                 cell.ChangeColor(cell.originColor);
                 transform.position = location;
+
                 rigid.AddForce(Vector3.down * divePower * 2f, ForceMode.VelocityChange);
                 yield return new WaitWhile(() => Vector3.Distance(transform.position, cell.transform.position) > 3.3f);
                 yield return StartCoroutine(DiveEffect(1.5f));
@@ -177,10 +182,10 @@ public class Boss_Knight : ABoss
                 for(int i = 0; i < num; i++)
                 {
                     Rigidbody rigid = hits[i].GetComponent<Rigidbody>();
-                    if (rigid != null && rigid.position.y < -5f)
+                    if (rigid != null && rigid.position.y < -5f && rigid.gameObject.layer == 10)
                     {
                         Debug.Log("폭발");
-                        rigid.AddExplosionForce(4000f, transform.position, 1000f, 0f);
+                        rigid.AddExplosionForce(3500f, transform.position, 500f, 0f);
                         rigid.GetComponent<PlayerControl>().jumpCount++;
                         break;
                     }
