@@ -73,13 +73,11 @@ public class Boss_Knight : ABoss
         //리스트가 다 삭제될때까지 이동가능한 곳이 없다면 이동안하고 종료
         //새로운 리스트를 받기위해 리스트 초기화
         moveList.Clear();
-
     }
     protected override void OnAction()
     {
         base.OnAction();
-        action = 2;
-        //action = Random.Range(0, 2);
+        action = Random.Range(0, 2);
         switch (action)
         {
             case 0:
@@ -94,6 +92,7 @@ public class Boss_Knight : ABoss
                 if (target != null) StartCoroutine(Dive(target.position));
                 break;
         }
+        Invoke("OnAction", 3);
     }
     private IEnumerator Rush(Vector3 dir)
     {
@@ -141,23 +140,21 @@ public class Boss_Knight : ABoss
     private IEnumerator Dive(Vector3 location)
     {
         rigid.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
-        yield return new WaitForSeconds(2f);
-
         location = ConvertCellPos(location) + Vector3.up * diveY;
-        transform.position = location;
         rigid.velocity = Vector3.zero;
-        rigid.AddForce(Vector3.down * divePower/2f, ForceMode.VelocityChange);
-        Ray ray = new Ray(transform.position, Vector3.down);
+        Ray ray = new Ray(location, Vector3.down);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity,LayerMask.GetMask("Ground")))
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
         {
             Cell cell = hit.collider.GetComponent<Cell>();
-            if(cell != null)
+            if (cell != null)
             {
                 cell.ChangeColor(cell.hazardColor);
-                yield return new WaitWhile(() => Vector3.Distance(transform.position, cell.transform.position) > 3.3f);
-                //땅과 부딪힐 시
+                yield return new WaitForSeconds(2f);
                 cell.ChangeColor(cell.originColor);
+                transform.position = location;
+                rigid.AddForce(Vector3.down * divePower * 2f, ForceMode.VelocityChange);
+                yield return new WaitWhile(() => Vector3.Distance(transform.position, cell.transform.position) > 3.3f);
                 yield return StartCoroutine(DiveEffect(1.5f));
             }
         }
@@ -183,7 +180,7 @@ public class Boss_Knight : ABoss
                     if (rigid != null && rigid.position.y < -5f)
                     {
                         Debug.Log("폭발");
-                        rigid.AddExplosionForce(4000f, transform.position, 1000f, 0.75f);
+                        rigid.AddExplosionForce(4000f, transform.position, 1000f, 0f);
                         rigid.GetComponent<PlayerControl>().jumpCount++;
                         break;
                     }

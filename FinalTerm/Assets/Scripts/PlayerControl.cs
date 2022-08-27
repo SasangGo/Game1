@@ -12,6 +12,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] public ParticleSystem BombEffect;
     [SerializeField] GameObject[] checkPoints;
 
+    private const float REBOUND = 20F;
     private Animator anim;
     public bool isDoubleJump;
     public Rigidbody rigid;
@@ -51,7 +52,7 @@ public class PlayerControl : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        jumpPower = 2000f;
+        jumpPower = 3000f;
         isDoubleJump = false;
         jumpCount = 0;
 
@@ -280,7 +281,7 @@ public class PlayerControl : MonoBehaviour
     {
         GameObject obj = collision.gameObject;
         if (obj == null) return;
-        if (collision.gameObject.layer == 8)
+        if (obj.layer == 8)
         {
             jumpCount = 0;
             //anim.SetBool("Jump", false);
@@ -290,10 +291,17 @@ public class PlayerControl : MonoBehaviour
             AObstacle obstacle = obj.GetComponent<AObstacle>();
             StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
         }
-        //Layer == 12 -> Enemy
-        else if(collision.gameObject.layer == 12)
-        { 
-            OnDamaged();
+        //layer == 12 -> Enemy
+        else if(obj.layer == 12)
+        {
+            ABoss enemy = obj.GetComponent<ABoss>();
+            if (collision.collider.CompareTag("Damagable"))
+            {
+                Debug.Log("데미지");
+                enemy.OnDamaged(Vector3.zero);
+                rigid.AddForce(Vector3.up * REBOUND, ForceMode.VelocityChange);
+            }
+            else OnDamaged();
         }
     }
 

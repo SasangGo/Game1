@@ -60,7 +60,7 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        phase = 0;
+        phase = 19;
         Score = 0;
         intervalTime = 2f;
         isPhaseEnd = true;

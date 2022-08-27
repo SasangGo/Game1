@@ -170,7 +170,7 @@ public abstract class ABoss : MonoBehaviour
 
         return true;
     }
-    protected virtual void OnDamaged(Vector3 pos)
+    public virtual void OnDamaged(Vector3 pos)
     {
         cntHealth--;
         if (cntHealth <= 0) Die();
@@ -192,15 +192,6 @@ public abstract class ABoss : MonoBehaviour
         gameObject.layer = 0;
         float percent = (health - cntHealth) / (float)health;
         mesh.material.color = Color.Lerp(originColor.color, damagedColor.color, percent);
-    }
-    protected virtual void OnCollisionEnter(Collision collision)
-    {
-        PlayerControl player = collision.collider.GetComponent<PlayerControl>();
-        if (player == null) return;
-        if(collision.GetContact(0).normal.y < -0.5f) 
-        {
-            OnDamaged(collision.GetContact(0).point);
-        }
     }
     protected void Die()
     {
