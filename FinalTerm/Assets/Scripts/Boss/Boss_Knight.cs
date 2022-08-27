@@ -6,6 +6,7 @@ public class Boss_Knight : ABoss
 {
     [SerializeField] ParticleSystem rushEffect;
     [SerializeField] ParticleSystem diveEffect;
+    [SerializeField] ParticleSystem flameEffect;
     [SerializeField] GameObject pawnPrefab;
     [SerializeField] float rushDelay = 3f;
     [SerializeField] int amountOfPawn = 10;
@@ -14,6 +15,7 @@ public class Boss_Knight : ABoss
     private const int spawnOffsetX = -15;
     private const float divePower = 100f;
     private int diveY = 20;
+    private const float RUSHSPEED = 100F;
     private const float MIN_DIVE_RANGE = 0.5f;
     private const float MAX_DIVE_RANGE = 100f;
     // 기본적인 정보
@@ -77,7 +79,8 @@ public class Boss_Knight : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = Random.Range(0, 3);
+        action = 3;
+        //action = Random.Range(0, 4);
         switch (action)
         {
             case 0:
@@ -91,22 +94,27 @@ public class Boss_Knight : ABoss
             case 2:
                 if (target != null) StartCoroutine(Dive(target.position));
                 break;
+            case 3:
+                if (target != null) StartCoroutine(Flame(target.position));
+                break;
         }
-        Invoke("OnAction", 3);
     }
     private IEnumerator Rush(Vector3 dir)
     {
         if (dir == Vector3.zero) yield break;
         bossState = BossState.attack;
+        anim.enabled = false;
         CancelInvoke();
+        Rotate(dir, true);
         rushEffect.gameObject.SetActive(true);
         while (CheckCanMove(ConvertCellPos(transform.position + dir)))
         {
-            transform.Translate(speed * Time.deltaTime * dir);
+            transform.position = Vector3.MoveTowards(transform.position, transform.position + dir, Time.deltaTime * RUSHSPEED);
             yield return null;
         }
         transform.position = ConvertCellPos(transform.position - dir);
         bossState = BossState.idle;
+        anim.enabled = true;
         rushEffect.gameObject.SetActive(false);
         Invoke("OnAction", 3);
         InvokeRepeating("UpdateTarget", 0.5f, 1);
@@ -121,6 +129,7 @@ public class Boss_Knight : ABoss
         int offsetY = GameManager.Instance.CELL_OFFSET_Y;
         int temp = 0;
 
+        if (target != null) Rotate(target.position);
         for (int i = 0; i < amountOfPawn; i++)
         {
             GameObject pawn = Instantiate(pawnPrefab);
@@ -137,9 +146,12 @@ public class Boss_Knight : ABoss
             temp += 5;
         }
         bossState = BossState.idle;
+        Invoke("OnAction", 3);
     }
     private IEnumerator Dive(Vector3 location)
     {
+        bossState = BossState.attack;
+        anim.enabled = false;
         rigid.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
         // 보스 추락 방지
         if (!CheckCanMove(location)) location = transform.position;
@@ -173,7 +185,6 @@ public class Boss_Knight : ABoss
         float radius = MIN_DIVE_RANGE;
         while(cnt < t)
         {
-            Debug.Log("시간");
             cnt += Time.deltaTime;
             radius = Mathf.Lerp(radius, MAX_DIVE_RANGE, Time.deltaTime);
             int num = Physics.OverlapSphereNonAlloc(transform.position, radius, hits, LayerMask.GetMask("Player"));
@@ -184,6 +195,8 @@ public class Boss_Knight : ABoss
                     Rigidbody rigid = hits[i].GetComponent<Rigidbody>();
                     if (rigid != null && rigid.position.y < -5f && rigid.gameObject.layer == 10)
                     {
+                        UpdateTarget();
+                        Rotate(target.position);
                         Debug.Log("폭발");
                         rigid.AddExplosionForce(3500f, transform.position, 500f, 0f);
                         rigid.GetComponent<PlayerControl>().jumpCount++;
@@ -193,5 +206,24 @@ public class Boss_Knight : ABoss
             }
             yield return null;
         }
+        bossState = BossState.idle;
+        anim.enabled = true;
+        Invoke("OnAction", 3);
+    }
+    private IEnumerator Flame(Vector3 location)
+    {
+        bossState = BossState.attack;
+        Vector3 dir = (location - transform.position).normalized;
+        Quaternion newRot = Quaternion.LookRotation(dir);
+        flameEffect.Play();
+        anim.enabled = false;
+        while (flameEffect.isPlaying)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, newRot, Time.deltaTime * speed);
+            yield return null;
+        }
+        anim.enabled = true;
+        bossState = BossState.idle;
+        Invoke("OnAction", 3);
     }
 }

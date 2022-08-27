@@ -16,6 +16,7 @@ public abstract class ABoss : MonoBehaviour
     protected Rigidbody rigid;
     protected int action;
     protected MeshRenderer mesh;
+    protected Animator anim;
     protected int[] dx = { 1, 1, -1, -1 };
     protected int[] dz = { -1, 1, 1, -1 };
 
@@ -26,7 +27,6 @@ public abstract class ABoss : MonoBehaviour
     private const int BACK = 0;
     private const float ERORR_FIX_DELAY = 0.5F;
 
-    private Animator anim;
     //이동 방향 리스트를 담는 배열
     protected List<Vector3Int> moveList = new List<Vector3Int>();
 
@@ -81,27 +81,24 @@ public abstract class ABoss : MonoBehaviour
         if (RIGHT >= angle && angle > BACK)
         {
             direction = 1;
-            Debug.Log("back_Right");
         }
         else if (BACK >= angle && angle > LEFT)
         {
             direction = 2;
-            Debug.Log("Back_left");
         }
         else if (angle <= LEFT && angle > FRONT)
         {
             direction = 3;
-            Debug.Log("Front_Left");
         }
         else
         {
             direction = 0;
-            Debug.Log("front_Right");
         }
     }
     protected virtual void Trace(Vector3 pos)
     {
         // 보스를 추적 상태로 바꿈
+        anim.enabled = true;
         bossState = BossState.trace;
         anim.SetBool("Trace", true);
     }
@@ -112,10 +109,8 @@ public abstract class ABoss : MonoBehaviour
         // 중력을 꺼둬 Slerp에 방해되지 않게 함
         rigid.useGravity = false;
         float cnt = 0;
-        Debug.Log(movePos);
         while(Vector3.Distance(transform.position,movePos) > 0.5f && cnt < ERORR_FIX_DELAY)
         {
-            Debug.Log(cnt);
             cnt += Time.deltaTime;
             transform.position = Vector3.Slerp(transform.position, movePos, 0.1f);
             yield return null;
@@ -123,7 +118,9 @@ public abstract class ABoss : MonoBehaviour
         transform.position = movePos;
         rigid.useGravity = true;
         bossState = BossState.idle;
-        if(anim != null)anim.SetBool("Trace", false);
+        if(anim != null) anim.SetBool("Trace", false);
+        anim.enabled = false;
+        Invoke("OnAction", 3);
     }
 
     // 이동 방향을 바라보도록 회전
@@ -131,9 +128,20 @@ public abstract class ABoss : MonoBehaviour
     {
         if (target == null || bossState != BossState.trace) return;
         if (location == Vector3.zero) return;
-        location = new Vector3(location.x, 0, location.z);
-        Quaternion dir = Quaternion.LookRotation(location).normalized;
-        rigid.rotation = Quaternion.Lerp(rigid.rotation, dir, 1f);
+        location = new Vector3(location.x,GameManager.Instance.CELL_OFFSET_Y, location.z);
+        Vector3 dir = (location - transform.position).normalized;
+        Quaternion newRot = Quaternion.LookRotation(dir);
+        rigid.rotation = Quaternion.Slerp(rigid.rotation, newRot, Time.deltaTime * speed);
+    }
+    protected virtual void Rotate(Vector3 location, bool immediate)
+    {
+        if (target == null || bossState == BossState.dead) return;
+        if (location == Vector3.zero) return;
+        location = new Vector3(location.x, GameManager.Instance.CELL_OFFSET_Y, location.z);
+        Vector3 dir = (location - transform.position).normalized;
+        Quaternion newRot = Quaternion.LookRotation(dir);
+        if (immediate) rigid.rotation = Quaternion.Slerp(rigid.rotation, newRot, 1f);
+        Debug.Log(rigid.rotation);
     }
 
     // 현재위치에서 가로 x칸 세로 z칸 만큼 이동
