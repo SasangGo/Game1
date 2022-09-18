@@ -22,7 +22,7 @@ public class Boss_Knight : ABoss
     protected override void OnEnable()
     {
         base.OnEnable();
-        InvokeRepeating("UpdateTarget", 0.5f, 1);
+        InvokeRepeating("UpdateTarget", 0.1f, 0.25f);
         Invoke("OnAction", 3);
         speed = 50;
         health = 4;
@@ -154,8 +154,14 @@ public class Boss_Knight : ABoss
         anim.enabled = false;
         rigid.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
         // 보스 추락 방지
-        if (!CheckCanMove(location)) location = transform.position;
-        location = ConvertCellPos(location) + Vector3.up * diveY;
+        Ray checkRay = new Ray(location, location - Vector3.down);
+        // 타겟 위치에 땅이 없을 시 (낭떠러지일때)
+        if (!(Physics.Raycast(checkRay, Mathf.Infinity, LayerMask.GetMask("Ground"))))
+        {
+            location = transform.position + Vector3.up * diveY;
+        }
+        // 아닐 시 타겟 위치로 이동
+        else location = ConvertCellPos(location) + Vector3.up * diveY;
 
         rigid.velocity = Vector3.zero;
         Ray ray = new Ray(location, Vector3.down);
