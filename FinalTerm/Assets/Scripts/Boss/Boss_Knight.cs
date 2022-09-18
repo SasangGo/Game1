@@ -175,21 +175,22 @@ public class Boss_Knight : ABoss
                 yield return new WaitForSeconds(2f);
                 cell.ChangeColor(cell.originColor);
                 transform.position = location;
-
                 rigid.AddForce(Vector3.down * divePower * 2f, ForceMode.VelocityChange);
                 yield return new WaitWhile(() => Vector3.Distance(transform.position, cell.transform.position) > 3.3f);
-                yield return StartCoroutine(DiveEffect(1.5f));
+                yield return StartCoroutine(DiveEffect(0.5f));
             }
         }
     }
     private IEnumerator DiveEffect(float t)
     {
         diveEffect.Play();
+        // 셀 위치가 똑같거나 타겟을 못찾으면 방향회전 X(축비틀어짐 방지)
+        if(target != null) Rotate(target.position, true);
         float cnt = 0;
 
         Collider[] hits = new Collider[10]; 
         float radius = MIN_DIVE_RANGE;
-        while(cnt < t)
+        while (cnt < t)
         {
             cnt += Time.deltaTime;
             radius = Mathf.Lerp(radius, MAX_DIVE_RANGE, Time.deltaTime);
@@ -202,9 +203,8 @@ public class Boss_Knight : ABoss
                     if (rigid != null && rigid.position.y < -5f && rigid.gameObject.layer == 10)
                     {
                         UpdateTarget();
-                        Rotate(target.position);
                         Debug.Log("폭발");
-                        rigid.AddExplosionForce(3500f, transform.position, 500f, 0f);
+                        rigid.AddExplosionForce(10000f, transform.position, 500f, 0f);
                         rigid.GetComponent<PlayerControl>().jumpCount++;
                         break;
                     }

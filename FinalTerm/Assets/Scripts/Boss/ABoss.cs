@@ -121,22 +121,25 @@ public abstract class ABoss : MonoBehaviour
         Invoke("OnAction", 3);
     }
 
-    // 이동 방향을 바라보도록 회전
+    // 이동 방향을 바라보도록 자연스럽게 (부드럽게) 회전
     protected virtual void Rotate(Vector3 location)
     {
         if (target == null || bossState != BossState.trace) return;
         if (location == Vector3.zero) return;
         location = new Vector3(location.x,GameManager.Instance.CELL_OFFSET_Y, location.z);
-        Vector3 dir = (location - transform.position).normalized;
+        Vector3 cntPos = new Vector3(transform.position.x, GameManager.Instance.CELL_OFFSET_Y, transform.position.z);
+        Vector3 dir = (location - cntPos).normalized;
         Quaternion newRot = Quaternion.LookRotation(dir);
         rigid.rotation = Quaternion.Slerp(rigid.rotation, newRot, Time.deltaTime * speed);
     }
+    //이동 방향을 곧바로 바라
     protected virtual void Rotate(Vector3 location, bool immediate)
     {
         if (target == null || bossState == BossState.dead) return;
         if (location == Vector3.zero) return;
         location = new Vector3(location.x, GameManager.Instance.CELL_OFFSET_Y, location.z);
-        Vector3 dir = (location - transform.position).normalized;
+        Vector3 cntPos = new Vector3(transform.position.x, GameManager.Instance.CELL_OFFSET_Y, transform.position.z);
+        Vector3 dir = (location - cntPos).normalized;
         Quaternion newRot = Quaternion.LookRotation(dir);
         if (immediate) rigid.rotation = Quaternion.Slerp(rigid.rotation, newRot, 1f);
         Debug.Log(rigid.rotation);
