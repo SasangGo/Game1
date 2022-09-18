@@ -8,7 +8,7 @@ public class Boss_Knight : ABoss
     [SerializeField] ParticleSystem diveEffect;
     [SerializeField] ParticleSystem flameEffect;
     [SerializeField] GameObject pawnPrefab;
-    [SerializeField] float rushDelay = 3f;
+    [SerializeField] float rushDelay = 10f;
     [SerializeField] int amountOfPawn = 10;
 
     private float rushTime = 0;
@@ -79,7 +79,7 @@ public class Boss_Knight : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = 3;
+        action = 2;
         //action = Random.Range(0, 4);
         switch (action)
         {
@@ -213,6 +213,8 @@ public class Boss_Knight : ABoss
     private IEnumerator Flame(Vector3 location)
     {
         bossState = BossState.attack;
+        //y축은 못따라가게 y축 고정
+        location = new Vector3(location.x, GameManager.Instance.CELL_OFFSET_Y,location.z);
         Vector3 dir = (location - transform.position).normalized;
         Quaternion newRot = Quaternion.LookRotation(dir);
         flameEffect.Play();

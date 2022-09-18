@@ -98,9 +98,8 @@ public abstract class ABoss : MonoBehaviour
     protected virtual void Trace(Vector3 pos)
     {
         // 보스를 추적 상태로 바꿈
-        anim.enabled = true;
+        anim.enabled = false;
         bossState = BossState.trace;
-        anim.SetBool("Trace", true);
     }
     // 보스 움직임 액션
     protected IEnumerator MovingAction(Vector3 movePos)
@@ -118,8 +117,7 @@ public abstract class ABoss : MonoBehaviour
         transform.position = movePos;
         rigid.useGravity = true;
         bossState = BossState.idle;
-        if(anim != null) anim.SetBool("Trace", false);
-        anim.enabled = false;
+        anim.enabled = true;
         Invoke("OnAction", 3);
     }
 
