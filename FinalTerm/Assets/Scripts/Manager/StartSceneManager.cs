@@ -9,23 +9,28 @@ public class StartSceneManager : Singleton<StartSceneManager>
 {
     private const int MAINSCENENUMBER = 1;
 
-    [SerializeField] GameObject recordPanel;
+    [SerializeField] GameObject achievePanel;
     [SerializeField] GameObject exitPanel;
-    [SerializeField] Text RecordText;
+    [SerializeField] public GameObject[] achieveItem;
+
+    private void Start()
+    {
+    }
+
 
     private void Update()
     {
         // 뒤로가기 버튼 이벤트
         if (Input.GetKeyDown(KeyCode.Escape))
             // recordPanel이 활성화 된 상태인 경우 -> 비활성화
-            if (recordPanel.activeSelf)
-                recordPanel.SetActive(false);
+            if (achievePanel.activeSelf)
+                achievePanel.SetActive(false);
             // recordPanel이 비활성화 된 상태인 경우 -> exitPanel 활성 or 비활성화
             else
-                if(!exitPanel.activeSelf)
-                    exitPanel.SetActive(true);
-                else
-                    exitPanel.SetActive(false);
+                if (!exitPanel.activeSelf)
+                exitPanel.SetActive(true);
+            else
+                exitPanel.SetActive(false);
 
     }
 
@@ -35,19 +40,21 @@ public class StartSceneManager : Singleton<StartSceneManager>
         SceneManager.LoadScene(MAINSCENENUMBER);
     }
 
-    // RecordButton 이벤트 -> 레코드 패널 활성화
-    public void RecordButton()
-    {
-        UpdateRecordText();
-        if (recordPanel != null)
-            recordPanel.SetActive(true);
+    // AchieveButton 이벤트 -> 업적 패널 활성화
+    public void AchieveButton()
+    { 
+        for(int i = 0; i < AchieveManager.Instance.achieveList.Count; i++)
+            SetAchieveItem(AchieveManager.Instance.achieveList[i]);
+
+        if (achievePanel != null)
+            achievePanel.SetActive(true);
     }
 
-    // CancelButton 이벤트 -> 레코드 패널 비활성화
+    // CancelButton 이벤트 -> 업적 패널 비활성화
     public void CancelButton()
     {
-        if (recordPanel != null)
-            recordPanel.SetActive(false);
+        if (achievePanel != null)
+            achievePanel.SetActive(false);
     }
 
     // ExitPanel 안의 Yes, no 버튼 이벤트
@@ -57,14 +64,26 @@ public class StartSceneManager : Singleton<StartSceneManager>
             Application.Quit();
         else
             exitPanel.SetActive(false);
-            
     }
 
-    // ExitPanel 안의 Yes, no 버튼 이벤트
-    private void UpdateRecordText()
+    public void SetAchieveItem(Achievement achieve)
     {
-        RecordText.text = "";
-        for (int i = 1; i <= 10 && PlayerPrefs.HasKey("Record_" + i); i++)
-            RecordText.text = RecordText.text + (i + ". " + PlayerPrefs.GetInt("Record_" + i) + "\n");
+        Text[] texts = achieveItem[achieve.index].GetComponentsInChildren<Text>();
+        Image[] image = achieveItem[achieve.index].GetComponentsInChildren<Image>();
+
+        texts[0].text = achieve.achieveTitle;
+        if (achieve.isAchieve)
+        {
+            texts[1].text = achieve.achieveExplane;
+            texts[2].text = "효과 : " + achieve.achieveEffect;
+            image[3].sprite = AchieveManager.Instance.achieveImageList[achieve.index];
+        }
+        else
+        {
+            texts[1].text = "???";
+            texts[2].text = "효과 : ???";
+            image[3].sprite = AchieveManager.Instance.noAchieveSprite;
+        }
     }
+
 }

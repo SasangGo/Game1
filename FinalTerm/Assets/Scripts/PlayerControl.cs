@@ -22,16 +22,15 @@ public class PlayerControl : MonoBehaviour
     // 플레이어의 현재 상태 변수들
     public int maxHp; // 플레이어 현재 최대 체력
     public int hp; // 플레이어 현재 체력
-    public int maxLevel; // 플레이어 최대 레벨
     public int level; // 플레이어 현재 레벨
-    public int shieldCount;
+    public int shieldCount; // 쉴드 개수
     public float maxExp; // 플레이어 최대 경험치
     public float exp; // 플레이어 현재 경험치
     public float speed; // 플레이어 현재 스피드
     public float skillExp; // 경험치 증가 스킬로 얻는 추가 경험치량
     public float onHitInvincibilityTime; // 피격 무적 시간
     public float skillInvincibilityTime; // 스킬 무적 시간
-    public float coolTimeDecrement;
+    public float coolTimeDecrement; // 쿨타임 감소량
     public bool isSkillInvincibility;
     public bool isOnHitInvincibility;
 
@@ -59,8 +58,9 @@ public class PlayerControl : MonoBehaviour
         // 플레이어 현재 상태 변수들 초기 값 초기화
         maxHp = 3;
         hp = maxHp;
-        maxLevel = 30;
-        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve) maxLevel += 10;
+        SkillManager.Instance.maxLevel = 30;
+        if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve)
+            SkillManager.Instance.maxLevel += 10;
         level = 1;
         shieldCount = 0;
         maxExp = 3f;
@@ -81,9 +81,9 @@ public class PlayerControl : MonoBehaviour
 
     private void Update()
     {
-        if (level < maxLevel) // 레벨이 최대치에 도달했는지 체크
+        if (level < SkillManager.Instance.maxLevel) // 레벨이 최대치에 도달했는지 체크
         {
-            //GetExp(0.25f);
+            GetExp(0.25f);
             if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
                 LevelUp();
         }
@@ -246,7 +246,7 @@ public class PlayerControl : MonoBehaviour
     public void LevelUp()
     {
         level++;
-        if (level < maxLevel)
+        if (level < SkillManager.Instance.maxLevel)
         {
             exp = exp - maxExp;
             //maxExp = maxExp * 1.15f + level;
@@ -255,8 +255,8 @@ public class PlayerControl : MonoBehaviour
         else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)
             exp = maxExp;
         // 스킬 선택창 띄우기
-        GameManager.Instance.SetSkillPanels();
-        GameManager.Instance.ActivePanel(GameManager.Instance.skillChoicePanel, true);
+        GameManager.Instance.SetStatPanels();
+        GameManager.Instance.ActivePanel(GameManager.Instance.statChoicePanel, true);
         SoundManager.Instance.StopSound(SoundManager.Instance.playerAudioSource);
         SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.LevelUpSound);
     }
@@ -265,7 +265,7 @@ public class PlayerControl : MonoBehaviour
     public void GetExp(float delayTime)
     {
         // 시간 당 얻는 경험치 양 계산식
-        timePerExp = timePerExp + ( patternExp + skillExp )* Time.deltaTime;
+        timePerExp = timePerExp + (1f +  patternExp + skillExp )* Time.deltaTime;
 
         // 매개변수 delayTime초 마다 경험치를 획득할 수 있하는 코드
         timer = timer + Time.deltaTime;

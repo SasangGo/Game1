@@ -8,7 +8,7 @@ public class SkillManager : Singleton<SkillManager>
     public Text debugText;
     public Text debugText2;
     // 스킬의 Index
-    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
+    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, ActiveSkillPoint, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
     // 스킬 세팅
     public List<string> skillNames; // 스킬 이름을 담는 List
@@ -22,7 +22,8 @@ public class SkillManager : Singleton<SkillManager>
     public bool[] isGetTransformSkill; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
     public bool[] isMaxSkillLevel; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
     public int[] skillLevel; // 각 스킬들 레벨을 체크하는 배열
-    public int totalSkillsCount; // 이 게임에 존재하는 Skill 개수 변수
+    public int totalStatCount; // 이 게임에 존재하는 Stat 개수 변수
+    public int totalSkillCount; // 이 게임에 존재하는 Skill 개수 변수
     public int maxSkillCount; // Max가 된 스킬들이 몇개인지 체크하기 위한 변수
 
     // 텔레포트 관련 변수
@@ -36,7 +37,7 @@ public class SkillManager : Singleton<SkillManager>
     public float speedIncrement, coolTimeDecrease, onHitInvincibilityTimeIncrement, skillExpIncrement, jumpIncrement;
 
     // 각 패시브 스킬 최대값
-    public int maxHpLevel, maxSpeedLevel, maxSkillExpLevel, maxOnHitInvincibilityTimeLevel, maxCoolTimeLevel, maxJumpLevel;
+    public int maxLevel, maxHpLevel, maxSpeedLevel, maxSkillExpLevel, maxOnHitInvincibilityTimeLevel, maxCoolTimeLevel, maxJumpLevel;
 
     [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
     [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
@@ -57,23 +58,23 @@ public class SkillManager : Singleton<SkillManager>
         if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxCoolTime].isAchieve) maxCoolTimeLevel += 1;
         if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxJump].isAchieve) maxJumpLevel += 1;
 
-        totalSkillsCount = (int)Skills.Heal + 1;
+        totalStatCount = (int)Skills.Heal + 1;
+        totalSkillCount = (int)Skills.PAWN - totalStatCount;
 
         ActSkillIndex = 0;
         transformSkillIndex = 2;
         actSkillButtonNumber = new Skills[GameManager.Instance.activeSkillButtons.Length];
 
         maxSkillCount = 0;
-        isMaxSkillLevel = new bool[totalSkillsCount];
-        skillLevel = new int[totalSkillsCount];
-        for (int i = 0; i < totalSkillsCount; i++)
+        isMaxSkillLevel = new bool[(int)Skills.KING + 1];
+        skillLevel = new int[(int)Skills.KING + 1];
+        for (int i = 0; i < totalStatCount - 1; i++)
         {
-            isMaxSkillLevel[i] = false;
             skillLevel[i] = 1;
         }
 
-        GetActiveSkill(Skills.RandomAll);
-        GetActiveSkill(Skills.Bomb);
+        // GetActiveSkill(Skills.RandomAll);
+        // GetActiveSkill(Skills.Bomb);
 
     }
 
@@ -97,7 +98,8 @@ public class SkillManager : Singleton<SkillManager>
         SetSkillsInfo("경험치 증가", "경험치 획득량을 1 증가시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
         SetSkillsInfo("스킬 쿨타임 감소", "스킬 쿨타임이 10% 감소한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
         SetSkillsInfo("점프력 증가", "점프 높이가 상승한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
-        
+        SetSkillsInfo("스킬포인트 증가", "스킬포인트를 1 획득한다", Resources.Load<Sprite>("Sprites/SkillSprites/ExpUp"));
+
         SetSkillsInfo("Hp 회복", "Hp를 2 회복시킨다", Resources.Load<Sprite>("Sprites/SkillSprites/Heal"));
 
         SetSkillsInfo("ExpBall", "ExpBall", Resources.Load<Sprite>("Sprites/SkillSprites/Invincibility"));
@@ -124,19 +126,20 @@ public class SkillManager : Singleton<SkillManager>
         // 각 패시브 스킬 증가량 초기화
         HpIncrement = 1;
         HealIncrement = 2;
-        speedIncrement = 2f;
-        onHitInvincibilityTimeIncrement = 1f;
-        skillExpIncrement = 1f;
-        coolTimeDecrease = 10f;
-        jumpIncrement = 200f;
+        speedIncrement = 1f;
+        onHitInvincibilityTimeIncrement = 0.5f;
+        skillExpIncrement = 0.5f;
+        coolTimeDecrease = 5f;
+        jumpIncrement = 100f;
 
         // 각 패시브 스킬 최대값 초기화
+        maxLevel = 50;
         maxHpLevel = 8;
-        maxSpeedLevel = 5;
-        maxOnHitInvincibilityTimeLevel = 5;
-        maxSkillExpLevel = 5;
-        maxCoolTimeLevel = 5;
-        maxJumpLevel = 5;
+        maxSpeedLevel = 10;
+        maxOnHitInvincibilityTimeLevel = 10;
+        maxSkillExpLevel = 10;
+        maxCoolTimeLevel = 10;
+        maxJumpLevel = 10;
     }
 
     // 스킬 정보 설정 함수
@@ -149,35 +152,47 @@ public class SkillManager : Singleton<SkillManager>
     }
 
     // 스킬들 중, 랜덤으로 N 선택
-    public List<int> RandomSkill(int N)
+    public List<int> RandomSkill(int N, bool isStat)
     {
         // 랜덤 숫자 N개를 담을 List 생성
         List<int> randomNum = new List<int>();
-
-        // Max치가 정해져 있는 스킬들이 Max상태 일 경우
-        if (totalSkillsCount - maxSkillCount <= 1)
+        int temp;
+        if (isStat)
         {
+            // Max치가 정해져 있는 스킬들이 Max상태 일 경우
+            if (totalStatCount - maxSkillCount <= 1)
+            {
+                for (int i = 0; i < N; i++)
+                    randomNum.Add((int)Skills.Heal);
+                return randomNum;
+            }
+
+            // 랜덤 스킬 중복 제외하고 뽑음
+            temp = Random.Range(0, totalStatCount);
             for (int i = 0; i < N; i++)
-                randomNum.Add((int)Skills.Heal);
-            return randomNum;
+            {
+                // List에 포함되 있는지, 뽑은 스킬이 이미 Max인지 체크 해서 제외시키기
+                while (randomNum.Contains(temp) || isMaxSkillLevel[temp] || (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxHp].isAchieve && temp == (int)Skills.Heal))
+                    temp = Random.Range(0, totalStatCount);
+
+                randomNum.Add(temp);
+            }
         }
-
-        // 랜덤 스킬 중복 제외하고 뽑음
-        int temp = Random.Range(0, totalSkillsCount);
-        for (int i = 0; i < N; i++)
+        else
         {
-            // List에 포함되 있는지, 뽑은 스킬이 이미 Max인지 체크 해서 제외시키기
-            while (randomNum.Contains(temp) || isMaxSkillLevel[temp] || (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxHp].isAchieve && temp == (int)Skills.Heal))
-                temp = Random.Range(0, totalSkillsCount);
-
-            randomNum.Add(temp);
+            // 랜덤 스킬 중복 제외하고 뽑음
+            do
+            {
+                temp = Random.Range(0, totalSkillCount);
+            } while (isMaxSkillLevel[(int)Skills.ExpBall + temp]);
+            randomNum.Add((int)Skills.ExpBall + temp);
         }
 
         return randomNum;
     }
 
     // 각 스킬 기능 함수
-    public void ChoiceSkillApply(Skills skill)
+    public void ChoiceStatApply(Skills skill)
     {
         switch (skill)
         {
@@ -204,6 +219,10 @@ public class SkillManager : Singleton<SkillManager>
             // 점프력 증가 스킬
             case Skills.IncreaseJump:
                 IncreaseJump(maxJumpLevel, jumpIncrement);
+                break;
+            // 액티브 스킬 포인트 얻기
+            case Skills.ActiveSkillPoint:
+                GetActiveSkillPoint();
                 break;
             // Hp 회복 스킬
             case Skills.Heal:
@@ -336,6 +355,18 @@ public class SkillManager : Singleton<SkillManager>
         }
     }
 
+    // 액티브 스킬 포인트 얻기
+    public void GetActiveSkillPoint()
+    {
+        skillLevel[(int)Skills.ActiveSkillPoint]++;
+        if (skillLevel[(int)Skills.ActiveSkillPoint] >= 3)
+        {
+            skillLevel[(int)Skills.ActiveSkillPoint] -= 3;
+            GameManager.Instance.SetSkillPanels();
+            GameManager.Instance.ActivePanel(GameManager.Instance.skillChoicePanel, true);
+        }
+    }
+
     // Hp 회복
     public void Heal(int increment)
     {
@@ -346,13 +377,8 @@ public class SkillManager : Singleton<SkillManager>
     }
 
     // 엑티브 스킬 얻는 함수
-    public void GetActiveSkill(Skills skill)
+    public void GetActiveSkill(Skills skill, int buttonIndex)
     {
-        int buttonIndex = 0;
-        if (skill >= Skills.PAWN)
-            buttonIndex = transformSkillIndex;
-        else
-            buttonIndex = ActSkillIndex;
 
         GameManager.Instance.ActiveSkillButtonActive(buttonIndex, (int)skill); // UI 설정
         actSkillButtonNumber[buttonIndex] = skill; // 버튼에 어떤 스킬이 연결되어 있는지 설정
@@ -362,13 +388,9 @@ public class SkillManager : Singleton<SkillManager>
             GameManager.Instance.activeSkillButtons[buttonIndex].interactable = false;
             player.isDoubleJump = true;
         }
+
         if(skill == Skills.Teleport)
             teleportButtonIndex = buttonIndex;
-
-        if (skill >= Skills.PAWN)
-            transformSkillIndex++;
-        else
-            ActSkillIndex++;
     }
 
     // 액티브 스킬 and 변신 버튼 클릭 이벤트

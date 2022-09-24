@@ -29,12 +29,26 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public GameObject AchievePopUpPanel;
     [SerializeField] Text PopUpAchieveText;
     [SerializeField] Image PopUpAchieveImage;
+    [SerializeField] public GameObject statChoicePanel;
     [SerializeField] public GameObject skillChoicePanel;
-    [SerializeField] public GameObject[] skillPanel;
+    [SerializeField] public GameObject slotChoicePanel;
     [SerializeField] public GameObject[] AchieveItem;
+    [SerializeField] public GameObject[] statPanel;
+    [SerializeField] public Text[] statPanelHeadText;
+    [SerializeField] public Text[] statPanelInfoText;
+    [SerializeField] public Image[] statPanelImage;
+
+    [SerializeField] public GameObject[] skillPanel;
     [SerializeField] public Text[] skillPanelHeadText;
     [SerializeField] public Text[] skillPanelInfoText;
     [SerializeField] public Image[] skillPanelImage;
+
+    [SerializeField] public GameObject[] slotPanel;
+    [SerializeField] public Text[] slotPanelHeadText;
+    [SerializeField] public Text[] slotPanelInfoText;
+    [SerializeField] public Image[] slotPanelImage;
+
+    [SerializeField] public Text[] statText;
     [SerializeField] public Image[] hpImages;
     [SerializeField] public Image[] inHpImages;
     [SerializeField] public Button[] activeSkillButtons;
@@ -76,10 +90,10 @@ public class GameManager : Singleton<GameManager>
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if(AchievementPanel.activeSelf)
-                ActivePanel(AchievementPanel, !AchievementPanel.activeSelf);
+            if (AchievementPanel.activeSelf)
+                ClickAchievementButton();
             else
-                ActivePanel(optionPanel, !optionPanel.activeSelf);
+                ClickOptionButton();
         }
 
         LevelBarUpdate();
@@ -167,6 +181,7 @@ public class GameManager : Singleton<GameManager>
     // optiomButtom 클릭 이벤트
     public void ClickOptionButton()
     {
+        SetStatPanel();
         ActivePanel(optionPanel, !optionPanel.activeSelf);
         if(AchievementPanel.activeSelf)
             AchievementPanel.SetActive(false);
@@ -174,6 +189,8 @@ public class GameManager : Singleton<GameManager>
     // AchieveButton 클릭 이벤트
     public void ClickAchievementButton()
     {
+        for (int i = 0; i < AchieveManager.Instance.achieveList.Count; i++)
+            SetAchieveItem(AchieveManager.Instance.achieveList[i]);
         ActivePanel(AchievementPanel, !AchievementPanel.activeSelf);
         if (optionPanel.activeSelf)
             optionPanel.SetActive(false);
@@ -246,19 +263,50 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    // 스킬 패널 세팅
-    public void SetSkillPanels()
+    // 스탯 패널 세팅
+    public void SetStatPanels()
     {
         // skillPanel.Length(선택할 수 있는 스킬의 개수) 만큼 랜덤 스킬을 뽑음
-        randomSkillNumbers = SkillManager.Instance.RandomSkill(skillPanel.Length);
+        randomSkillNumbers = SkillManager.Instance.RandomSkill(statPanel.Length, true);
 
         // SkillPanel들의 UI 업데이트
         int index = 0;
         foreach(int skillNum in randomSkillNumbers)
         {
-            skillPanelHeadText[index].text = "" + SkillManager.Instance.skillNames[skillNum];
+            statPanelHeadText[index].text = "" + SkillManager.Instance.skillNames[skillNum];
             if(skillNum != (int)SkillManager.Skills.Heal && skillNum != (int)SkillManager.Skills.InvincibilitySkill)
-                skillPanelHeadText[index].text += " Lv." + SkillManager.Instance.skillLevel[skillNum];
+                statPanelHeadText[index].text += " Lv." + SkillManager.Instance.skillLevel[skillNum];
+            statPanelInfoText[index].text = "" + SkillManager.Instance.skill_Info[skillNum];
+            statPanelImage[index].sprite = SkillManager.Instance.skillSprites[skillNum];
+            index++;
+        }
+    }
+
+    // 스킬 선택 창에서 하나의 스킬을 선택하면 호출되는 함수
+    public void ClickStatPanel(int statIndex)
+    {        
+        if (statIndex == 2) // 스킬 포인트 획득 선택시
+            SkillManager.Instance.ChoiceStatApply(SkillManager.Skills.ActiveSkillPoint);
+        else // 그 외에 스킬매니저에서 선택한 스킬을 적용함
+            SkillManager.Instance.ChoiceStatApply((SkillManager.Skills)randomSkillNumbers[statIndex]);
+
+        if (skillChoicePanel.activeSelf)
+            statChoicePanel.SetActive(false);
+        else
+            ActivePanel(statChoicePanel, false);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.SkillGetSound);
+    }
+
+    public void SetSkillPanels()
+    {
+        // skillPanel.Length(선택할 수 있는 스킬의 개수) 만큼 랜덤 스킬을 뽑음
+        randomSkillNumbers = SkillManager.Instance.RandomSkill(skillPanel.Length, false);
+
+        // SkillPanel들의 UI 업데이트
+        int index = 0;
+        foreach (int skillNum in randomSkillNumbers)
+        {
+            skillPanelHeadText[index].text = "" + SkillManager.Instance.skillNames[skillNum];
             skillPanelInfoText[index].text = "" + SkillManager.Instance.skill_Info[skillNum];
             skillPanelImage[index].sprite = SkillManager.Instance.skillSprites[skillNum];
             index++;
@@ -268,11 +316,49 @@ public class GameManager : Singleton<GameManager>
     // 스킬 선택 창에서 하나의 스킬을 선택하면 호출되는 함수
     public void ClickSkillPanel(int skillIndex)
     {
-        // 스킬매니저에서 선택한 스킬을 적용함
-        SkillManager.Instance.ChoiceSkillApply((SkillManager.Skills)randomSkillNumbers[skillIndex]);
-        ActivePanel(skillChoicePanel, false);
+        if (skillIndex == 1)// 스킬 포인트 획득 선택시
+        {
+            SkillManager.Instance.ChoiceStatApply(SkillManager.Skills.ActiveSkillPoint);
+            ActivePanel(skillChoicePanel, false);
+        }
+        else // 그 외에 스킬매니저에서 선택한 스킬을 적용함
+        {
+            if(SkillManager.Instance.ActSkillIndex > 1)
+            {
+                SetSlotPanels();
+                ActivePanel(skillChoicePanel, false);
+                ActivePanel(slotChoicePanel, true);
+            }
+            else
+            {
+                SkillManager.Instance.GetActiveSkill((SkillManager.Skills)randomSkillNumbers[skillIndex], SkillManager.Instance.ActSkillIndex++);
+                ActivePanel(skillChoicePanel, false);
+            }
+
+        }
         SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.SkillGetSound);
     }
+
+    public void SetSlotPanels()
+    {
+        // skillPanel.Length(선택할 수 있는 스킬의 개수) 만큼 랜덤 스킬을 뽑음
+        for(int i = 0; i < slotPanel.Length; i++)
+        {
+            int skillNum = (int)SkillManager.Instance.actSkillButtonNumber[i];
+            slotPanelHeadText[i].text = "" + SkillManager.Instance.skillNames[skillNum];
+            slotPanelInfoText[i].text = "" + SkillManager.Instance.skill_Info[skillNum];
+            slotPanelImage[i].sprite = SkillManager.Instance.skillSprites[skillNum];
+        }
+    }
+
+    public void ClickSlotPanel(int slotIndex)
+    {
+        SkillManager.Instance.GetActiveSkill((SkillManager.Skills)randomSkillNumbers[0], slotIndex);
+        ActivePanel(slotChoicePanel, false);
+
+        SoundManager.Instance.PlaySound(SoundManager.Instance.uIAudioSource, SoundManager.Instance.SkillGetSound);
+    }
+
 
     public void ActiveSkillButtonActive(int index, int skillNumber)
     {
@@ -322,6 +408,18 @@ public class GameManager : Singleton<GameManager>
         yield return new WaitForSecondsRealtime(3f);
         AchievePopUpPanel.SetActive(false);
     }
+
+    public void SetStatPanel()
+    {
+        statText[0].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.IncreaseInvincibilityTime];
+        statText[1].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.IncreaseSpeed];
+        statText[2].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.IncreaseExp];
+        statText[3].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.DecreaseCoolTime];
+        statText[4].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.IncreaseJump];
+        statText[5].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.ActiveSkillPoint];
+    }
+
+
     // 스코어 기록 함수
     private void RecordScore()
     {

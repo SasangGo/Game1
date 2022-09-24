@@ -6,8 +6,9 @@ using System.Text;
 
 public class DataManager : Singleton<DataManager>
 {
-    void Start()
+    void Awake()
     {
+        DontDestroyOnLoad(gameObject);
     }
 
     void Update()

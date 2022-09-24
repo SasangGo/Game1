@@ -10,18 +10,16 @@ public class AchieveManager : Singleton<AchieveManager>
     public List<Sprite> achieveImageList;
     public Sprite noAchieveSprite;
 
-    [SerializeField] PlayerControl player;
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
+
         achieveList = new List<Achievement>();
         achieveImageList = new List<Sprite>();
 
         InitAchievements();
 
         DataManager.Instance.LoadAchieve(Application.dataPath, "AchievementList");
-
-        for (int i = 0; i < achieveList.Count; i++)
-            GameManager.Instance.SetAchieveItem(achieveList[i]);
     }
 
     public void InitAchievements()
@@ -44,7 +42,7 @@ public class AchieveManager : Singleton<AchieveManager>
     public void AchieveMaxLevel()
     {
         achieveList[(int)Achieve.MaxLevel].isAchieve = true;
-        player.maxLevel += 10;
+        SkillManager.Instance.maxLevel += 10;
         GameManager.Instance.PopUpAchieve(achieveList[(int)Achieve.MaxLevel]);
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxLevel]);
         DataManager.Instance.SaveAchieve();
