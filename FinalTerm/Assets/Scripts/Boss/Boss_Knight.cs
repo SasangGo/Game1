@@ -240,6 +240,8 @@ public class Boss_Knight : ABoss
     {
         base.Enraged();
         StartCoroutine(Smallize(new Vector3(2, 2, 2)));
+        rushDelay /= 2;
+        actionDelay /= 2;
     }
     private IEnumerator Smallize(Vector3 size)
     {
