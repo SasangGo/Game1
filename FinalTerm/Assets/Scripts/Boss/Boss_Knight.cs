@@ -4,29 +4,32 @@ using UnityEngine;
 
 public class Boss_Knight : ABoss
 {
+    private const int DIVEY = 20;
+    private const float RUSHSPEED = 100F;
+    private const float MIN_DIVE_RANGE = 0.5f;
+    private const float MAX_DIVE_RANGE = 100f;
+    private const int SPAWNOFFSETX = -15;
+    private const float DIVEPOWER = 100f;
+
     [SerializeField] ParticleSystem rushEffect;
     [SerializeField] ParticleSystem diveEffect;
     [SerializeField] ParticleSystem flameEffect;
     [SerializeField] GameObject pawnPrefab;
-    [SerializeField] float rushDelay = 10f;
     [SerializeField] int amountOfPawn = 10;
 
+    private float rushDelay;
+
     private float rushTime = 0;
-    private const int spawnOffsetX = -15;
-    private const float divePower = 100f;
-    private int diveY = 20;
-    private const float RUSHSPEED = 100F;
-    private const float MIN_DIVE_RANGE = 0.5f;
-    private const float MAX_DIVE_RANGE = 100f;
     // 기본적인 정보
     protected override void OnEnable()
     {
         base.OnEnable();
         InvokeRepeating("UpdateTarget", 0.1f, 0.25f);
-        Invoke("OnAction", 3);
+        Invoke("OnAction", actionDelay);
         speed = 50;
         health = 4;
         cntHealth = 2;
+        rushDelay = 10f;
     }
     protected override void Update()
     {
@@ -79,8 +82,7 @@ public class Boss_Knight : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = 2;
-        //action = Random.Range(0, 4);
+        action = Random.Range(0, 4);
         switch (action)
         {
             case 0:
@@ -116,7 +118,7 @@ public class Boss_Knight : ABoss
         bossState = BossState.idle;
         anim.enabled = true;
         rushEffect.gameObject.SetActive(false);
-        Invoke("OnAction", 3);
+        Invoke("OnAction", actionDelay);
         InvokeRepeating("UpdateTarget", 0.5f, 1);
     }
     private void SpawnPawn()
@@ -134,34 +136,34 @@ public class Boss_Knight : ABoss
         {
             GameObject pawn = Instantiate(pawnPrefab);
             if (index == 0)
-                pawn.transform.position = ConvertCellPos(new Vector3(sPosX+ spawnOffsetX + temp, offsetY, sPosZ));
+                pawn.transform.position = ConvertCellPos(new Vector3(sPosX+ SPAWNOFFSETX + temp, offsetY, sPosZ));
             else if (index == 1)
-                pawn.transform.position = ConvertCellPos(new Vector3(sPosX + spawnOffsetX, offsetY, sPosZ+temp));
+                pawn.transform.position = ConvertCellPos(new Vector3(sPosX + SPAWNOFFSETX, offsetY, sPosZ+temp));
             else if (index == 2)
-                pawn.transform.position = ConvertCellPos(new Vector3(sPosX + spawnOffsetX + temp, offsetY, ePosZ));
+                pawn.transform.position = ConvertCellPos(new Vector3(sPosX + SPAWNOFFSETX + temp, offsetY, ePosZ));
             else
-                pawn.transform.position = ConvertCellPos(new Vector3(ePosX + spawnOffsetX, offsetY, sPosZ + temp));
-
+                pawn.transform.position = ConvertCellPos(new Vector3(ePosX + SPAWNOFFSETX, offsetY, sPosZ + temp));
+            
             pawn.transform.Rotate(Vector3.up, 90 * index);
             temp += 5;
         }
         bossState = BossState.idle;
-        Invoke("OnAction", 3);
+        Invoke("OnAction", actionDelay);
     }
     private IEnumerator Dive(Vector3 location)
     {
         bossState = BossState.attack;
         anim.enabled = false;
-        rigid.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
+        rigid.AddForce(Vector3.up * DIVEPOWER, ForceMode.VelocityChange);
         // 보스 추락 방지
         Ray checkRay = new Ray(location, location - Vector3.down);
         // 타겟 위치에 땅이 없을 시 (낭떠러지일때)
         if (!(Physics.Raycast(checkRay, Mathf.Infinity, LayerMask.GetMask("Ground"))))
         {
-            location = transform.position + Vector3.up * diveY;
+            location = transform.position + Vector3.up * DIVEY;
         }
         // 아닐 시 타겟 위치로 이동
-        else location = ConvertCellPos(location) + Vector3.up * diveY;
+        else location = ConvertCellPos(location) + Vector3.up * DIVEY;
 
         rigid.velocity = Vector3.zero;
         Ray ray = new Ray(location, Vector3.down);
@@ -175,7 +177,7 @@ public class Boss_Knight : ABoss
                 yield return new WaitForSeconds(2f);
                 cell.ChangeColor(cell.originColor);
                 transform.position = location;
-                rigid.AddForce(Vector3.down * divePower * 2f, ForceMode.VelocityChange);
+                rigid.AddForce(Vector3.down * DIVEPOWER * 2f, ForceMode.VelocityChange);
                 yield return new WaitWhile(() => Vector3.Distance(transform.position, cell.transform.position) > 3.3f);
                 yield return StartCoroutine(DiveEffect(0.5f));
             }
@@ -214,7 +216,7 @@ public class Boss_Knight : ABoss
         }
         bossState = BossState.idle;
         anim.enabled = true;
-        Invoke("OnAction", 3);
+        Invoke("OnAction", actionDelay);
     }
     private IEnumerator Flame(Vector3 location)
     {
@@ -232,6 +234,27 @@ public class Boss_Knight : ABoss
         }
         anim.enabled = true;
         bossState = BossState.idle;
-        Invoke("OnAction", 3);
+        Invoke("OnAction", actionDelay);
+    }
+    protected override void Enraged()
+    {
+        base.Enraged();
+        StartCoroutine(Smallize(new Vector3(2, 2, 2)));
+    }
+    private IEnumerator Smallize(Vector3 size)
+    {
+        anim.enabled = false;
+        Debug.Log("광폭");
+        while (transform.lossyScale.x >= size.x)
+        {
+            Debug.Log("작아");
+            yield return null;
+            transform.localScale *= 0.9f;
+        }
+
+        anim.enabled = true;
+        anim.SetBool("Rage", true);
+        bossState = BossState.idle;
+        Invoke("OnAction", actionDelay);
     }
 }

@@ -17,6 +17,7 @@ public abstract class ABoss : MonoBehaviour
     protected int action;
     protected MeshRenderer mesh;
     protected Animator anim;
+    protected float actionDelay;
     protected int[] dx = { 1, 1, -1, -1 };
     protected int[] dz = { -1, 1, 1, -1 };
 
@@ -42,6 +43,7 @@ public abstract class ABoss : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         direction = 0;
+        actionDelay = 3f;
         
     }
 
@@ -101,6 +103,11 @@ public abstract class ABoss : MonoBehaviour
         anim.enabled = false;
         bossState = BossState.trace;
     }
+    protected virtual void Enraged()
+    {
+        bossState = BossState.attack;
+        CancelInvoke("OnAction");// 광폭화중에는 패턴을 멈춤.
+    }
     // 보스 움직임 액션
     protected IEnumerator MovingAction(Vector3 movePos)
     {
@@ -118,7 +125,7 @@ public abstract class ABoss : MonoBehaviour
         rigid.useGravity = true;
         bossState = BossState.idle;
         anim.enabled = true;
-        Invoke("OnAction", 3);
+        Invoke("OnAction", actionDelay);
     }
 
     // 이동 방향을 바라보도록 자연스럽게 (부드럽게) 회전
@@ -183,10 +190,8 @@ public abstract class ABoss : MonoBehaviour
     {
         cntHealth--;
         if (cntHealth <= 0) Die();
-        else
-        {
-            StartCoroutine(DamagedEffect(2f));
-        }
+        else if (cntHealth <= 1) Enraged();
+        StartCoroutine(DamagedEffect(2f));
     }
     protected virtual IEnumerator DamagedEffect(float time)
     {
