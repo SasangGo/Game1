@@ -99,6 +99,7 @@ public abstract class ABoss : MonoBehaviour
     }
     protected virtual void Trace(Vector3 pos)
     {
+        if (target.gameObject == null) return;
         // 보스를 추적 상태로 바꿈
         anim.enabled = false;
         bossState = BossState.trace;
@@ -112,13 +113,14 @@ public abstract class ABoss : MonoBehaviour
     protected IEnumerator MovingAction(Vector3 movePos)
     {
 
-        // 중력을 꺼둬 Slerp에 방해되지 않게 함
+        // 중력을 꺼둬 lerp에 방해되지 않게 함
         rigid.useGravity = false;
         float cnt = 0;
         while(Vector3.Distance(transform.position,movePos) > 0.5f && cnt < ERORR_FIX_DELAY)
         {
             cnt += Time.deltaTime;
-            transform.position = Vector3.Slerp(transform.position, movePos, 0.1f);
+            transform.position = Vector3.Lerp(transform.position+ Vector3.up, movePos, cnt);
+
             yield return null;
         }
         transform.position = movePos;

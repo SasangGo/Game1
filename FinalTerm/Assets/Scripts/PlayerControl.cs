@@ -80,12 +80,12 @@ public class PlayerControl : MonoBehaviour
     }
 
     private void Update()
-    {
+    { 
         if (level < SkillManager.Instance.maxLevel) // 레벨이 최대치에 도달했는지 체크
         {
             GetExp(0.25f);
-            if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
-                LevelUp();
+            if (exp >= maxExp) ; // 경험치가 100% 다 채웠는지 체크
+                LevelUp(); 
         }
         else if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve)
         {

@@ -25,7 +25,7 @@ public class Boss_Bishop : ABoss
         switch (action)
         {
             case 0:
-
+                if(target != null) Trace(target.position);
                 break;
         }
     }
@@ -38,6 +38,7 @@ public class Boss_Bishop : ABoss
         {
             moveList.Add(movePos);
             go++;
+            movePos = GetMovePosition(go, go);
         }
         float distance = float.MaxValue;
         for(int i = 0; i < moveList.Count; i++)
