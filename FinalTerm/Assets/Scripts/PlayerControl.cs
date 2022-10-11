@@ -63,7 +63,7 @@ public class PlayerControl : MonoBehaviour
             SkillManager.Instance.maxLevel += 10;
         level = 1;
         shieldCount = 0;
-        maxExp = 3f;
+        maxExp = 5f;
         exp = 0;
         speed = 20f;
         skillExp = 0;
@@ -83,9 +83,9 @@ public class PlayerControl : MonoBehaviour
     { 
         if (level < SkillManager.Instance.maxLevel) // 레벨이 최대치에 도달했는지 체크
         {
-            GetExp(0.25f);
+            // GetExp(0.25f);
             if (exp >= maxExp) ; // 경험치가 100% 다 채웠는지 체크
-                LevelUp(); 
+                // LevelUp(); 
         }
         else if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve)
         {
@@ -191,8 +191,6 @@ public class PlayerControl : MonoBehaviour
                 Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f);
                 mesh.material.color = color;
             }
-
-
             return;
         }
 
@@ -290,6 +288,7 @@ public class PlayerControl : MonoBehaviour
         {
             AObstacle obstacle = obj.GetComponent<AObstacle>();
             StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
+            OnDamaged();
         }
         //layer == 12 -> Enemy
         else if(obj.layer == 12)

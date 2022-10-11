@@ -33,10 +33,19 @@ public class DataManager : Singleton<DataManager>
     {
         List<Achievement> AchieveList = AchieveManager.Instance.achieveList;
         SaveData data = LoadJsonFile<SaveData>(loadPath, fileName);
-
-        for (int i = 0; i < AchieveList.Count; i++)
+        if (data == null)
         {
-            AchieveList[i].isAchieve = data.isAchieve[i];
+            for (int i = 0; i < AchieveList.Count; i++)
+            {
+                AchieveList[i].isAchieve = false;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < AchieveList.Count; i++)
+            {
+                AchieveList[i].isAchieve = data.isAchieve[i];
+            }
         }
     }
 
@@ -51,7 +60,14 @@ public class DataManager : Singleton<DataManager>
 
     public T LoadJsonFile<T>(string loadPath, string fileName)
     {
+        FileInfo fileInfo = new FileInfo(string.Format("{0}/{1}.json", loadPath, fileName));
+        if (!fileInfo.Exists)
+        {
+            CreateJsonFile(null, loadPath, fileName);
+        }
+
         FileStream fileStream = new FileStream(string.Format("{0}/{1}.json", loadPath, fileName), FileMode.Open);
+
         byte[] data = new byte[fileStream.Length];
         fileStream.Read(data, 0, data.Length);
         fileStream.Close();

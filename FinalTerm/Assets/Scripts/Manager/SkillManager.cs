@@ -8,7 +8,7 @@ public class SkillManager : Singleton<SkillManager>
     public Text debugText;
     public Text debugText2;
     // 스킬의 Index
-    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, ActiveSkillPoint, Heal, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
+    public enum Skills { IncreaseMaxHp, IncreaseInvincibilityTime, IncreaseSpeed, IncreaseExp, DecreaseCoolTime, IncreaseJump, Heal, ActiveSkillPoint, ExpBall, RandomAll, Clone, Bomb, Dash, SizeDown, DoubleJump, SkillHeal, Teleport, Shield, InvincibilitySkill, Wall, PAWN, KNIGHT, BISHOP, ROOK, KING };
 
     // 스킬 세팅
     public List<string> skillNames; // 스킬 이름을 담는 List
@@ -38,6 +38,10 @@ public class SkillManager : Singleton<SkillManager>
 
     // 각 패시브 스킬 최대값
     public int maxLevel, maxHpLevel, maxSpeedLevel, maxSkillExpLevel, maxOnHitInvincibilityTimeLevel, maxCoolTimeLevel, maxJumpLevel;
+
+    // 업적 체크용
+    public bool isTrans;
+
 
     [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
     [SerializeField] Transform ePos;// 셀의 끝 위치(거리 체크용)
@@ -684,6 +688,7 @@ public class SkillManager : Singleton<SkillManager>
     //변신
     public void ChangeType(PlayerControl.State state)
     {
+        isTrans = true;
         int index = (int)state;
 
         Mesh model = types[index].mesh;

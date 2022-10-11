@@ -64,7 +64,6 @@ public class GameManager : Singleton<GameManager>
     private int idx;
     private int preIdx = -1;
     private Animator startTextAnim;
-    private List<int> recordList;
     private List<int> randomSkillNumbers;
 
     private const int STARTSCENENUMBER = 0;
@@ -163,7 +162,6 @@ public class GameManager : Singleton<GameManager>
         gameOverPanel.gameObject.SetActive(true);
         resultText.text = Mathf.CeilToInt(Score) + "초";
         Time.timeScale = 0f;
-        RecordScore();
         StopAllCoroutines(); // 모든 코루틴 종료
         CancelInvoke(); // 모든 함수 종료
     }
@@ -397,15 +395,35 @@ public class GameManager : Singleton<GameManager>
         PopUpAchieveText.text = achieve.achieveTitle;
         PopUpAchieveImage.sprite = AchieveManager.Instance.achieveImageList[achieve.index];
 
+        RectTransform popupRect = AchievePopUpPanel.GetComponent<RectTransform>();
+        popupRect.anchoredPosition = new Vector2(0, 75f);
         AchievePopUpPanel.SetActive(true);
 
-        StopCoroutine(PopDownAchieve());
-        StartCoroutine(PopDownAchieve());
+        StopCoroutine(PopDownAchieve(popupRect));
+        StartCoroutine(PopDownAchieve(popupRect));
     }
 
-    public IEnumerator PopDownAchieve()
+    public IEnumerator PopDownAchieve(RectTransform popupRect)
     {
-        yield return new WaitForSecondsRealtime(3f);
+        float delayTime = 0;
+        float speed = 3f;
+        while (delayTime < 1f)
+        {
+            delayTime += Time.fixedDeltaTime;
+            popupRect.anchoredPosition = Vector2.Lerp(popupRect.anchoredPosition, new Vector2(0, -75f), speed * Time.fixedDeltaTime);
+            yield return new WaitForSecondsRealtime(Time.fixedDeltaTime);
+        }
+
+        yield return new WaitForSecondsRealtime(2f);
+        delayTime = 0;
+        while (delayTime < 1f)
+        {
+            delayTime += Time.fixedDeltaTime;
+            popupRect.anchoredPosition = Vector2.Lerp(popupRect.anchoredPosition, new Vector2(0, 75f), speed * Time.fixedDeltaTime);
+            yield return new WaitForSecondsRealtime(Time.fixedDeltaTime);
+        }
+
+
         AchievePopUpPanel.SetActive(false);
     }
 
@@ -417,37 +435,5 @@ public class GameManager : Singleton<GameManager>
         statText[3].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.DecreaseCoolTime];
         statText[4].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.IncreaseJump];
         statText[5].text = "" + SkillManager.Instance.skillLevel[(int)SkillManager.Skills.ActiveSkillPoint];
-    }
-
-
-    // 스코어 기록 함수
-    private void RecordScore()
-    {
-        recordList = new List<int>();
-
-        // 저장되어 있던 기록표들 가져옴
-        for(int i = 1; i<=10 && PlayerPrefs.HasKey("Record_" + i); i++)
-        {
-            recordList.Add(PlayerPrefs.GetInt("Record_" + i));
-        }
-        recordList.Add((int)Score);
-
-        // 저장되어 있던 기록 + 새 기록 -> 내림차순 정렬
-        recordList.Sort((delegate (int A, int B) //내림차순; 오름차순 정렬의 경우 return값을 반대로 해주면 된다 1<-> -1
-        {
-            if (A < B) return 1;
-            else if (A > B) return -1;
-            return 0; //동일한 값일 경우
-        }));
-
-        // 다시 기록
-        int j = 1;
-        foreach (int record in recordList)
-        {
-            if (j <= 10)
-                PlayerPrefs.SetInt("Record_" + j, record);
-            j++;
-        }
-
     }
 }
