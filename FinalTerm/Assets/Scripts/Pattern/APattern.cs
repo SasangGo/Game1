@@ -20,6 +20,7 @@ public class APattern : MonoBehaviour
     }
     protected virtual void StartPattern()
     {
+
     }
     // 페이즈가 진행되는 시간(진행 시간)
     protected IEnumerator PhaseTimer(float time)

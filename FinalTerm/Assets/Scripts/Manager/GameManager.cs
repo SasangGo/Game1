@@ -24,6 +24,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] Text startText;
     [SerializeField] Text resultText;
     [SerializeField] GameObject gameOverPanel;
+    [SerializeField] GameObject gameClearPanel;
     [SerializeField] GameObject optionPanel;
     [SerializeField] GameObject AchievementPanel;
     [SerializeField] public GameObject AchievePopUpPanel;
@@ -56,7 +57,9 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public Image[] activeSkillCoolTimeImage;
     [SerializeField] Slider levelBar;
     [SerializeField] Text levelText;
+    [SerializeField] Text stageText;
     [SerializeField] GameObject[] patterns;
+    [SerializeField] GameObject[] bosses;
     [SerializeField] FloatingJoystick joystick;
     [SerializeField] float intervalTime;
     [SerializeField] PlayerControl player;
@@ -71,9 +74,10 @@ public class GameManager : Singleton<GameManager>
 
     private int phase;
 
+
     private void Start()
     {
-        phase = 19;
+        phase = 0;
         Score = 0;
         intervalTime = 2f;
         isPhaseEnd = true;
@@ -130,9 +134,13 @@ public class GameManager : Singleton<GameManager>
             preIdx = idx;
         }
     }
+    
     public void SummonBoss(int stage)
     {
+        bosses[stage].SetActive(true);
+
     }
+    
     // 다음 패턴 불러옴
     public void NextPhase()
     {
@@ -140,13 +148,25 @@ public class GameManager : Singleton<GameManager>
         isPhaseEnd = false;
 
         phase++;
-        Debug.Log("phase :" + phase);
+        stageText.text = "Stage : " + phase;
 
         // 일정 페이즈마다 보스 스테이지 진행
-        int stage = (phase / BOSSINTEVAR) + 1;
+        int stage = (phase / BOSSINTEVAR) - 1;
+        if(phase == 60)
+        {
+            EndGame();
+            return;
+        }
+
         if (phase % BOSSINTEVAR == 0) SummonBoss(stage);
         else StartPattern();
     }
+
+    public void IntervalNextPhase()
+    {
+        Invoke("NextPhase", intervalTime);
+    }
+
     // 해당 패턴 종료하고 일정 시간후 다음 페이즈 시작
     public void EndPhase(GameObject pattern)
     {
@@ -154,6 +174,37 @@ public class GameManager : Singleton<GameManager>
         pattern.SetActive(false);
         Invoke("NextPhase", intervalTime);
     }
+
+    public void EndGame()
+    {
+        gameOverPanel.gameObject.SetActive(true);
+        resultText.text = Mathf.CeilToInt(Score) + "초";
+        Time.timeScale = 0f;
+        StopAllCoroutines(); // 모든 코루틴 종료
+        CancelInvoke(); // 모든 함수 종료
+
+        DataManager.Instance.clearCount++;
+
+
+        if (DataManager.Instance.clearCount == 1)
+            AchieveManager.Instance.AchieveFirstClear();
+        if (!player.isFall)
+            AchieveManager.Instance.AchieveNoFalling();
+        if (DataManager.Instance.clearCount == 5)
+            AchieveManager.Instance.AchieveFiveClear();
+        if (!SkillManager.Instance.isStatGet)
+            AchieveManager.Instance.AchieveNoStat();
+        if (!SkillManager.Instance.isTrans)
+            AchieveManager.Instance.AchieveNoTransform();
+        if (!player.isHit)
+            AchieveManager.Instance.AchieveNoHit();
+
+
+
+
+        DataManager.Instance.SaveAchieve();
+    }
+
     // 게임 오버
     public void GameOver()
     {
@@ -165,6 +216,7 @@ public class GameManager : Singleton<GameManager>
         StopAllCoroutines(); // 모든 코루틴 종료
         CancelInvoke(); // 모든 함수 종료
     }
+
     // 게임 재시작
     public void ClickReStartGame()
     {

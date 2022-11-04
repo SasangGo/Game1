@@ -41,6 +41,7 @@ public class SkillManager : Singleton<SkillManager>
 
     // 업적 체크용
     public bool isTrans;
+    public bool isStatGet;
 
 
     [SerializeField] Transform sPos; // 셀의 시작 위치(거리 체크용)
@@ -63,7 +64,7 @@ public class SkillManager : Singleton<SkillManager>
         if (AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxJump].isAchieve) maxJumpLevel += 1;
 
         totalStatCount = (int)Skills.Heal + 1;
-        totalSkillCount = (int)Skills.PAWN - totalStatCount;
+        totalSkillCount = (int)Skills.PAWN - (int)Skills.ExpBall;
 
         ActSkillIndex = 0;
         transformSkillIndex = 2;
@@ -252,6 +253,8 @@ public class SkillManager : Singleton<SkillManager>
             }
         }
         GameManager.Instance.HpImageUpdate();
+
+        isStatGet = true;
     }
 
     // 피격무적 시간 증가
@@ -273,6 +276,7 @@ public class SkillManager : Singleton<SkillManager>
                 maxSkillCount++;
             }
         }
+        isStatGet = true;
     }
 
     // 스피드 증가
@@ -294,6 +298,7 @@ public class SkillManager : Singleton<SkillManager>
                 maxSkillCount++;
             }
         }
+        isStatGet = true;
     }
 
     // 경험치 획득량 증가
@@ -315,6 +320,7 @@ public class SkillManager : Singleton<SkillManager>
                 maxSkillCount++;
             }
         }
+        isStatGet = true;
     }
 
     // 쿨타임 감소
@@ -336,6 +342,7 @@ public class SkillManager : Singleton<SkillManager>
                 maxSkillCount++;
             }
         }
+        isStatGet = true;
     }
 
     // 점프력 증가
@@ -357,6 +364,7 @@ public class SkillManager : Singleton<SkillManager>
                 maxSkillCount++;
             }
         }
+        isStatGet = true;
     }
 
     // 액티브 스킬 포인트 얻기
@@ -383,7 +391,6 @@ public class SkillManager : Singleton<SkillManager>
     // 엑티브 스킬 얻는 함수
     public void GetActiveSkill(Skills skill, int buttonIndex)
     {
-
         GameManager.Instance.ActiveSkillButtonActive(buttonIndex, (int)skill); // UI 설정
         actSkillButtonNumber[buttonIndex] = skill; // 버튼에 어떤 스킬이 연결되어 있는지 설정
 

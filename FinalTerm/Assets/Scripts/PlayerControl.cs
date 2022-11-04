@@ -39,6 +39,10 @@ public class PlayerControl : MonoBehaviour
     public float timePerExp;// ??초 마다 얻는 경험치
     public float timer;// 시간을 재는 변수
 
+    // 업적 관련 변수
+    public bool isFall;
+    public bool isHit;
+
     //플레어어의 현재 체스말 상태를 나타냄
     public enum State
     {
@@ -76,6 +80,9 @@ public class PlayerControl : MonoBehaviour
         timePerExp = 0;
         timer = 0;
 
+        // 업적 관련 변수
+        isFall = false;
+
         GameManager.Instance.HpImageUpdate();
     }
 
@@ -83,9 +90,9 @@ public class PlayerControl : MonoBehaviour
     { 
         if (level < SkillManager.Instance.maxLevel) // 레벨이 최대치에 도달했는지 체크
         {
-            // GetExp(0.25f);
-            if (exp >= maxExp) ; // 경험치가 100% 다 채웠는지 체크
-                // LevelUp(); 
+            GetExp(0.25f);
+            if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
+                LevelUp(); 
         }
         else if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve)
         {
@@ -106,6 +113,7 @@ public class PlayerControl : MonoBehaviour
         {
             OnDamaged();
             Respawn();
+            isFall = true;
         }
     }
     private void Move()
@@ -196,6 +204,7 @@ public class PlayerControl : MonoBehaviour
 
         hp--;
         GameManager.Instance.HpImageUpdate();
+        isHit = true;
 
         isOnHitInvincibility = true;
         if (hp <= 0)

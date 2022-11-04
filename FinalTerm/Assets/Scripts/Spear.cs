@@ -9,32 +9,43 @@ public class Spear : AObstacle
     private Vector3 affterPos;
     public float speed = 8f;
     public bool isStart;
+    public bool isMove;
 
     private void Start()
     {
-        ChangeAlertColor();
-        Invoke("EnalbleSpear", 1f);
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
+
     }
 
     private void OnDisable()
     {
         isStart = false;
+        isMove = false;
     }
 
     private void Update()
     {
-        if(isStart)
+        if (isStart)
+        {
+            beforePos = transform.position;
+            affterPos = beforePos;
+            ChangeAlertColor();
+            Invoke("EnalbleSpear", 1f);
+            isStart = false;
+        }
+
+        if (isMove)
             transform.position = Vector3.MoveTowards(transform.position, affterPos, speed);
     }
 
     private void ChangePos()
     {
         affterPos = beforePos;
+        beforePos = new Vector3(beforePos.x, -20f, beforePos.z);
     }
 
     private void ChangeAlertColor()
@@ -63,8 +74,8 @@ public class Spear : AObstacle
     {
         beforePos = transform.position;
         affterPos = new Vector3(beforePos.x, -5f, beforePos.z);
-        isStart = true;
         Invoke("ChangePos", 1.5f);
+        isMove = true;
         StartCoroutine(ReturnObstacle(3f, 4));
     }
 }

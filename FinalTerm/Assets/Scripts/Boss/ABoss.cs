@@ -216,6 +216,7 @@ public abstract class ABoss : MonoBehaviour
         bossState = BossState.dead;
         if(anim != null) anim.SetBool("Dead", true);
         CancelInvoke();
+        GameManager.Instance.IntervalNextPhase();
         Destroy(gameObject, 2);
     }
 }

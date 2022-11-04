@@ -6,6 +6,8 @@ using System.Text;
 
 public class DataManager : Singleton<DataManager>
 {
+    public int clearCount;
+
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
@@ -25,7 +27,7 @@ public class DataManager : Singleton<DataManager>
             isAchieve[i] = AchieveList[i].isAchieve;
         }
 
-        SaveData data = new SaveData(isAchieve);
+        SaveData data = new SaveData(isAchieve, clearCount);
         CreateJsonFile(data, Application.dataPath, "AchievementList");
     }
 
@@ -39,6 +41,7 @@ public class DataManager : Singleton<DataManager>
             {
                 AchieveList[i].isAchieve = false;
             }
+            clearCount = 0;
         }
         else
         {
@@ -46,6 +49,7 @@ public class DataManager : Singleton<DataManager>
             {
                 AchieveList[i].isAchieve = data.isAchieve[i];
             }
+            clearCount = data.clearCount;
         }
     }
 
@@ -80,9 +84,11 @@ public class DataManager : Singleton<DataManager>
 public class SaveData
 {
     public bool[] isAchieve;
+    public int clearCount;
 
-    public SaveData(bool[] isAchieve)
+    public SaveData(bool[] isAchieve, int clearCount)
     {
         this.isAchieve = isAchieve;
+        this.clearCount = clearCount;
     }
 }
