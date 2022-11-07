@@ -53,9 +53,9 @@ public class Boss_Knight : ABoss
             }
         }
     }
-    protected override void Trace(Vector3 pos)
+    protected override void Trace()
     {
-        base.Trace(pos);
+        base.Trace();
         // 체스에서 말의 움직임 구현
         moveList.Add(GetMovePosition(2, 1));
         moveList.Add(GetMovePosition(1, 2));
@@ -86,18 +86,16 @@ public class Boss_Knight : ABoss
         switch (action)
         {
             case 0:
-                {
-                    if (target != null) Trace(target.position);
-                }
+                Trace();
                 break;
             case 1:
                 SpawnPawn();
                 break;
             case 2:
-                if (target != null) StartCoroutine(Dive(target.position));
+                StartCoroutine(Dive());
                 break;
             case 3:
-                if (target != null) StartCoroutine(Flame(target.position));
+                StartCoroutine(Flame());
                 break;
         }
     }
@@ -150,8 +148,10 @@ public class Boss_Knight : ABoss
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
     }
-    private IEnumerator Dive(Vector3 location)
+    private IEnumerator Dive()
     {
+        if (target == null) StopCoroutine(Dive());
+        Vector3 location = target.position;
         bossState = BossState.attack;
         anim.enabled = false;
         rigid.AddForce(Vector3.up * DIVEPOWER, ForceMode.VelocityChange);
@@ -218,8 +218,10 @@ public class Boss_Knight : ABoss
         anim.enabled = true;
         Invoke("OnAction", actionDelay);
     }
-    private IEnumerator Flame(Vector3 location)
+    private IEnumerator Flame()
     {
+        if (target != null) StopCoroutine(Flame());
+        Vector3 location = target.position;
         bossState = BossState.attack;
         //y축은 못따라가게 y축 고정
         location = new Vector3(location.x, GameManager.Instance.CELL_OFFSET_Y,location.z);

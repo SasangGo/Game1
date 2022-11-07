@@ -97,7 +97,7 @@ public abstract class ABoss : MonoBehaviour
             direction = 0;
         }
     }
-    protected virtual void Trace(Vector3 pos)
+    protected virtual void Trace()
     {
         if (target.gameObject == null) return;
         // 보스를 추적 상태로 바꿈

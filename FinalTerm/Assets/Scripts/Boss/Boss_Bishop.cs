@@ -26,16 +26,16 @@ public class Boss_Bishop : ABoss
         switch (action)
         {
             case 0:
-                Trace(target.position);
+                Trace();
                 break;
             case 1:
                 Teleport();
                 break;
         }
     }
-    protected override void Trace(Vector3 pos)
+    protected override void Trace()
     {
-        base.Trace(pos);
+        base.Trace();
         int go = 1;
         Vector3Int movePos = GetMovePosition(go, go);
         while (CheckCanMove(movePos))
