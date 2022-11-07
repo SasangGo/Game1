@@ -91,7 +91,7 @@ public class Boss_Knight : ABoss
             case 1:
                 SpawnPawn();
                 break;
-            case 2:
+            case 2: 
                 StartCoroutine(Dive());
                 break;
             case 3:
