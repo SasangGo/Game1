@@ -60,7 +60,7 @@ public abstract class ABoss : MonoBehaviour
     protected virtual void UpdateTarget()
     {
         //타겟 인식 구 레이캐스트
-        Collider[] cols = Physics.OverlapSphere(transform.position, 500f, LayerMask.GetMask("Player"));
+        Collider[] cols = Physics.OverlapSphere(transform.position, 500f, LayerMask.GetMask("Player", "Invincibility"));
         for (int i = 0; i < cols.Length; i++)
         {
             PlayerControl newTarget = cols[i].GetComponent<PlayerControl>();

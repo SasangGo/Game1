@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Boss_Bishop : ABoss
 {
+    private const float TELEPORT_SPEED = 0.5f;
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -21,11 +22,14 @@ public class Boss_Bishop : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = 0;
+        action = 1;
         switch (action)
         {
             case 0:
-                if(target != null) Trace(target.position);
+                Trace(target.position);
+                break;
+            case 1:
+                Teleport();
                 break;
         }
     }
@@ -52,5 +56,27 @@ public class Boss_Bishop : ABoss
         }
         StartCoroutine(MovingAction(movePos));
         moveList.Clear();
+    }
+    private void Teleport()
+    {
+        Vector3Int point = ConvertCellPos(target.position);
+        if (!CheckCanMove(point) && target != null) return;
+
+        StartCoroutine(TeleportAction(point));
+    }
+    private IEnumerator TeleportAction(Vector3Int point)
+    {
+        bossState = BossState.attack;
+        MeshCollider colli = mesh.GetComponent<MeshCollider>();
+
+        anim.SetBool("Teleport", true);
+        yield return new WaitForSeconds(TELEPORT_SPEED);
+        colli.enabled = true;
+        mesh.enabled = true;
+        anim.SetBool("Teleport", false);
+        transform.position = point + Vector3.up * 5;
+ 
+        bossState = BossState.idle;
+        Invoke("OnAction", actionDelay);
     }
 }
