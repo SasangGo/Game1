@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Boss_Bishop : ABoss
 {
-    private const float TELEPORT_SPEED = 0.5f;
+    [SerializeField] ParticleSystem teleportEffect;
+    private const float TELEPORT_SPEED = 0.2f;
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -75,6 +76,7 @@ public class Boss_Bishop : ABoss
         mesh.enabled = true;
         anim.SetBool("Teleport", false);
         transform.position = point + Vector3.up * 5;
+        teleportEffect.Play();
  
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
