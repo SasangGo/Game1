@@ -217,6 +217,20 @@ public abstract class ABoss : MonoBehaviour
         if(anim != null) anim.SetBool("Dead", true);
         CancelInvoke();
         GameManager.Instance.IntervalNextPhase();
+
+        if(gameObject.GetComponent<Boss_Knight>() != null)
+        {
+            int index = SkillManager.Instance.transformSkillIndex;
+            SkillManager.Instance.GetActiveSkill(SkillManager.Skills.KNIGHT, index);
+            SkillManager.Instance.transformSkillIndex++;
+        }
+        else if (gameObject.GetComponent<Boss_Bishop>() != null)
+        {
+            int index = SkillManager.Instance.transformSkillIndex;
+            SkillManager.Instance.GetActiveSkill(SkillManager.Skills.BISHOP, index);
+            SkillManager.Instance.transformSkillIndex++;
+        }
+
         Destroy(gameObject, 2);
     }
 }

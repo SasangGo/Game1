@@ -199,9 +199,6 @@ public class GameManager : Singleton<GameManager>
         if (!player.isHit)
             AchieveManager.Instance.AchieveNoHit();
 
-
-
-
         DataManager.Instance.SaveAchieve();
     }
 
