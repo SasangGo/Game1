@@ -5,7 +5,11 @@ using UnityEngine;
 public class Boss_Bishop : ABoss
 {
     [SerializeField] ParticleSystem teleportEffect;
+    [SerializeField] GameObject[] MagicBalls;
+
     private const float TELEPORT_SPEED = 0.2f;
+    private const int MAX_BALL_NUM = 6;
+    private const float RADIUS = 10F;
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -23,7 +27,7 @@ public class Boss_Bishop : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = 1;
+        action = 2;
         switch (action)
         {
             case 0:
@@ -31,6 +35,9 @@ public class Boss_Bishop : ABoss
                 break;
             case 1:
                 Teleport();
+                break;
+            case 2:
+                ShootMagicBall();
                 break;
         }
     }
@@ -61,7 +68,7 @@ public class Boss_Bishop : ABoss
     private void Teleport()
     {
         Vector3Int point = ConvertCellPos(target.position);
-        if (!CheckCanMove(point) && target != null) return;
+        if (!CheckCanMove(point) && target == null) return;
 
         StartCoroutine(TeleportAction(point));
     }
@@ -80,5 +87,26 @@ public class Boss_Bishop : ABoss
  
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
+    }
+    private void ShootMagicBall()
+    {
+        if (target == null) return;
+        anim.enabled = false;
+        StartCoroutine(MagicBallAction());
+    }
+    private IEnumerator MagicBallAction()
+    {
+        List<GameObject> balls = new List<GameObject>();
+        int offset = 1;
+        while(balls.Count < MAX_BALL_NUM)
+        {
+            float angle = offset * Mathf.PI / MAX_BALL_NUM;
+            int rand = Random.Range(0, MagicBalls.Length);
+            GameObject ball = Instantiate<GameObject>(MagicBalls[rand]);
+            ball.transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0)) * RADIUS;
+            offset++;
+            balls.Add(ball);
+            yield return new WaitForSeconds(0.3f);
+        }
     }
 }
