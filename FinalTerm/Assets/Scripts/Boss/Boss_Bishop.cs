@@ -10,6 +10,7 @@ public class Boss_Bishop : ABoss
     private const float TELEPORT_SPEED = 0.2f;
     private const int MAX_BALL_NUM = 6;
     private const float RADIUS = 10F;
+    private const int OFFSET_OBJECTPOOL = 5;
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -53,7 +54,7 @@ public class Boss_Bishop : ABoss
             movePos = GetMovePosition(go, go);
         }
         float distance = float.MaxValue;
-        for(int i = 0; i < moveList.Count; i++)
+        for (int i = 0; i < moveList.Count; i++)
         {
             float temp = Vector3Int.Distance(ConvertCellPos(target.position), moveList[i]);
             if (temp < distance)
@@ -84,7 +85,7 @@ public class Boss_Bishop : ABoss
         anim.SetBool("Teleport", false);
         transform.position = point + Vector3.up * 5;
         teleportEffect.Play();
- 
+
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
     }
@@ -96,17 +97,28 @@ public class Boss_Bishop : ABoss
     }
     private IEnumerator MagicBallAction()
     {
-        List<GameObject> balls = new List<GameObject>();
-        int offset = 1;
-        while(balls.Count < MAX_BALL_NUM)
+        List<AObstacle> balls = new List<AObstacle>();
+        int offset = 0;
+        // MAX_BALL_NUM 개수만큼의 매직 볼 랜덤 소환
+        while (balls.Count < MAX_BALL_NUM)
         {
-            float angle = offset * Mathf.PI / MAX_BALL_NUM;
-            int rand = Random.Range(0, MagicBalls.Length);
-            GameObject ball = Instantiate<GameObject>(MagicBalls[rand]);
+            float angle = offset * Mathf.PI / (MAX_BALL_NUM - 1);
+            int rand = Random.Range(0, MagicBalls.Length) + OFFSET_OBJECTPOOL;
+            AObstacle ball = ObjectPool.Instance.GetObject(rand).GetComponent<AObstacle>();
+            ball.enabled = false;
+            // 반 구 모양으로 소
             ball.transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0)) * RADIUS;
             offset++;
             balls.Add(ball);
             yield return new WaitForSeconds(0.3f);
+        }
+        yield return new WaitForSeconds(1f);
+        // 각각의 매직볼 액션 활성
+        foreach (AObstacle ball in balls)
+        {
+       
+            ball.enabled = true;
+            ball.transform.LookAt(target);
         }
     }
 }

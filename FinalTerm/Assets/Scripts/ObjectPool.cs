@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * 0 -> Bullet
+ * 1 -> DropBall
+ * 2 -> Missile
+ * 3 -> ExpBall
+ * 4 -> Spear
+ * 5 -> FireBall
+ * 6 -> IceBall
+ */
 // 오브젝트 풀링 관리하는 스크립트 < 싱글톤>
 public class ObjectPool : Singleton<ObjectPool>
 {
@@ -13,7 +22,7 @@ public class ObjectPool : Singleton<ObjectPool>
 
     private void Awake()
     {
-        Initialize(100);
+        Initialize(50);
     }
     // 초기화(개수)
     private void Initialize(int count)
