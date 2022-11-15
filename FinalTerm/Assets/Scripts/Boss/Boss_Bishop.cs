@@ -11,6 +11,7 @@ public class Boss_Bishop : ABoss
     private const int MAX_BALL_NUM = 6;
     private const float RADIUS = 10F;
     private const int OFFSET_OBJECTPOOL = 5;
+    private const int REPEAT = 2;
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -97,28 +98,40 @@ public class Boss_Bishop : ABoss
     }
     private IEnumerator MagicBallAction()
     {
+        bossState = BossState.attack;
         List<AObstacle> balls = new List<AObstacle>();
-        int offset = 0;
-        // MAX_BALL_NUM 개수만큼의 매직 볼 랜덤 소환
-        while (balls.Count < MAX_BALL_NUM)
+        int count = REPEAT;
+
+        while (count-- > 0)
         {
-            float angle = offset * Mathf.PI / (MAX_BALL_NUM - 1);
-            int rand = Random.Range(0, MagicBalls.Length) + OFFSET_OBJECTPOOL;
-            AObstacle ball = ObjectPool.Instance.GetObject(rand).GetComponent<AObstacle>();
-            ball.enabled = false;
-            // 반 구 모양으로 소
-            ball.transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0)) * RADIUS;
-            offset++;
-            balls.Add(ball);
-            yield return new WaitForSeconds(0.3f);
+            balls.Clear();
+            int offset = 0;
+            // MAX_BALL_NUM 개수만큼의 매직 볼 랜덤 소환
+            while (balls.Count < MAX_BALL_NUM)
+            {
+                float angle = offset * Mathf.PI / (MAX_BALL_NUM - 1);
+                int rand = Random.Range(0, MagicBalls.Length) + OFFSET_OBJECTPOOL;
+                AObstacle ball = ObjectPool.Instance.GetObject(rand).GetComponent<AObstacle>();
+                ball.enabled = false;
+                // 반 구 모양으로 소
+                ball.transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0)) * RADIUS;
+                offset++;
+                balls.Add(ball);
+                yield return new WaitForSeconds(0.3f);
+            }
+            yield return new WaitForSeconds(1f);
+            // 각각의 매직볼 액션 활성
+            foreach (AObstacle ball in balls)
+            {
+
+                ball.enabled = true;
+                ball.transform.LookAt(target);
+            }
+            yield return new WaitForSeconds(5f);
         }
-        yield return new WaitForSeconds(1f);
-        // 각각의 매직볼 액션 활성
-        foreach (AObstacle ball in balls)
-        {
-       
-            ball.enabled = true;
-            ball.transform.LookAt(target);
-        }
+        yield return new WaitForSeconds(7f);
+        anim.enabled = true;
+        bossState = BossState.idle;
+        Invoke("OnAction", actionDelay);
     }
 }
