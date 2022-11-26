@@ -8,7 +8,6 @@ public class Straight_Ball : AObstacle
     private const int LIFE_TIME = 4;
     private Vector3 dir;
     private Rigidbody rigid;
-    // Update is called once per frame
 
     void Start()
     {
