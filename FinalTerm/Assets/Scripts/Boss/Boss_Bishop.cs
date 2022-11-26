@@ -5,7 +5,8 @@ using UnityEngine;
 public class Boss_Bishop : ABoss
 {
     [SerializeField] ParticleSystem teleportEffect;
-    [SerializeField] GameObject[] MagicBalls;
+    [SerializeField] GameObject[] magicBalls;
+    [SerializeField] MagicCloud magicCloud;
 
     private const float TELEPORT_SPEED = 0.2f;
     private const int MAX_BALL_NUM = 6;
@@ -29,7 +30,7 @@ public class Boss_Bishop : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-        action = 2;
+        action = Random.Range(0, 3);
         switch (action)
         {
             case 0:
@@ -93,27 +94,29 @@ public class Boss_Bishop : ABoss
     private void ShootMagicBall()
     {
         if (target == null) return;
-        anim.enabled = false;
         StartCoroutine(MagicBallAction());
     }
     private IEnumerator MagicBallAction()
     {
         bossState = BossState.attack;
-        List<AObstacle> balls = new List<AObstacle>();
+
+        // magic Ball 개수를 세기 위해 list에 저장
+        List<AObstacle> balls = new List<AObstacle>(); 
         int count = REPEAT;
 
         while (count-- > 0)
         {
-            balls.Clear();
+            balls.Clear(); // 리스트 초기화
             int offset = 0;
             // MAX_BALL_NUM 개수만큼의 매직 볼 랜덤 소환
             while (balls.Count < MAX_BALL_NUM)
             {
+                // 반구에 균등하게 배분해서 생성
                 float angle = offset * Mathf.PI / (MAX_BALL_NUM - 1);
-                int rand = Random.Range(0, MagicBalls.Length) + OFFSET_OBJECTPOOL;
+                int rand = Random.Range(0, magicBalls.Length) + OFFSET_OBJECTPOOL;
                 AObstacle ball = ObjectPool.Instance.GetObject(rand).GetComponent<AObstacle>();
                 ball.enabled = false;
-                // 반 구 모양으로 소
+                // 반 구 모양으로 소
                 ball.transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0)) * RADIUS;
                 offset++;
                 balls.Add(ball);
@@ -130,8 +133,31 @@ public class Boss_Bishop : ABoss
             yield return new WaitForSeconds(5f);
         }
         yield return new WaitForSeconds(7f);
-        anim.enabled = true;
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
+    }
+    protected override void Enraged()
+    {
+        base.Enraged();
+        magicCloud.gameObject.SetActive(true);
+        magicCloud.transform.SetParent(null);
+        anim.SetTrigger("Rage");
+        StartCoroutine(ChangeState());
+    }
+    private IEnumerator ChangeState()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Invincibility");
+        yield return new WaitUntil(
+            () => anim.GetCurrentAnimatorStateInfo(0).IsName("Bishop_Rage")
+            && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f);
+        Debug.Log("패턴 종료 ");
+        gameObject.layer = LayerMask.NameToLayer("Enemy");
+        bossState = BossState.idle;
+        Invoke("OnAction", actionDelay);
+    }
+    protected override void Die()
+    {
+        base.Die();
+        magicCloud.RemoveMagicCloud();
     }
 }
