@@ -45,7 +45,7 @@ public class Spear : AObstacle
     private void ChangePos()
     {
         affterPos = beforePos;
-        beforePos = new Vector3(beforePos.x, -20f, beforePos.z);
+        beforePos = new Vector3(beforePos.x, -40f, beforePos.z);
     }
 
     private void ChangeAlertColor()
@@ -73,7 +73,7 @@ public class Spear : AObstacle
     private void EnalbleSpear()
     {
         beforePos = transform.position;
-        affterPos = new Vector3(beforePos.x, -5f, beforePos.z);
+        affterPos = new Vector3(beforePos.x, -17f, beforePos.z);
         Invoke("ChangePos", 1.5f);
         isMove = true;
         StartCoroutine(ReturnObstacle(3f, 4));

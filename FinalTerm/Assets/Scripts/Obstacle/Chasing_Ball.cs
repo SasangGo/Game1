@@ -25,6 +25,7 @@ public class Chasing_Ball : AObstacle
         if (point == null) return;
         Vector3 relativeDir = (point.position - transform.position) + Vector3.up * ATTACK_OFFSET;
         Quaternion dir = Quaternion.LookRotation(relativeDir);
+        Debug.Log(dir);
         transform.rotation = Quaternion.Slerp(transform.rotation, dir, Time.deltaTime * ROTATION_SPEED);
     }
 }

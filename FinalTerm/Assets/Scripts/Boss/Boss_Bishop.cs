@@ -5,6 +5,7 @@ using UnityEngine;
 public class Boss_Bishop : ABoss
 {
     [SerializeField] ParticleSystem teleportEffect;
+    [SerializeField] GameObject[] MagicBalls;
     [SerializeField] GameObject[] magicBalls;
     [SerializeField] MagicCloud magicCloud;
 
@@ -30,7 +31,7 @@ public class Boss_Bishop : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-
+        action = 2;
         action = Random.Range(0, 3);
         switch (action)
         {
@@ -95,8 +96,10 @@ public class Boss_Bishop : ABoss
     private void ShootMagicBall()
     {
         if (target == null) return;
+        anim.enabled = false;
         StartCoroutine(MagicBallAction());
     }
+
     private IEnumerator MagicBallAction()
     {
         bossState = BossState.attack;

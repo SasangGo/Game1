@@ -103,6 +103,7 @@ public class Boss_Knight : ABoss
                 break;
         }
     }
+
     private IEnumerator Rush(Vector3 dir)
     {
         if (dir == Vector3.zero) yield break;

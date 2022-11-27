@@ -485,7 +485,6 @@ public class SkillManager : Singleton<SkillManager>
                 cooltime = 5f;
                 break;
         }
-
         return cooltime * (1 - player.coolTimeDecrement / 100);
     }
 
@@ -691,6 +690,7 @@ public class SkillManager : Singleton<SkillManager>
     {
         wall.SetActive(false);
     }
+
 
     //변신
     public void ChangeType(PlayerControl.State state)

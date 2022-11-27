@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44736552, g: 0.49730444, b: 0.57524395, a: 1}
+  m_IndirectSpecularColor: {r: 0.44736642, g: 0.49730587, b: 0.5752454, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -20276,7 +20276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &574965607
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -20288,7 +20288,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &574965608
 MeshRenderer:
@@ -20308,7 +20308,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c717fb89e24ff384785039c0f1169eee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -20336,7 +20336,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 574965606}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 4300000, guid: 790b418366b065e40a30c085435acbc4, type: 3}
 --- !u!4 &574965610
 Transform:
   m_ObjectHideFlags: 0
@@ -20346,7 +20346,7 @@ Transform:
   m_GameObject: {fileID: 574965606}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.029999996, y: 0.565, z: 0.016000008}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 1304625905}
   m_RootOrder: 3
@@ -24019,7 +24019,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100006, guid: 03f80303eb362fc489b3fe5bab219a93, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 03f80303eb362fc489b3fe5bab219a93, type: 3}
       propertyPath: m_RootOrder
@@ -50744,7 +50744,7 @@ MonoBehaviour:
   - {fileID: 6582725874302985704, guid: 8b285176bdf02c14ca895c8050d83dfc, type: 3}
   - {fileID: 2871848922000154313, guid: c52f8929c0872fa45a858f7a372c5f80, type: 3}
   - {fileID: 4512917029091170302, guid: 2a67ffb3d5c22a94689a5ceca02f8561, type: 3}
-  - {fileID: 5928341398113836560, guid: cb58712fb6e59bd4b80e9053b42f944d, type: 3}
+  - {fileID: 7050011177017485659, guid: cb58712fb6e59bd4b80e9053b42f944d, type: 3}
   - {fileID: 4208683915313615298, guid: 3dc2bb6f380794b429d99a5ea2319b85, type: 3}
   - {fileID: 4335233464796162539, guid: de3cd6c5719e94a3e930906cab94e9cc, type: 3}
 --- !u!82 &1577360706
@@ -60653,7 +60653,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1997395728
 Transform:
   m_ObjectHideFlags: 0
@@ -60663,7 +60663,7 @@ Transform:
   m_GameObject: {fileID: 1997395727}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 20, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 1577360704}
   m_RootOrder: 0
@@ -60695,7 +60695,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.9
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1997395731
 MeshRenderer:
@@ -60715,7 +60715,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c717fb89e24ff384785039c0f1169eee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -60743,7 +60743,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1997395727}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 4300000, guid: 790b418366b065e40a30c085435acbc4, type: 3}
 --- !u!54 &1997395733
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -64561,6 +64561,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Black Bishop
+      objectReference: {fileID: 0}
+    - target: {fileID: 6050315764581100036, guid: 293fb105c81594919a8455b2fa116c46,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6589262435242733036, guid: 293fb105c81594919a8455b2fa116c46,
         type: 3}

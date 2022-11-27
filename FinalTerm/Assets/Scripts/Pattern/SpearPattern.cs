@@ -7,7 +7,7 @@ public class SpearPattern : APattern
     [SerializeField] int amountSpawn = 40; // 초당 떨어지는 공 개수
     
     private const float PHASETIME = 10f; // 진행시간
-    private const float HEIGHT = -20f; // 떨어지는 높이
+    private const float HEIGHT = -40f; // 떨어지는 높이
 
 
     protected override void OnEnable()
@@ -43,7 +43,7 @@ public class SpearPattern : APattern
         float posZ = Random.Range(start.z - 5, end.z + 5);
         GameObject spear = ObjectPool.Instance.GetObject(4);
         spear.transform.position = GetPosition(posX, HEIGHT, posZ);
-        spear.GetComponent<Spear>().isStart = true;
+        spear.GetComponentInChildren<Spear>().isStart = true;
     }
 
     // 위치를 셀 위치에 떨어지게 하기 위해 픽셀단위 벡터를 반환
