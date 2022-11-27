@@ -8,11 +8,6 @@ public class Straight_Ball : AObstacle
     private const int LIFE_TIME = 4;
     private Vector3 dir;
     private Rigidbody rigid;
-<<<<<<< HEAD
-    // Update is called once per frame
-=======
->>>>>>> 434d4a809ae3601691ad8e48afa5ff76decce608
-
     void Start()
     {
         StartCoroutine(ReturnObstacle(LIFE_TIME, 5));

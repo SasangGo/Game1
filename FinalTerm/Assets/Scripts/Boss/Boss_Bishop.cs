@@ -5,12 +5,9 @@ using UnityEngine;
 public class Boss_Bishop : ABoss
 {
     [SerializeField] ParticleSystem teleportEffect;
-<<<<<<< HEAD
     [SerializeField] GameObject[] MagicBalls;
-=======
     [SerializeField] GameObject[] magicBalls;
     [SerializeField] MagicCloud magicCloud;
->>>>>>> 434d4a809ae3601691ad8e48afa5ff76decce608
 
     private const float TELEPORT_SPEED = 0.2f;
     private const int MAX_BALL_NUM = 6;
@@ -34,12 +31,8 @@ public class Boss_Bishop : ABoss
     protected override void OnAction()
     {
         base.OnAction();
-<<<<<<< HEAD
         action = 2;
-=======
-
         action = Random.Range(0, 3);
->>>>>>> 434d4a809ae3601691ad8e48afa5ff76decce608
         switch (action)
         {
             case 0:
@@ -97,7 +90,6 @@ public class Boss_Bishop : ABoss
         transform.position = point + Vector3.up * 5;
         teleportEffect.Play();
 
-<<<<<<< HEAD
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
     }
@@ -107,51 +99,7 @@ public class Boss_Bishop : ABoss
         anim.enabled = false;
         StartCoroutine(MagicBallAction());
     }
-    private IEnumerator MagicBallAction()
-    {
-        bossState = BossState.attack;
-        List<AObstacle> balls = new List<AObstacle>();
-        int count = REPEAT;
 
-        while (count-- > 0)
-        {
-            balls.Clear();
-            int offset = 0;
-            // MAX_BALL_NUM 개수만큼의 매직 볼 랜덤 소환
-            while (balls.Count < MAX_BALL_NUM)
-            {
-                float angle = offset * Mathf.PI / (MAX_BALL_NUM - 1);
-                int rand = Random.Range(0, MagicBalls.Length) + OFFSET_OBJECTPOOL;
-                AObstacle ball = ObjectPool.Instance.GetObject(rand).GetComponent<AObstacle>();
-                ball.enabled = false;
-                // 반 구 모양으로 소
-                ball.transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0)) * RADIUS;
-                offset++;
-                balls.Add(ball);
-                yield return new WaitForSeconds(0.3f);
-            }
-            yield return new WaitForSeconds(1f);
-            // 각각의 매직볼 액션 활성
-            foreach (AObstacle ball in balls)
-            {
-
-                ball.enabled = true;
-                ball.transform.LookAt(target);
-            }
-            yield return new WaitForSeconds(5f);
-        }
-        yield return new WaitForSeconds(7f);
-        anim.enabled = true;
-=======
->>>>>>> 434d4a809ae3601691ad8e48afa5ff76decce608
-        bossState = BossState.idle;
-        Invoke("OnAction", actionDelay);
-    }
-    private void ShootMagicBall()
-    {
-        if (target == null) return;
-        StartCoroutine(MagicBallAction());
-    }
     private IEnumerator MagicBallAction()
     {
         bossState = BossState.attack;
