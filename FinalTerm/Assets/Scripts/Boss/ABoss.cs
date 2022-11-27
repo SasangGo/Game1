@@ -141,6 +141,7 @@ public abstract class ABoss : MonoBehaviour
         Quaternion newRot = Quaternion.LookRotation(dir);
         rigid.rotation = Quaternion.Slerp(rigid.rotation, newRot, Time.deltaTime * speed);
     }
+
     //이동 방향을 곧바로 바라
     protected virtual void Rotate(Vector3 location, bool immediate)
     {
@@ -210,7 +211,7 @@ public abstract class ABoss : MonoBehaviour
         float percent = (health - cntHealth) / (float)health;
         mesh.material.color = Color.Lerp(originColor.color, damagedColor.color, percent);
     }
-    protected void Die()
+    protected virtual void Die()
     {
         gameObject.layer = 9;
         bossState = BossState.dead;

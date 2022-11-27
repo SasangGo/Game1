@@ -291,7 +291,6 @@ public class PlayerControl : MonoBehaviour
         if (obj.layer == 8)
         {
             jumpCount = 0;
-            //anim.SetBool("Jump", false);
         }
         else if(obj.GetComponent<AObstacle>() != null)
         {
