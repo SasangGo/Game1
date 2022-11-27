@@ -9454,7 +9454,7 @@ ParticleSystemRenderer:
   m_CameraVelocityScale: 0
   m_VelocityScale: 0
   m_LengthScale: -5
-  m_SortingFudge: -100
+  m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
   m_RenderAlignment: 0
@@ -28449,7 +28449,7 @@ ParticleSystemRenderer:
   m_CameraVelocityScale: 0
   m_VelocityScale: 0
   m_LengthScale: 2
-  m_SortingFudge: -100
+  m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
   m_RenderAlignment: 0
@@ -28601,7 +28601,7 @@ MonoBehaviour:
   magicBalls:
   - {fileID: 4208683915313615298, guid: 3dc2bb6f380794b429d99a5ea2319b85, type: 3}
   - {fileID: 4335233464796162539, guid: de3cd6c5719e94a3e930906cab94e9cc, type: 3}
-  magicCloud: {fileID: 4807771908045357193}
+  magicCloud: {fileID: 3605556985498375101}
 --- !u!95 &7358869953648693306
 Animator:
   serializedVersion: 3
@@ -33322,7 +33322,7 @@ ParticleSystemRenderer:
   m_CameraVelocityScale: 0
   m_VelocityScale: 0
   m_LengthScale: 2
-  m_SortingFudge: -100
+  m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
   m_RenderAlignment: 0
@@ -33350,7 +33350,7 @@ GameObject:
   - component: {fileID: 4397010910781292769}
   m_Layer: 12
   m_Name: HitBox
-  m_TagString: Untagged
+  m_TagString: Damagable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33363,7 +33363,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6589262435242733036}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.02, z: -0.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6050315764580828846}
@@ -33379,10 +33379,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 1.5
+  m_Radius: 0.7114622
+  m_Height: 1.4230685
   m_Direction: 1
-  m_Center: {x: 0, y: 1.8, z: 0}
+  m_Center: {x: 0, y: 1.800041, z: 0.0114619145}
 --- !u!1 &9106479066015861835
 GameObject:
   m_ObjectHideFlags: 0
@@ -33407,7 +33407,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9106479066015861835}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -162, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3351039754457085206}

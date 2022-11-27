@@ -30,6 +30,7 @@ public class Boss_Bishop : ABoss
     protected override void OnAction()
     {
         base.OnAction();
+
         action = Random.Range(0, 3);
         switch (action)
         {
@@ -150,7 +151,6 @@ public class Boss_Bishop : ABoss
         yield return new WaitUntil(
             () => anim.GetCurrentAnimatorStateInfo(0).IsName("Bishop_Rage")
             && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f);
-        Debug.Log("패턴 종료 ");
         gameObject.layer = LayerMask.NameToLayer("Enemy");
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
