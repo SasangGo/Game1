@@ -7,6 +7,7 @@ using UnityEngine;
 // 충돌시에 관한 작용이 쓰여있음
 public abstract class AObstacle : MonoBehaviour
 {
+    public Transform point;
     public RaycastHit[] hits; // 셀 감지
     public int Index { get; protected set; }
     protected virtual void OnEnable()
@@ -59,5 +60,19 @@ public abstract class AObstacle : MonoBehaviour
         }
         ObjectPool.Instance.ReturnObject(gameObject, index);
 
+    }
+    protected virtual void UpdateTarget()
+    {
+        Collider[] cols = Physics.OverlapSphere(transform.position, 100, LayerMask.GetMask("Player"));
+        for (int i = 0; i < cols.Length; i++)
+        {
+            PlayerControl newTarget = cols[i].GetComponent<PlayerControl>();
+            if (newTarget != null)
+            {
+                point = newTarget.transform;
+                return;
+            }
+        }
+        point = null;
     }
 }
