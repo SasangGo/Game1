@@ -12,6 +12,10 @@ public class Pawn : ABoss
         cntHealth = health;
         InvokeRepeating("OnAction", 2,2);
     }
+    protected override void Update()
+    {
+        base.Update();
+    }
 
     protected override void OnAction()
     {
@@ -33,5 +37,9 @@ public class Pawn : ABoss
         transform.position = movePos;
         rigid.useGravity = true;
         bossState = BossState.idle;
+    }
+    protected override void Die()
+    {
+        Destroy(gameObject);
     }
 }

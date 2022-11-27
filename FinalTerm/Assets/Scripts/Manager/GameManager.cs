@@ -70,7 +70,7 @@ public class GameManager : Singleton<GameManager>
     private List<int> randomSkillNumbers;
 
     private const int STARTSCENENUMBER = 0;
-    private const int BOSSINTEVAR = 20;
+    private const int BOSSINTEVAR = 5;
 
     private int phase;
 
