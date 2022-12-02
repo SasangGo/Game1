@@ -19,12 +19,15 @@ public class SkillManager : Singleton<SkillManager>
     public int ActSkillIndex; // 엑티브 스킬 버튼 인덱스
     public int transformSkillIndex; // 변신 스킬 버튼 인덱스
 
-    public bool[] isGetTransformSkill; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
+    public bool[] isGetTransformSkill; // 변신 스킬 얻었는지 체크
     public bool[] isMaxSkillLevel; // 각 스킬들의 상태가 Max인지 체크하기 위한 배열
+    public bool[] isSkillCool; // 스킬이 쿨타임 중인지 체크하는 배열
     public int[] skillLevel; // 각 스킬들 레벨을 체크하는 배열
     public int totalStatCount; // 이 게임에 존재하는 Stat 개수 변수
     public int totalSkillCount; // 이 게임에 존재하는 Skill 개수 변수
     public int maxSkillCount; // Max가 된 스킬들이 몇개인지 체크하기 위한 변수
+    public int lastClickIndex; // 마지막으로 사용한 스킬 인덱스
+    public Mesh[] chessMesh;
 
     // 텔레포트 관련 변수
     public bool isTeleport;
@@ -66,9 +69,11 @@ public class SkillManager : Singleton<SkillManager>
         totalStatCount = (int)Skills.Heal + 1;
         totalSkillCount = (int)Skills.PAWN - (int)Skills.ExpBall;
 
+        lastClickIndex = 0;
         ActSkillIndex = 0;
         transformSkillIndex = 2;
         actSkillButtonNumber = new Skills[GameManager.Instance.activeSkillButtons.Length];
+        isSkillCool = new bool[actSkillButtonNumber.Length];
 
         maxSkillCount = 0;
         isMaxSkillLevel = new bool[(int)Skills.KING + 1];
@@ -78,8 +83,10 @@ public class SkillManager : Singleton<SkillManager>
             skillLevel[i] = 1;
         }
 
-        // GetActiveSkill(Skills.RandomAll);
-        // GetActiveSkill(Skills.Bomb);
+        GetActiveSkill(Skills.RandomAll, 0);
+        GetActiveSkill(Skills.Clone, 1);
+        GetActiveSkill(Skills.BISHOP, 2);
+        GetActiveSkill(Skills.KNIGHT, 3);
 
     }
 
@@ -261,7 +268,7 @@ public class SkillManager : Singleton<SkillManager>
     public void IncreaseOnHitInvincibilityTime(int maxLevel, float increment)
     {
         player.onHitInvincibilityTime = player.onHitInvincibilityTime + increment;
-
+        
         skillLevel[(int)Skills.IncreaseInvincibilityTime]++;
         // 스킬이 max치가 되면
         if (skillLevel[(int)Skills.IncreaseInvincibilityTime] >= maxLevel)
@@ -407,9 +414,19 @@ public class SkillManager : Singleton<SkillManager>
     // 액티브 스킬 and 변신 버튼 클릭 이벤트
     public void ClickActSkillButton(int buttonIndex)
     {
+        // 플레이어의 마지막 변신 상태
+        Skills lastState = (Skills)((int)player.state + (int)Skills.PAWN);
+
+        lastClickIndex = buttonIndex;
         float cooltime = ActiveSkill(actSkillButtonNumber[buttonIndex]);
-        StartCoroutine(SkillCoolDown(buttonIndex, cooltime));
+        if(cooltime != -1f)
+            StartCoroutine(SkillCoolDown(buttonIndex, cooltime));
+        if (buttonIndex >= 2)
+            GetActiveSkill(lastState, buttonIndex);
     }
+
+
+
 
     public float ActiveSkill(Skills skill)
     {
@@ -433,7 +450,7 @@ public class SkillManager : Singleton<SkillManager>
                 cooltime = 0.5f;
                 break;
             case Skills.Dash:
-                SkillDash(100000f, 1500f);
+                SkillDash(800f, 75f);
                 break;
             case Skills.SizeDown:
                 SkillSizeDown(0.5f, 5f);
@@ -449,7 +466,7 @@ public class SkillManager : Singleton<SkillManager>
             case Skills.Teleport:
                 SkillTeleport(4f);
                 if(isTeleport)
-                    return 0;
+                    return -1;
                 cooltime = 5f;
                 teleportCoolTime = cooltime;
                 break;
@@ -522,8 +539,8 @@ public class SkillManager : Singleton<SkillManager>
         do
         {
             random = Random.Range((int)start, (int)end + 1);
-        } while (random == (int)Skills.RandomAll);
-        debugText2.text = "" + (Skills)random;
+        } while (random == (int)Skills.RandomAll && random == (int)Skills.DoubleJump && random == (int)Skills.Teleport);
+        
         ActiveSkill((Skills)random);
     }
 
@@ -531,6 +548,8 @@ public class SkillManager : Singleton<SkillManager>
     public void SkillClone()
     {
         clone.transform.position = player.transform.position;
+        clone.GetComponent<MeshFilter>().mesh = chessMesh[(int)player.state];
+        clone.GetComponent<MeshCollider>().sharedMesh = chessMesh[(int)player.state];
         clone.SetActive(true);
     }
 
@@ -545,8 +564,8 @@ public class SkillManager : Singleton<SkillManager>
     // 대쉬 스킬
     public void SkillDash(float xPower, float yPower)
     {
-        player.rigid.AddForce(player.transform.forward * xPower);
-        player.rigid.AddForce(player.transform.up * yPower);
+        player.rigid.AddForce(player.transform.up * yPower, ForceMode.Impulse);
+        player.rigid.AddForce(player.transform.forward * xPower, ForceMode.Impulse);
     }
 
     // 소소화
@@ -584,7 +603,9 @@ public class SkillManager : Singleton<SkillManager>
         }
 
         Renderer mesh = player.GetComponent<MeshRenderer>();
-        Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f , 0f);
+        //Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f , 0f);
+        Color color = mesh.material.color;
+        color.a = 0f;
         mesh.material.color = color;
 
         Button[] button = GameManager.Instance.activeSkillButtons;
@@ -604,13 +625,15 @@ public class SkillManager : Singleton<SkillManager>
     public void TeleportEnd()
     {
         Renderer mesh = player.GetComponent<MeshRenderer>();
-        Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f, 255f);
+        //Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f, 255f);
+        Color color = mesh.material.color;
+        color.a = 1f;
         mesh.material.color = color;
 
         Button[] button = GameManager.Instance.activeSkillButtons;
         for (int i = 0; i < button.Length; i++)
         {
-            if (i != teleportButtonIndex)
+            if (i != teleportButtonIndex && !isSkillCool[i])
                 button[i].interactable = true;
         }
 
@@ -646,6 +669,7 @@ public class SkillManager : Singleton<SkillManager>
     }
 
     // 벽 세우기 스킬
+    // 보스 스킬, 이동 안막힘
     public void SkillWall(float time)
     {
         float directX = player.transform.forward.x;
@@ -691,8 +715,7 @@ public class SkillManager : Singleton<SkillManager>
         wall.SetActive(false);
     }
 
-
-    //변신
+    // 변신
     public void ChangeType(PlayerControl.State state)
     {
         isTrans = true;
@@ -717,8 +740,9 @@ public class SkillManager : Singleton<SkillManager>
     public IEnumerator SkillCoolDown(int index, float maxCoolTime)
     {
         GameManager.Instance.activeSkillButtons[index].interactable = false;
-
+        isSkillCool[index] = true;
         float coolTime = maxCoolTime;
+
         while (coolTime > 0f)
         {
             coolTime -= Time.deltaTime;
@@ -729,7 +753,9 @@ public class SkillManager : Singleton<SkillManager>
             yield return new WaitForFixedUpdate();
         }
 
-        GameManager.Instance.activeSkillButtons[index].interactable = true;
+        if(!isTeleport)
+            GameManager.Instance.activeSkillButtons[index].interactable = true;
+        isSkillCool[index] = false;
     }
 
 }

@@ -20,11 +20,26 @@ public class SkillBomb : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        SkillManager.Instance.debugText.text = other.gameObject.tag;
-        if(other.gameObject.tag == "Bullet")
+        AObstacle obstacle = other.GetComponent<AObstacle>();
+        if (obstacle != null)
         {
-            AObstacle obstacle = other.GetComponent<AObstacle>();
             StartCoroutine(obstacle.ReturnObstacle(0, obstacle.Index));
+            return;
         }
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject obj = collision.gameObject;
+        //layer == 12 -> Enemy
+        if (obj.layer == 12)
+        {
+            ABoss enemy = obj.GetComponent<ABoss>();
+            if (collision.collider.CompareTag("Damagable"))
+            {
+                enemy.OnDamaged(Vector3.zero);
+            }
+        }
+    }
+
 }

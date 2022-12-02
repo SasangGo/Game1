@@ -15,7 +15,9 @@ public class Clone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Bullet")
+
+        AObstacle obj = other.GetComponent<AObstacle>();
+        if (obj != null)
         {
             hp--;
 
@@ -26,9 +28,8 @@ public class Clone : MonoBehaviour
             }
 
             gameObject.layer = 9;
-            Invoke("Invincibility", 1.5f);
+            Invoke("Invincibility", 1f);
 
-            AObstacle obj = other.GetComponent<AObstacle>();
             StartCoroutine(obj.ReturnObstacle(0, obj.Index));
         }
     }

@@ -33,6 +33,7 @@ public class PlayerControl : MonoBehaviour
     public float coolTimeDecrement; // 쿨타임 감소량
     public bool isSkillInvincibility;
     public bool isOnHitInvincibility;
+    public Color currentColor;
 
     // 경험치 관련 변수들
     public float patternExp;// 패턴 마다 얻는 경험치량
@@ -46,8 +47,8 @@ public class PlayerControl : MonoBehaviour
     //플레어어의 현재 체스말 상태를 나타냄
     public enum State
     {
-      //폰/나이트/룩/비숍/킹 순서
-        PAWN,KNIGHT, BISHOP, ROOK,KING
+        //폰/나이트/비숍/룩/킹 순서
+        PAWN, KNIGHT, BISHOP, ROOK,KING
     }
     public State state;
 
@@ -55,7 +56,7 @@ public class PlayerControl : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        jumpPower = 3000f;
+        jumpPower = 4000f;
         isDoubleJump = false;
         jumpCount = 0;
 
@@ -80,6 +81,9 @@ public class PlayerControl : MonoBehaviour
         timePerExp = 0;
         timer = 0;
 
+        // 플레이어 상태
+        state = State.PAWN;
+
         // 업적 관련 변수
         isFall = false;
 
@@ -90,7 +94,7 @@ public class PlayerControl : MonoBehaviour
     { 
         if (level < SkillManager.Instance.maxLevel) // 레벨이 최대치에 도달했는지 체크
         {
-            GetExp(0.25f);
+            // GetExp(0.25f);
             if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
                 LevelUp();
         }
@@ -121,8 +125,12 @@ public class PlayerControl : MonoBehaviour
         if (SkillManager.Instance.isTeleport)
             return;
 
-        float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
-        float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
+        //float moveX = joystick.Horizontal; // 수평 움직임 값 조이스틱 변수에서 가져옴
+        //float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
+
+
 
         Vector3 movePos;
 
@@ -240,9 +248,13 @@ public class PlayerControl : MonoBehaviour
         isOnHitInvincibility = false;
 
         // 색 돌아옴
-        Color color = new Color(195f/255f, 202f/255f, 219f/255f);
+        Color color = new Color(195f / 255f, 202f / 255f, 219f / 255f);
         mesh.material.color = color;
-
+        if (SkillManager.Instance.isTeleport)
+        {
+            color.a = 0;
+        }
+        mesh.material.color = color;
     }
 
     // 레벨 업 함수
