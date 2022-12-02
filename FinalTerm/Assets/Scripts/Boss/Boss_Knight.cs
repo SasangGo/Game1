@@ -33,6 +33,10 @@ public class Boss_Knight : ABoss
     }
     protected override void Update()
     {
+        if (transform.position.y < GameManager.Instance.DEADLINE)
+        {
+            Die();
+        }
         rushTime += Time.deltaTime;
         if (target == null) return;
         Rotate(target.position);

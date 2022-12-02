@@ -90,9 +90,9 @@ public class PlayerControl : MonoBehaviour
     { 
         if (level < SkillManager.Instance.maxLevel) // 레벨이 최대치에 도달했는지 체크
         {
-            //GetExp(0.25f);
-            //if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
-                //LevelUp(); 
+            GetExp(0.25f);
+            if (exp >= maxExp) // 경험치가 100% 다 채웠는지 체크
+                LevelUp();
         }
         else if (!AchieveManager.Instance.achieveList[(int)AchieveManager.Achieve.MaxLevel].isAchieve)
         {
@@ -125,10 +125,6 @@ public class PlayerControl : MonoBehaviour
         float moveZ = joystick.Vertical; // 수직 움직임 값 조이스틱 변수에서 가져옴
 
         Vector3 movePos;
-
-        // 점프 상태일때만 y 좌표를 받아 걸을때는 넘어지지 않게 함
-        // if(isJump) movePos = new Vector3(moveX * speed, rigid.velocity.y ,moveZ * speed);
-        // else movePos = new Vector3(moveX, 0, moveZ) * speed;
 
         movePos = new Vector3(moveX * speed, rigid.velocity.y, moveZ * speed);
 
@@ -201,8 +197,8 @@ public class PlayerControl : MonoBehaviour
             }
             return;
         }
-
-        hp--;
+        //테스트를 위해 잠시 꺼둠
+        //hp--;
         GameManager.Instance.HpImageUpdate();
         isHit = true;
 
@@ -256,7 +252,7 @@ public class PlayerControl : MonoBehaviour
         if (level < SkillManager.Instance.maxLevel)
         {
             exp = exp - maxExp;
-            //maxExp = maxExp * 1.15f + level;
+            maxExp = maxExp * 1.15f + level;
             Debug.Log("MaxExp : " + maxExp);
         }
         else // 레벨이 최대치이면 maxExp로 고정(경험치바 UI가 꽉차보이게)

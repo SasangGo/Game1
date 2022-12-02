@@ -173,8 +173,8 @@ public abstract class ABoss : MonoBehaviour
 
     protected virtual void OnAction()
     {
-        bossState = BossState.attack;
         if (bossState != BossState.idle) return;
+        bossState = BossState.attack;
     }
 
     //해당 위치로 이동할 수 있는지 확인
