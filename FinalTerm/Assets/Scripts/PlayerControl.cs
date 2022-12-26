@@ -55,7 +55,7 @@ public class PlayerControl : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        jumpPower = 3000f;
+        jumpPower = 5000f;
         isDoubleJump = false;
         jumpCount = 0;
 
