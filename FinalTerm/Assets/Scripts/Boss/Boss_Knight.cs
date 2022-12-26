@@ -266,4 +266,27 @@ public class Boss_Knight : ABoss
         bossState = BossState.idle;
         Invoke("OnAction", actionDelay);
     }
+    protected override void Die()
+    {
+        gameObject.layer = 9;
+        bossState = BossState.dead;
+        if (anim != null) anim.SetBool("Dead", true);
+        CancelInvoke();
+        GameManager.Instance.SummonBoss(1);
+
+        if (gameObject.GetComponent<Boss_Knight>() != null)
+        {
+            int index = SkillManager.Instance.transformSkillIndex;
+            SkillManager.Instance.GetActiveSkill(SkillManager.Skills.KNIGHT, index);
+            SkillManager.Instance.transformSkillIndex++;
+        }
+        else if (gameObject.GetComponent<Boss_Bishop>() != null)
+        {
+            int index = SkillManager.Instance.transformSkillIndex;
+            SkillManager.Instance.GetActiveSkill(SkillManager.Skills.BISHOP, index);
+            SkillManager.Instance.transformSkillIndex++;
+        }
+
+        Destroy(gameObject, 2);
+    }
 }
