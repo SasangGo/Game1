@@ -70,14 +70,13 @@ public class GameManager : Singleton<GameManager>
     private List<int> randomSkillNumbers;
 
     private const int STARTSCENENUMBER = 0;
-    private const int BOSSINTEVAR = 9;
+    private const int BOSSINTEVAR = 5;
 
     private int phase;
 
 
     private void Start()
     {
-        idx = 0;
         phase = 0;
         Score = 0;
         intervalTime = 2f;
@@ -121,11 +120,10 @@ public class GameManager : Singleton<GameManager>
     // 패턴을 랜덤으로 결정하고 불러옴
     public void StartPattern()
     {
-        
-        //do
-        //{
-        //    idx = Random.Range(0, patterns.Length);
-        //} while (preIdx == idx);
+        do
+        {
+            idx = Random.Range(0, patterns.Length);
+        } while (preIdx == idx);
 
         APattern pattern = patterns[idx].GetComponent<APattern>();
         if (pattern != null)
@@ -135,9 +133,6 @@ public class GameManager : Singleton<GameManager>
             player.patternExp = pattern.expAmount;
             preIdx = idx;
         }
-        //시연용 코
-        if (idx + 1 >= patterns.Length) idx = 0;
-        else idx++;
     }
     
     public void SummonBoss(int stage)

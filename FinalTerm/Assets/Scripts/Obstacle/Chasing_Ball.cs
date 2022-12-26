@@ -8,7 +8,7 @@ public class Chasing_Ball : AObstacle
     private const float ATTACK_OFFSET = 5F;
     private const float DECREASE_PERCENT = 0.3F;
     private const float ROTATION_SPEED = 80F;
-    private const int LIFE_TIME = 6;
+    private const int LIFE_TIME = 10;
 
     private Rigidbody rigid;
     void Start()
