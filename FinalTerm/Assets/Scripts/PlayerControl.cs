@@ -56,7 +56,11 @@ public class PlayerControl : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
+<<<<<<< HEAD
         jumpPower = 4000f;
+=======
+        jumpPower = 5000f;
+>>>>>>> e6e0207da75177c7cb3020820b9c4e0212d1f607
         isDoubleJump = false;
         jumpCount = 0;
 
