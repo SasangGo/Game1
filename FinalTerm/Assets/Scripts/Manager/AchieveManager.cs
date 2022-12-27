@@ -53,7 +53,7 @@ public class AchieveManager : Singleton<AchieveManager>
         achieveList.Add(achievement);
         achieveImageList.Add(sprite);
     }
-    // 달성 조건 및 달성 기능
+    // 캐릭터 만렙 달성, 만렙 +10
     public void AchieveMaxLevel()
     {
         achieveList[(int)Achieve.MaxLevel].isAchieve = true;
@@ -62,6 +62,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxLevel]);
         DataManager.Instance.SaveAchieve();
     }
+    // 피격무적 패시브 레벨 만렙, 피격 무적 시간 만렙 +1
     public void AchieveMaxOnHit()
     {
         achieveList[(int)Achieve.MaxOnHit].isAchieve = true;
@@ -70,6 +71,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxOnHit]);
         DataManager.Instance.SaveAchieve();
     }
+    // 스피드 패시브 레벨 만렙, 스피드 만렙 +1
     public void AchieveMaxSpeed()
     {
         achieveList[(int)Achieve.MaxSpeed].isAchieve = true;
@@ -78,6 +80,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxSpeed]);
         DataManager.Instance.SaveAchieve();
     }
+    // 경험치 획득량 패시브 레벨 만렙, 경험치 획득량 만렙 +1
     public void AchieveMaxExpSkill()
     {
         achieveList[(int)Achieve.MaxExpSkill].isAchieve = true;
@@ -86,6 +89,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxExpSkill]);
         DataManager.Instance.SaveAchieve();
     }
+    // 쿨타임 감소 패시브 레벨 만렙, 쿨타임 감소 만렙 +1
     public void AchieveMaxCoolTime()
     {
         achieveList[(int)Achieve.MaxCoolTime].isAchieve = true;
@@ -94,6 +98,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxCoolTime]);
         DataManager.Instance.SaveAchieve();
     }
+    // 점프력 패시브 레벨 만렙, 점프력 만렙 +1
     public void AchieveMaxJump()
     {
         achieveList[(int)Achieve.MaxJump].isAchieve = true;
@@ -102,6 +107,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxJump]);
         DataManager.Instance.SaveAchieve();
     }
+    // 체력 최대치 증가 레벨 만렙, 체력 최대치 증가 만렙 +1
     public void AchieveMaxHp()
     {
         achieveList[(int)Achieve.MaxHp].isAchieve = true;
@@ -110,6 +116,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.MaxHp]);
         DataManager.Instance.SaveAchieve();
     }
+    // 게임 클리어 1회, 경험치 구슬 스킬
     public void AchieveFirstClear()
     {
         achieveList[(int)Achieve.FirstClear].isAchieve = true;
@@ -117,6 +124,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.FirstClear]);
         DataManager.Instance.SaveAchieve();
     }
+    // 한 번도 떨어지지 않고 게임 클리어, 2단 점프
     public void AchieveNoFalling()
     {
         achieveList[(int)Achieve.NoFalling].isAchieve = true;
@@ -124,6 +132,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.NoFalling]);
         DataManager.Instance.SaveAchieve();
     }
+    // 스탯을 찍지 않고 게임 클리어, 게임 시작 시 스킬 하나 주고 시작
     public void AchieveNoStat()
     {
         achieveList[(int)Achieve.NoStat].isAchieve = true;
@@ -131,6 +140,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.NoStat]);
         DataManager.Instance.SaveAchieve();
     }
+    // 변신 하지 않고 게임 클리어, ??? 스킬
     public void AchieveNoTransform()
     {
         achieveList[(int)Achieve.NoTransform].isAchieve = true;
@@ -138,6 +148,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.NoTransform]);
         DataManager.Instance.SaveAchieve();
     }
+    // 정상에 선 자(일정 높이 이상 올라가면 주는 업적), 2단 점프
     public void AchieveHighest()
     {
         achieveList[(int)Achieve.Highest].isAchieve = true;
@@ -145,6 +156,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.Highest]);
         DataManager.Instance.SaveAchieve();
     }
+    //  한번도 맞지 않고 클리어, 명예의 전당(구글 리더보드)
     public void AchieveNoHit()
     {
         achieveList[(int)Achieve.NoHit].isAchieve = true;
@@ -152,6 +164,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.NoHit]);
         DataManager.Instance.SaveAchieve();
     }
+    // 나이트 한대도 안맞고 클리어, 소소화 
     public void AchieveNoHitNight()
     {
         achieveList[(int)Achieve.NoHitNight].isAchieve = true;
@@ -159,6 +172,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.NoHitNight]);
         DataManager.Instance.SaveAchieve();
     }
+    // 비숍 한대도 안맞고 클리어, 텔포
     public void AchieveNoHitBishop()
     {
         achieveList[(int)Achieve.NoHitBishop].isAchieve = true;
@@ -166,6 +180,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.NoHitBishop]);
         DataManager.Instance.SaveAchieve();
     }
+    // 룩 한대도 안맞고 클리어, 벽세우기
     public void AchieveNoHitRook()
     {
         achieveList[(int)Achieve.NoHitRook].isAchieve = true;
@@ -173,6 +188,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.NoHitRook]);
         DataManager.Instance.SaveAchieve();
     }
+    // 피했다고!(못피함)(한 게임 내에 모든 패턴 1대 이상 맞음), 체력 +1
     public void AchieveAllHit()
     {
         achieveList[(int)Achieve.AllHit].isAchieve = true;
@@ -180,6 +196,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.AllHit]);
         DataManager.Instance.SaveAchieve();
     }
+    // 죽음에서 돌아온자(피1에서 맥스까지), 쉴드
     public void AchieveRevive()
     {
         achieveList[(int)Achieve.Revive].isAchieve = true;
@@ -187,6 +204,7 @@ public class AchieveManager : Singleton<AchieveManager>
         GameManager.Instance.SetAchieveItem(achieveList[(int)Achieve.Revive]);
         DataManager.Instance.SaveAchieve();
     }
+    // 이걸 5번이나 했다고?(5회 클리어), 명예의 전당
     public void AchieveFiveClear()
     {
         achieveList[(int)Achieve.FiveClear].isAchieve = true;

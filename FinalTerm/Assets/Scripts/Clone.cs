@@ -15,7 +15,6 @@ public class Clone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
         AObstacle obj = other.GetComponent<AObstacle>();
         if (obj != null)
         {

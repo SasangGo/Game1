@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class BombTurret : MonoBehaviour
 {
-    [SerializeField] Transform centerPos;
+    [SerializeField] Transform targetPos;
+    [SerializeField] GameObject player;
+    [SerializeField] GameObject clone;
+    
     [SerializeField] GameObject bigBomb;
 
     private Vector3 beforePos;
@@ -15,7 +18,11 @@ public class BombTurret : MonoBehaviour
 
     protected void OnEnable()
     {
-        Vector3 temp = centerPos.position;
+        targetPos.position = player.transform.position;
+        if (clone.activeSelf)
+            targetPos.position = clone.transform.position;
+
+        Vector3 temp = targetPos.position;
         temp.y = transform.position.y;
         transform.LookAt(temp);
 
@@ -70,7 +77,7 @@ public class BombTurret : MonoBehaviour
     private void ShootBomb()
     {
         bigBomb.transform.position = transform.position + new Vector3(0,7f,0);
-        Vector3 direction = (centerPos.position - bigBomb.transform.position) * 0.3f + new Vector3(0, 10f, 0);
+        Vector3 direction = (targetPos.position - bigBomb.transform.position) * 0.3f + new Vector3(0, 10f, 0);
         bigBomb.GetComponent<Rigidbody>().velocity = Vector3.zero;
         bigBomb.SetActive(true);
         bigBomb.GetComponent<Rigidbody>().AddForce(direction * 30f, ForceMode.Impulse);

@@ -87,7 +87,6 @@ public class SkillManager : Singleton<SkillManager>
         GetActiveSkill(Skills.Clone, 1);
         GetActiveSkill(Skills.BISHOP, 2);
         GetActiveSkill(Skills.KNIGHT, 3);
-
     }
 
     // Update is called once per frame
